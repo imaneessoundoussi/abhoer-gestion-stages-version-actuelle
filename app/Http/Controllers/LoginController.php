@@ -37,10 +37,11 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
+            // NB : l'espace Agent est fusionné dans l'espace Responsable,
+            // un compte AGENT est donc redirigé vers le même espace.
             return match ($user->role) {
                 'ADMINISTRATEUR' => redirect('/admin/dashboard'),
-                'AGENT' => redirect('/agent/dashboard'),
-                'RESPONSABLE' => redirect('/responsable/dashboard'),
+                'AGENT', 'RESPONSABLE' => redirect('/responsable/dashboard'),
                 default => redirect('/'),
             };
         }
