@@ -24,6 +24,8 @@ class DemandeStage extends Model
         'dateFin',
         'statut',
         'typeDepot',
+        'typeStage',
+        'theme',
         'observation',
     ];
 

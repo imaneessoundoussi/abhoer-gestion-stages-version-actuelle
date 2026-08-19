@@ -256,13 +256,35 @@
                     <label>Service demandé *</label>
                     <select name="idService" required>
                         <option value="">-- Choisir un service --</option>
-                        @foreach ($services as $service)
-                            <option value="{{ $service->idService }}" @selected(old('idService') == $service->idService)>
-                                {{ $service->nomService }}
-                            </option>
+                        @foreach ($services->groupBy(fn($s) => optional($s->departement)->nomDepartement ?? 'Autres') as $nomDepartement => $servicesDuDepartement)
+                            <optgroup label="{{ $nomDepartement }}">
+                                @foreach ($servicesDuDepartement as $service)
+                                    <option value="{{ $service->idService }}" @selected(old('idService') == $service->idService)>
+                                        {{ $service->nomService }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
                         @endforeach
                     </select>
                     @error('idService')<div class="error-text">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Type de stage *</label>
+                        <select name="typeStage" required>
+                            <option value="">-- Choisir --</option>
+                            <option value="Stage d'observation" @selected(old('typeStage') === "Stage d'observation")>Stage d'observation</option>
+                            <option value="Stage d'initiation" @selected(old('typeStage') === "Stage d'initiation")>Stage d'initiation</option>
+                            <option value="Stage technique" @selected(old('typeStage') === 'Stage technique')>Stage technique</option>
+                            <option value="Stage de fin d'études (PFE)" @selected(old('typeStage') === "Stage de fin d'études (PFE)")>Stage de fin d'études (PFE)</option>
+                        </select>
+                        @error('typeStage')<div class="error-text">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="form-group">
+                        <label>Thème / Sujet du stage</label>
+                        <input type="text" name="theme" value="{{ old('theme') }}" placeholder="Ex: Suivi des ressources en eau">
+                    </div>
                 </div>
 
                 <div class="form-row">

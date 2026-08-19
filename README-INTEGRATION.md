@@ -1,26 +1,38 @@
-# Intégration — Suivi des stages + Historique complet
+# Intégration — Départements/Services (organigramme) + Type de stage/Thème
 
-## Fichiers nouveaux (à copier tels quels)
-- `app/Http/Controllers/Responsable/ResponsableHistoriqueController.php`
-- `app/Http/Controllers/Responsable/ResponsableStageController.php`
-- `resources/views/responsable/historique/index.blade.php`
-- `resources/views/responsable/stages/index.blade.php`
-
-## Fichiers modifiés (remplace-les entièrement, ils contiennent déjà tout le contenu précédent + les ajouts)
-- `routes/web.php` → ajout des routes `/responsable/stages` et `/responsable/historique`
-- `resources/views/responsable/dashboard.blade.php`
-- `resources/views/responsable/demandes/index.blade.php`
-- `resources/views/responsable/demandes/show.blade.php`
-- `resources/views/responsable/demandes/create.blade.php`
-  → ces 4 vues ont juste 2 liens de menu ajoutés ("Suivi des stages" et "Historique")
-
-## Après copie
+## 1. Fichier nouveau : la migration
+- `database/migrations/2026_08_19_102710_add_type_stage_and_theme_to_demande_stage_table.php`
+  → copie-la dans `database/migrations/`, puis lance :
 ```bash
-composer dump-autoload
+php artisan migrate
 ```
-(pas besoin de `storage:link` ni de migration, aucune nouvelle table)
+Ça ajoute 2 colonnes (`typeStage`, `theme`) à la table `demande_stage`, sans toucher aux données existantes.
 
-## Test rapide
-1. Connecte-toi en RESPONSABLE
-2. Menu → **Suivi des stages** : 3 onglets (À venir / En cours / Terminés). Vide tant qu'aucune affectation n'existe — affecte une demande à un service depuis sa page de détail pour tester.
-3. Menu → **Historique** : liste toutes les actions de toutes les demandes, avec filtres (recherche par n° demande, type d'action, utilisateur, dates).
+## 2. Fichier nouveau : le seeder
+- `database/seeders/DepartementServiceSeeder.php` → copie-le dans `database/seeders/`
+
+Puis lance-le pour peupler la base avec l'organigramme (Secrétariat Général + 4 Divisions + Délégation, et tous leurs services) :
+```bash
+php artisan db:seed --class=DepartementServiceSeeder
+```
+Il utilise `firstOrCreate`, donc tu peux le relancer sans créer de doublons.
+
+## 3. Fichiers modifiés (remplace entièrement)
+- `app/Models/DemandeStage.php` → ajout de `typeStage` et `theme` au `$fillable`
+- `app/Http/Controllers/Responsable/ResponsableDemandeController.php` → validation + sauvegarde des 2 nouveaux champs, services groupés par département
+- `resources/views/responsable/demandes/create.blade.php` → nouveau champ "Type de stage" (select) + "Thème / Sujet" (texte), select de service maintenant regroupé par département (optgroup)
+- `resources/views/responsable/demandes/show.blade.php` → affichage du type de stage et du thème dans le détail
+
+## Après copie, dans l'ordre
+```bash
+php artisan migrate
+php artisan db:seed --class=DepartementServiceSeeder
+composer dump-autoload
+php artisan view:clear
+```
+
+## Test
+1. Va sur "Nouvelle demande (physique)"
+2. Le menu déroulant "Service demandé" doit maintenant afficher tes départements comme groupes (Secrétariat Général, Division Administrative et Financière, etc.) avec leurs services dedans
+3. Remplis "Type de stage" (obligatoire) et "Thème" (optionnel)
+4. Valide et vérifie que ces 2 infos apparaissent bien sur la page de détail de la demande créée

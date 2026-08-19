@@ -179,7 +179,7 @@ class ResponsableDemandeController extends Controller
      */
     public function create()
     {
-        $services = Service::orderBy('nomService')->get();
+        $services = Service::with('departement')->orderBy('nomService')->get();
 
         return view('responsable.demandes.create', compact('services'));
     }
@@ -201,6 +201,8 @@ class ResponsableDemandeController extends Controller
             'niveauEtude' => ['nullable', 'string', 'max:50'],
             // Demande
             'idService' => ['required', 'exists:service,idService'],
+            'typeStage' => ['required', 'string', 'max:100'],
+            'theme' => ['nullable', 'string', 'max:255'],
             'dateDebut' => ['nullable', 'date'],
             'dateFin' => ['nullable', 'date', 'after_or_equal:dateDebut'],
             'observation' => ['nullable', 'string', 'max:1000'],
@@ -229,6 +231,8 @@ class ResponsableDemandeController extends Controller
                 'dateFin' => $validated['dateFin'] ?? null,
                 'statut' => 'EN_ATTENTE',
                 'typeDepot' => 'PHYSIQUE',
+                'typeStage' => $validated['typeStage'],
+                'theme' => $validated['theme'] ?? null,
                 'observation' => $validated['observation'] ?? null,
             ]);
 

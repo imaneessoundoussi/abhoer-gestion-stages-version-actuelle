@@ -299,6 +299,8 @@
 
                     <div class="info-line"><span>Service demandé</span><span>{{ $demande->service->nomService ?? '—' }}</span></div>
                     <div class="info-line"><span>Type de dépôt</span><span>{{ $demande->typeDepot ?? '—' }}</span></div>
+                    <div class="info-line"><span>Type de stage</span><span>{{ $demande->typeStage ?? '—' }}</span></div>
+                    <div class="info-line"><span>Thème / Sujet</span><span>{{ $demande->theme ?? '—' }}</span></div>
                     <div class="info-line"><span>Date de dépôt</span><span>{{ optional($demande->dateDepot)->format('d/m/Y') }}</span></div>
                     <div class="info-line"><span>Période souhaitée</span><span>
                         {{ $demande->dateDebut ? $demande->dateDebut->format('d/m/Y') : '—' }}
