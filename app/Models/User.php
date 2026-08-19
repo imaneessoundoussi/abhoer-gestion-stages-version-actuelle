@@ -2,31 +2,81 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use Notifiable;
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Table utilisée pour l'authentification
      */
-    protected function casts(): array
+    protected $table = 'utilisateur';
+
+    /**
+     * Clé primaire
+     */
+    protected $primaryKey = 'idUtilisateur';
+
+    protected $keyType = 'int';
+
+    public $incrementing = true;
+
+    /**
+     * Pas de timestamps Laravel
+     */
+    public $timestamps = false;
+
+    /**
+     * Champs modifiables
+     */
+    protected $fillable = [
+        'idCandidat',
+        'nom',
+        'prenom',
+        'login',
+        'motDePasse',
+        'role',
+        'actif',
+    ];
+
+    /**
+     * Champs cachés
+     */
+    protected $hidden = [
+        'motDePasse',
+    ];
+
+    /**
+     * Relation :
+     *
+     * utilisateur.idCandidat
+     *        ↓
+     * candidat.idCandidat
+     */
+    public function candidat()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->belongsTo(
+            Candidat::class,
+            'idCandidat',
+            'idCandidat'
+        );
+    }
+
+    /**
+     * Mot de passe utilisé par Laravel
+     */
+    public function getAuthPassword()
+    {
+        return $this->motDePasse;
+    }
+
+    /**
+     * Identifiant utilisé par Laravel
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'idUtilisateur';
     }
 }

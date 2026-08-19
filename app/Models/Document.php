@@ -25,6 +25,9 @@ class Document extends Model
         'dateAjout' => 'datetime',
     ];
 
+    /**
+     * Un document appartient à une demande.
+     */
     public function demande(): BelongsTo
     {
         return $this->belongsTo(

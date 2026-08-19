@@ -21,6 +21,9 @@ class Service extends Model
         'description',
     ];
 
+    /**
+     * Département du service.
+     */
     public function departement(): BelongsTo
     {
         return $this->belongsTo(
@@ -30,6 +33,9 @@ class Service extends Model
         );
     }
 
+    /**
+     * Demandes associées au service.
+     */
     public function demandes(): HasMany
     {
         return $this->hasMany(
@@ -38,12 +44,16 @@ class Service extends Model
             'idService'
         );
     }
+
+    /**
+     * Affectations associées au service.
+     */
     public function affectations(): HasMany
-{
-    return $this->hasMany(
-        Affectation::class,
-        'idService',
-        'idService'
-    );
-}
+    {
+        return $this->hasMany(
+            Affectation::class,
+            'idService',
+            'idService'
+        );
+    }
 }

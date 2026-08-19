@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-use App\Models\Service;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,6 +22,8 @@ class DemandeStage extends Model
         'dateDepot',
         'dateDebut',
         'dateFin',
+        'theme',
+        'motivation',
         'statut',
         'typeDepot',
         'observation',
@@ -50,28 +52,31 @@ class DemandeStage extends Model
             'idService'
         );
     }
+
     public function documents(): HasMany
-{
-    return $this->hasMany(
-        Document::class,
-        'idDemande',
-        'idDemande'
-    );
-}
-public function affectation(): HasOne
-{
-    return $this->hasOne(
-        Affectation::class,
-        'idDemande',
-        'idDemande'
-    );
-}
-public function historiques(): HasMany
-{
-    return $this->hasMany(
-        Historique::class,
-        'idDemande',
-        'idDemande'
-    );
-}
+    {
+        return $this->hasMany(
+            Document::class,
+            'idDemande',
+            'idDemande'
+        );
+    }
+
+    public function affectation(): HasOne
+    {
+        return $this->hasOne(
+            Affectation::class,
+            'idDemande',
+            'idDemande'
+        );
+    }
+
+    public function historiques(): HasMany
+    {
+        return $this->hasMany(
+            Historique::class,
+            'idDemande',
+            'idDemande'
+        );
+    }
 }

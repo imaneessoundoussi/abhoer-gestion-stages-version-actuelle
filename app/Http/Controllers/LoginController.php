@@ -38,11 +38,11 @@ class LoginController extends Controller
             $user = Auth::user();
 
             return match ($user->role) {
-                'ADMINISTRATEUR' => redirect('/admin/dashboard'),
-                'AGENT' => redirect('/agent/dashboard'),
-                'RESPONSABLE' => redirect('/responsable/dashboard'),
-                default => redirect('/'),
-            };
+    'ADMINISTRATEUR' => redirect('/admin/dashboard'),
+    'RESPONSABLE' => redirect('/responsable/dashboard'),
+    'ETUDIANT' => redirect('/etudiant/dashboard'),
+    default => redirect('/'),
+};
         }
 
         return back()
