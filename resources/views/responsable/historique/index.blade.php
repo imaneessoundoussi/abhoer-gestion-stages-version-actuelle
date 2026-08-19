@@ -12,7 +12,7 @@
         body { font-family: Arial, sans-serif; background: #f4f7fb; color: #333; }
 
         .navbar {
-            background: #075985; color: white; padding: 18px 30px;
+            background: linear-gradient(135deg, #1a7a86, #2fa9b0); color: white; padding: 18px 30px;
             display: flex; justify-content: space-between; align-items: center;
         }
         .navbar h1 { font-size: 22px; }
@@ -20,13 +20,13 @@
         .navbar nav a { color: white; text-decoration: none; margin-right: 20px; font-size: 14px; opacity: 0.9; }
         .navbar nav a:hover { opacity: 1; text-decoration: underline; }
         .logout button {
-            background: white; color: #075985; border: none;
+            background: white; color: #1a7a86; border: none;
             padding: 9px 16px; border-radius: 6px; cursor: pointer; font-weight: bold;
         }
 
         .container { padding: 30px; }
 
-        h2 { color: #075985; margin-bottom: 20px; }
+        h2 { color: #1a7a86; margin-bottom: 20px; }
 
         .filters {
             background: white; padding: 20px; border-radius: 10px;
@@ -45,7 +45,7 @@
             width: 100%; padding: 9px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;
         }
 
-        .btn { padding: 10px 18px; border-radius: 8px; border: none; background: #075985; color: white; font-weight: bold; cursor: pointer; }
+        .btn { padding: 10px 18px; border-radius: 8px; border: none; background: #1a7a86; color: white; font-weight: bold; cursor: pointer; }
 
         .table-section {
             background: white; border-radius: 10px; box-shadow: 0 3px 12px rgba(0,0,0,0.08);
@@ -58,21 +58,112 @@
 
         .action-tag {
             padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;
-            background: #e0f2fe; color: #075985;
+            background: #e0f2fe; color: #1a7a86;
         }
 
         .pagination-wrap { margin-top: 20px; }
 
+        .abhoer-pagination {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .abhoer-pagination-list {
+            display: flex;
+            list-style: none;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .abhoer-page-item .abhoer-page-link {
+            display: inline-block;
+            padding: 8px 13px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            color: #1a7a86;
+            text-decoration: none;
+            font-size: 13px;
+            background: white;
+        }
+
+        .abhoer-page-item .abhoer-page-link:hover {
+            background: #f4f7fb;
+        }
+
+        .abhoer-page-item.active .abhoer-page-link {
+            background: #1a7a86;
+            color: white;
+            border-color: #1a7a86;
+            font-weight: bold;
+        }
+
+        .abhoer-page-item.disabled .abhoer-page-link {
+            color: #bbb;
+            cursor: default;
+        }
+
+        .abhoer-pagination-info {
+            font-size: 12px;
+            color: #999;
+        }
+
         @media (max-width: 1000px) {
             .filters form { grid-template-columns: 1fr 1fr; }
         }
+            /* --- Identité visuelle ABHOER (logo + vagues) --- */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-logo {
+            height: 42px;
+            width: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 3px 6px;
+        }
+
+        .navbar-brand h1 {
+            font-size: 19px;
+            line-height: 1.1;
+        }
+
+        .navbar-subtitle {
+            display: block;
+            font-size: 11px;
+            opacity: 0.85;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+        }
+
+        .wave-divider {
+            line-height: 0;
+            margin-top: -1px;
+        }
+
+        .wave-divider svg {
+            width: 100%;
+            height: 26px;
+            display: block;
+        }
+
     </style>
 </head>
 
 <body>
 
     <div class="navbar">
-        <h1>ABHOER - Espace Responsable</h1>
+        <div class="navbar-brand">
+            <img src="{{ asset('images/logo-abhoer.png') }}" alt="Logo ABHOER" class="navbar-logo">
+            <div>
+                <h1>ABHOER</h1>
+                <span class="navbar-subtitle">Espace Responsable</span>
+            </div>
+        </div>
 
         <div class="navbar-right">
             <nav>
@@ -90,6 +181,12 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <div class="wave-divider">
+        <svg viewBox="0 0 1440 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path fill="#9bd9d6" d="M0,20 C240,40 480,0 720,15 C960,30 1200,5 1440,20 L1440,40 L0,40 Z"></path>
+        </svg>
     </div>
 
     <div class="container">
@@ -162,7 +259,7 @@
                             <td><span class="action-tag">{{ $item->action }}</span></td>
                             <td>
                                 @if ($item->demande)
-                                    <a href="{{ route('responsable.demandes.show', $item->demande->idDemande) }}" style="color:#075985;text-decoration:none;font-weight:bold;">
+                                    <a href="{{ route('responsable.demandes.show', $item->demande->idDemande) }}" style="color:#1a7a86;text-decoration:none;font-weight:bold;">
                                         {{ $item->demande->numeroDemande }}
                                     </a>
                                     <br>
@@ -184,7 +281,7 @@
             </table>
 
             <div class="pagination-wrap">
-                {{ $historiques->links() }}
+                {{ $historiques->links('vendor.pagination.abhoer') }}
             </div>
         </div>
 

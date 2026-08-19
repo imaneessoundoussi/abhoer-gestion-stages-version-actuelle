@@ -21,7 +21,7 @@
         }
 
         .navbar {
-            background: #075985;
+            background: linear-gradient(135deg, #1a7a86, #2fa9b0);
             color: white;
             padding: 18px 30px;
             display: flex;
@@ -51,7 +51,7 @@
         }
 
         .header h2 {
-            color: #075985;
+            color: #1a7a86;
         }
 
         .btn {
@@ -65,7 +65,7 @@
         }
 
         .btn-primary {
-            background: #075985;
+            background: #1a7a86;
             color: white;
         }
 
@@ -107,7 +107,7 @@
         }
 
         th {
-            background: #075985;
+            background: #1a7a86;
             color: white;
         }
 
@@ -146,6 +146,45 @@
             padding: 30px;
             color: #666;
         }
+            /* --- Identité visuelle ABHOER (logo + vagues) --- */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-logo {
+            height: 42px;
+            width: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 3px 6px;
+        }
+
+        .navbar-brand h1 {
+            font-size: 19px;
+            line-height: 1.1;
+        }
+
+        .navbar-subtitle {
+            display: block;
+            font-size: 11px;
+            opacity: 0.85;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+        }
+
+        .wave-divider {
+            line-height: 0;
+            margin-top: -1px;
+        }
+
+        .wave-divider svg {
+            width: 100%;
+            height: 26px;
+            display: block;
+        }
+
     </style>
 
 </head>
@@ -154,7 +193,13 @@
 
     <div class="navbar">
 
-        <h1>ABHOER - Gestion des stages</h1>
+        <div class="navbar-brand">
+            <img src="{{ asset('images/logo-abhoer.png') }}" alt="Logo ABHOER" class="navbar-logo">
+            <div>
+                <h1>ABHOER</h1>
+                <span class="navbar-subtitle">Gestion des stages</span>
+            </div>
+        </div>
 
         <div>
             <a href="{{ route('admin.dashboard') }}">
@@ -174,6 +219,12 @@
             </form>
         </div>
 
+    </div>
+
+    <div class="wave-divider">
+        <svg viewBox="0 0 1440 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path fill="#9bd9d6" d="M0,20 C240,40 480,0 720,15 C960,30 1200,5 1440,20 L1440,40 L0,40 Z"></path>
+        </svg>
     </div>
 
     <div class="container">

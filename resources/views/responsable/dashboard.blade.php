@@ -21,7 +21,7 @@
         }
 
         .navbar {
-            background: #075985;
+            background: linear-gradient(135deg, #1a7a86, #2fa9b0);
             color: white;
             padding: 18px 30px;
             display: flex;
@@ -53,7 +53,7 @@
 
         .logout button {
             background: white;
-            color: #075985;
+            color: #1a7a86;
             border: none;
             padding: 9px 16px;
             border-radius: 6px;
@@ -100,7 +100,7 @@
         .card .number {
             font-size: 30px;
             font-weight: bold;
-            color: #075985;
+            color: #1a7a86;
         }
 
         .card.pending .number { color: #d97706; }
@@ -125,14 +125,14 @@
         }
 
         .btn-primary {
-            background: #075985;
+            background: #1a7a86;
             color: white;
         }
 
         .btn-secondary {
             background: white;
-            color: #075985;
-            border: 1px solid #075985;
+            color: #1a7a86;
+            border: 1px solid #1a7a86;
         }
 
         .table-section {
@@ -185,6 +185,45 @@
             .container { padding: 15px; }
             .actions-rapides { flex-direction: column; }
         }
+            /* --- Identité visuelle ABHOER (logo + vagues) --- */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-logo {
+            height: 42px;
+            width: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 3px 6px;
+        }
+
+        .navbar-brand h1 {
+            font-size: 19px;
+            line-height: 1.1;
+        }
+
+        .navbar-subtitle {
+            display: block;
+            font-size: 11px;
+            opacity: 0.85;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+        }
+
+        .wave-divider {
+            line-height: 0;
+            margin-top: -1px;
+        }
+
+        .wave-divider svg {
+            width: 100%;
+            height: 26px;
+            display: block;
+        }
+
     </style>
 </head>
 
@@ -192,7 +231,13 @@
 
     <div class="navbar">
 
-        <h1>ABHOER - Espace Responsable</h1>
+        <div class="navbar-brand">
+            <img src="{{ asset('images/logo-abhoer.png') }}" alt="Logo ABHOER" class="navbar-logo">
+            <div>
+                <h1>ABHOER</h1>
+                <span class="navbar-subtitle">Espace Responsable</span>
+            </div>
+        </div>
 
         <div class="navbar-right">
             <nav>
@@ -211,6 +256,12 @@
             </div>
         </div>
 
+    </div>
+
+    <div class="wave-divider">
+        <svg viewBox="0 0 1440 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path fill="#9bd9d6" d="M0,20 C240,40 480,0 720,15 C960,30 1200,5 1440,20 L1440,40 L0,40 Z"></path>
+        </svg>
     </div>
 
     <div class="container">
@@ -278,7 +329,7 @@
                     @forelse ($dernieresDemandes as $demande)
                         <tr>
                             <td>
-                                <a href="{{ route('responsable.demandes.show', $demande->idDemande) }}" style="color:#075985;text-decoration:none;font-weight:bold;">
+                                <a href="{{ route('responsable.demandes.show', $demande->idDemande) }}" style="color:#1a7a86;text-decoration:none;font-weight:bold;">
                                     {{ $demande->numeroDemande }}
                                 </a>
                             </td>

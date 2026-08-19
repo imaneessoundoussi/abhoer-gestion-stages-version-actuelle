@@ -13,7 +13,7 @@
         body { font-family: Arial, sans-serif; background: #f4f7fb; color: #333; }
 
         .navbar {
-            background: #075985;
+            background: linear-gradient(135deg, #1a7a86, #2fa9b0);
             color: white;
             padding: 18px 30px;
             display: flex;
@@ -34,7 +34,7 @@
         .navbar nav a:hover { opacity: 1; text-decoration: underline; }
 
         .logout button {
-            background: white; color: #075985; border: none;
+            background: white; color: #1a7a86; border: none;
             padding: 9px 16px; border-radius: 6px; cursor: pointer; font-weight: bold;
         }
 
@@ -43,12 +43,12 @@
         .back-link {
             display: inline-block;
             margin-bottom: 15px;
-            color: #075985;
+            color: #1a7a86;
             text-decoration: none;
             font-size: 14px;
         }
 
-        h2 { color: #075985; margin-bottom: 5px; }
+        h2 { color: #1a7a86; margin-bottom: 5px; }
         .subtitle { color: #666; margin-bottom: 25px; font-size: 14px; }
 
         .panel {
@@ -59,7 +59,7 @@
         }
 
         .panel h3 {
-            color: #075985;
+            color: #1a7a86;
             margin-bottom: 15px;
             font-size: 15px;
             border-bottom: 1px solid #eee;
@@ -99,7 +99,7 @@
         .btn-submit {
             width: 100%;
             padding: 13px;
-            background: #075985;
+            background: #1a7a86;
             color: white;
             border: none;
             border-radius: 8px;
@@ -112,13 +112,58 @@
         @media (max-width: 600px) {
             .form-row { grid-template-columns: 1fr; }
         }
+            /* --- Identité visuelle ABHOER (logo + vagues) --- */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-logo {
+            height: 42px;
+            width: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 3px 6px;
+        }
+
+        .navbar-brand h1 {
+            font-size: 19px;
+            line-height: 1.1;
+        }
+
+        .navbar-subtitle {
+            display: block;
+            font-size: 11px;
+            opacity: 0.85;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+        }
+
+        .wave-divider {
+            line-height: 0;
+            margin-top: -1px;
+        }
+
+        .wave-divider svg {
+            width: 100%;
+            height: 26px;
+            display: block;
+        }
+
     </style>
 </head>
 
 <body>
 
     <div class="navbar">
-        <h1>ABHOER - Espace Responsable</h1>
+        <div class="navbar-brand">
+            <img src="{{ asset('images/logo-abhoer.png') }}" alt="Logo ABHOER" class="navbar-logo">
+            <div>
+                <h1>ABHOER</h1>
+                <span class="navbar-subtitle">Espace Responsable</span>
+            </div>
+        </div>
 
         <div class="navbar-right">
             <nav>
@@ -136,6 +181,12 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <div class="wave-divider">
+        <svg viewBox="0 0 1440 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path fill="#9bd9d6" d="M0,20 C240,40 480,0 720,15 C960,30 1200,5 1440,20 L1440,40 L0,40 Z"></path>
+        </svg>
     </div>
 
     <div class="container">

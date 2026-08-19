@@ -13,7 +13,7 @@
         body { font-family: Arial, sans-serif; background: #f4f7fb; color: #333; }
 
         .navbar {
-            background: #075985;
+            background: linear-gradient(135deg, #1a7a86, #2fa9b0);
             color: white;
             padding: 18px 30px;
             display: flex;
@@ -34,7 +34,7 @@
         .navbar nav a:hover { opacity: 1; text-decoration: underline; }
 
         .logout button {
-            background: white; color: #075985; border: none;
+            background: white; color: #1a7a86; border: none;
             padding: 9px 16px; border-radius: 6px; cursor: pointer; font-weight: bold;
         }
 
@@ -43,7 +43,7 @@
         .back-link {
             display: inline-block;
             margin-bottom: 15px;
-            color: #075985;
+            color: #1a7a86;
             text-decoration: none;
             font-size: 14px;
         }
@@ -57,7 +57,7 @@
             gap: 10px;
         }
 
-        .header-row h2 { color: #075985; }
+        .header-row h2 { color: #1a7a86; }
 
         .badge {
             padding: 6px 14px;
@@ -86,7 +86,7 @@
         }
 
         .panel h3 {
-            color: #075985;
+            color: #1a7a86;
             margin-bottom: 15px;
             font-size: 16px;
             border-bottom: 1px solid #eee;
@@ -113,7 +113,7 @@
             font-size: 14px;
         }
 
-        .doc-item a { color: #075985; text-decoration: none; font-weight: bold; }
+        .doc-item a { color: #1a7a86; text-decoration: none; font-weight: bold; }
 
         .btn {
             display: inline-block;
@@ -132,7 +132,7 @@
         .btn-accept { background: #16a34a; color: white; }
         .btn-refuse { background: #dc2626; color: white; }
         .btn-infos { background: #d97706; color: white; }
-        .btn-affect { background: #075985; color: white; }
+        .btn-affect { background: #1a7a86; color: white; }
         .btn-secondary { background: #f4f7fb; color: #333; border: 1px solid #ddd; }
 
         textarea, input, select {
@@ -154,7 +154,7 @@
         .action-block summary {
             cursor: pointer;
             font-weight: bold;
-            color: #075985;
+            color: #1a7a86;
             margin-bottom: 10px;
             font-size: 14px;
         }
@@ -165,7 +165,7 @@
             font-size: 13px;
         }
 
-        .timeline-item .action-name { font-weight: bold; color: #075985; }
+        .timeline-item .action-name { font-weight: bold; color: #1a7a86; }
         .timeline-item .action-meta { color: #999; font-size: 12px; margin-top: 2px; }
 
         .upload-form {
@@ -177,13 +177,58 @@
         @media (max-width: 900px) {
             .grid { grid-template-columns: 1fr; }
         }
+            /* --- Identité visuelle ABHOER (logo + vagues) --- */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-logo {
+            height: 42px;
+            width: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 3px 6px;
+        }
+
+        .navbar-brand h1 {
+            font-size: 19px;
+            line-height: 1.1;
+        }
+
+        .navbar-subtitle {
+            display: block;
+            font-size: 11px;
+            opacity: 0.85;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+        }
+
+        .wave-divider {
+            line-height: 0;
+            margin-top: -1px;
+        }
+
+        .wave-divider svg {
+            width: 100%;
+            height: 26px;
+            display: block;
+        }
+
     </style>
 </head>
 
 <body>
 
     <div class="navbar">
-        <h1>ABHOER - Espace Responsable</h1>
+        <div class="navbar-brand">
+            <img src="{{ asset('images/logo-abhoer.png') }}" alt="Logo ABHOER" class="navbar-logo">
+            <div>
+                <h1>ABHOER</h1>
+                <span class="navbar-subtitle">Espace Responsable</span>
+            </div>
+        </div>
 
         <div class="navbar-right">
             <nav>
@@ -201,6 +246,12 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <div class="wave-divider">
+        <svg viewBox="0 0 1440 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path fill="#9bd9d6" d="M0,20 C240,40 480,0 720,15 C960,30 1200,5 1440,20 L1440,40 L0,40 Z"></path>
+        </svg>
     </div>
 
     <div class="container">

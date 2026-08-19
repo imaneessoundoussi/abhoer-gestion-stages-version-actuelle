@@ -17,7 +17,7 @@
         }
 
         .navbar {
-            background: #075985;
+            background: linear-gradient(135deg, #1a7a86, #2fa9b0);
             color: white;
             padding: 18px 30px;
             display: flex;
@@ -41,7 +41,7 @@
 
         .logout button {
             background: white;
-            color: #075985;
+            color: #1a7a86;
             border: none;
             padding: 9px 16px;
             border-radius: 6px;
@@ -60,7 +60,7 @@
             gap: 10px;
         }
 
-        .header-row h2 { color: #075985; }
+        .header-row h2 { color: #1a7a86; }
 
         .btn {
             display: inline-block;
@@ -73,7 +73,7 @@
             cursor: pointer;
         }
 
-        .btn-primary { background: #075985; color: white; }
+        .btn-primary { background: #1a7a86; color: white; }
 
         .filters {
             background: white;
@@ -138,23 +138,114 @@
         .badge-REFUSEE { background: #fee2e2; color: #991b1b; }
 
         .link-detail {
-            color: #075985;
+            color: #1a7a86;
             font-weight: bold;
             text-decoration: none;
         }
 
         .pagination-wrap { margin-top: 20px; }
 
+        .abhoer-pagination {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .abhoer-pagination-list {
+            display: flex;
+            list-style: none;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .abhoer-page-item .abhoer-page-link {
+            display: inline-block;
+            padding: 8px 13px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            color: #1a7a86;
+            text-decoration: none;
+            font-size: 13px;
+            background: white;
+        }
+
+        .abhoer-page-item .abhoer-page-link:hover {
+            background: #f4f7fb;
+        }
+
+        .abhoer-page-item.active .abhoer-page-link {
+            background: #1a7a86;
+            color: white;
+            border-color: #1a7a86;
+            font-weight: bold;
+        }
+
+        .abhoer-page-item.disabled .abhoer-page-link {
+            color: #bbb;
+            cursor: default;
+        }
+
+        .abhoer-pagination-info {
+            font-size: 12px;
+            color: #999;
+        }
+
         @media (max-width: 900px) {
             .filters form { grid-template-columns: 1fr 1fr; }
         }
+            /* --- Identité visuelle ABHOER (logo + vagues) --- */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-logo {
+            height: 42px;
+            width: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 3px 6px;
+        }
+
+        .navbar-brand h1 {
+            font-size: 19px;
+            line-height: 1.1;
+        }
+
+        .navbar-subtitle {
+            display: block;
+            font-size: 11px;
+            opacity: 0.85;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+        }
+
+        .wave-divider {
+            line-height: 0;
+            margin-top: -1px;
+        }
+
+        .wave-divider svg {
+            width: 100%;
+            height: 26px;
+            display: block;
+        }
+
     </style>
 </head>
 
 <body>
 
     <div class="navbar">
-        <h1>ABHOER - Espace Responsable</h1>
+        <div class="navbar-brand">
+            <img src="{{ asset('images/logo-abhoer.png') }}" alt="Logo ABHOER" class="navbar-logo">
+            <div>
+                <h1>ABHOER</h1>
+                <span class="navbar-subtitle">Espace Responsable</span>
+            </div>
+        </div>
 
         <div class="navbar-right">
             <nav>
@@ -172,6 +263,12 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <div class="wave-divider">
+        <svg viewBox="0 0 1440 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path fill="#9bd9d6" d="M0,20 C240,40 480,0 720,15 C960,30 1200,5 1440,20 L1440,40 L0,40 Z"></path>
+        </svg>
     </div>
 
     <div class="container">
@@ -275,7 +372,7 @@
             </table>
 
             <div class="pagination-wrap">
-                {{ $demandes->links() }}
+                {{ $demandes->links('vendor.pagination.abhoer') }}
             </div>
         </div>
 
