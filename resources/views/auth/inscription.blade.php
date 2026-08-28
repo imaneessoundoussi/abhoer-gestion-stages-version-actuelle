@@ -1,361 +1,698 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Inscription étudiant - ABHOER</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Créer un compte - ABHOER</title>
 
     <style>
+
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
+            min-height: 100vh;
+            background: #f4f7fb;
             font-family: Arial, sans-serif;
-            background: #f1f5f9;
             color: #1e293b;
-        }
-
-        .header {
-            background: #08608c;
-            color: white;
-            padding: 18px 35px;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
+            padding: 40px 20px;
         }
 
         .container {
-            width: 90%;
-            max-width: 900px;
-            margin: 35px auto;
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
         }
 
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .title {
+        .header {
             text-align: center;
             margin-bottom: 30px;
         }
 
-        .title h2 {
-            color: #08608c;
+        .logo-icon {
+            font-size: 45px;
             margin-bottom: 8px;
         }
 
-        .title p {
+        .header h1 {
+            color: #123b70;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
             color: #64748b;
+            font-size: 14px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 35px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, .08);
+        }
+
+        .section {
+            margin-bottom: 30px;
         }
 
         .section-title {
-            color: #08608c;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 8px;
-            margin-top: 25px;
+            color: #123b70;
+            font-size: 17px;
+            font-weight: bold;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 12px;
             margin-bottom: 20px;
         }
 
-        .form-grid {
+        .section-title span {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: normal;
+        }
+
+        .row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 18px;
         }
 
         .form-group {
-            display: flex;
-            flex-direction: column;
+            margin-bottom: 18px;
         }
 
-        .form-group.full {
-            grid-column: 1 / 3;
+        .full {
+            grid-column: 1 / -1;
         }
 
         label {
+            display: block;
+            font-size: 13px;
             font-weight: bold;
             margin-bottom: 7px;
+            color: #334155;
         }
 
-        input {
-            padding: 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 15px;
+        label .required {
+            color: #dc2626;
         }
 
-        input:focus {
-            outline: none;
-            border-color: #08608c;
-        }
-
-        .button-container {
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        button {
+        input,
+        select,
+        textarea {
             width: 100%;
-            padding: 14px;
+            padding: 12px 13px;
+            border: 1px solid #d9dfe8;
+            border-radius: 7px;
+            outline: none;
+            font-size: 13px;
+            background: white;
+            color: #1e293b;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #1261c9;
+            box-shadow: 0 0 0 3px rgba(18, 97, 201, .08);
+        }
+
+        .help {
+            display: block;
+            margin-top: 5px;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .error {
+            color: #dc2626;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn {
             border: none;
-            border-radius: 6px;
-            background: #08608c;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 7px;
+            padding: 12px 22px;
+            font-size: 13px;
             cursor: pointer;
-        }
-
-        button:hover {
-            background: #064d72;
-        }
-
-        .login-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .login-link a {
-            color: #08608c;
             text-decoration: none;
-            font-weight: bold;
+            display: inline-block;
         }
 
-        .errors {
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
+        .btn-primary {
+            background: #1261c9;
+            color: white;
         }
 
-        @media (max-width: 700px) {
-            .form-grid {
+        .btn-primary:hover {
+            background: #0f52aa;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .required-info {
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        @media (max-width: 650px) {
+
+            .row {
                 grid-template-columns: 1fr;
             }
 
-            .form-group.full {
-                grid-column: 1;
+            .full {
+                grid-column: auto;
+            }
+
+            .card {
+                padding: 25px 20px;
+            }
+
+            .actions {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
             }
         }
+
     </style>
+
 </head>
+
 
 <body>
 
+<div class="container">
+
+    <!-- HEADER -->
+
     <div class="header">
-        <h1>ABHOER - Gestion des stages</h1>
+
+        <div class="logo-icon">
+            💧
+        </div>
+
+        <h1>
+            ABHOER - Gestion des stages
+        </h1>
+
+        <p>
+            Créer un compte étudiant
+        </p>
+
+        <p style="margin-top: 6px;">
+            Remplissez le formulaire ci-dessous pour créer votre compte étudiant.
+        </p>
+
     </div>
 
-    <div class="container">
 
-        <div class="card">
+    <!-- FORMULAIRE -->
 
-            <div class="title">
-                <h2>Créer un compte étudiant</h2>
-                <p>Inscription à la plateforme de gestion des demandes de stage</p>
-            </div>
+    <div class="card">
 
-            @if ($errors->any())
-                <div class="errors">
-                    <strong>Veuillez corriger les erreurs suivantes :</strong>
+        <form
+            method="POST"
+            action="{{ route('inscription.store') }}"
+        >
 
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+            @csrf
+
+
+            <!-- ===================================================== -->
+            <!-- INFORMATIONS PERSONNELLES -->
+            <!-- ===================================================== -->
+
+            <div class="section">
+
+                <div class="section-title">
+                    Informations personnelles
                 </div>
-            @endif
 
-            <form method="POST" action="{{ route('inscription.register') }}">
-                @csrf
 
-                <h3 class="section-title">Informations personnelles</h3>
+                <div class="row">
 
-                <div class="form-grid">
+                    <!-- NOM -->
 
                     <div class="form-group">
-                        <label for="nom">Nom *</label>
+
+                        <label>
+                            Nom <span class="required">*</span>
+                        </label>
 
                         <input
                             type="text"
-                            id="nom"
                             name="nom"
                             value="{{ old('nom') }}"
-                            placeholder="Votre nom"
                             required
                         >
+
+                        @error('nom')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                     </div>
 
+
+                    <!-- PRENOM -->
+
                     <div class="form-group">
-                        <label for="prenom">Prénom *</label>
+
+                        <label>
+                            Prénom <span class="required">*</span>
+                        </label>
 
                         <input
                             type="text"
-                            id="prenom"
                             name="prenom"
                             value="{{ old('prenom') }}"
-                            placeholder="Votre prénom"
                             required
                         >
+
+                        @error('prenom')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                     </div>
 
+
+                    <!-- CIN -->
+
                     <div class="form-group">
-                        <label for="cin">CIN *</label>
+
+                        <label>
+                            CIN <span class="required">*</span>
+                        </label>
 
                         <input
                             type="text"
-                            id="cin"
                             name="cin"
                             value="{{ old('cin') }}"
-                            placeholder="Ex : AB123456"
                             required
+                            placeholder="Ex : AB123456"
                         >
+
+                        @error('cin')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                     </div>
 
+
+                    <!-- CNE -->
+
                     <div class="form-group">
-                        <label for="telephone">Téléphone</label>
+
+                        <label>
+                            CNE
+                        </label>
 
                         <input
                             type="text"
-                            id="telephone"
-                            name="telephone"
-                            value="{{ old('telephone') }}"
-                            placeholder="06XXXXXXXX"
+                            name="cne"
+                            value="{{ old('cne') }}"
+                            placeholder="Ex : G123456789"
                         >
+
+                        <span class="help">
+                            Votre Code National de l'Étudiant.
+                        </span>
+
+                        @error('cne')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                     </div>
 
-                    <div class="form-group full">
-                        <label for="email">Email *</label>
+
+                    <!-- DATE DE NAISSANCE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Date de naissance
+                        </label>
+
+                        <input
+                            type="date"
+                            name="dateNaissance"
+                            value="{{ old('dateNaissance') }}"
+                        >
+
+                        @error('dateNaissance')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+
+
+                    <!-- TELEPHONE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Téléphone
+                        </label>
+
+                        <input
+                            type="text"
+                            name="telephone"
+                            value="{{ old('telephone') }}"
+                            placeholder="Ex : 06XXXXXXXX"
+                        >
+
+                        @error('telephone')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Adresse email <span class="required">*</span>
+                        </label>
 
                         <input
                             type="email"
-                            id="email"
                             name="email"
                             value="{{ old('email') }}"
-                            placeholder="exemple@email.com"
                             required
+                            placeholder="exemple@email.com"
                         >
+
+                        @error('email')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+
+
+                    <!-- ADRESSE -->
+
+                    <div class="form-group full">
+
+                        <label>
+                            Adresse
+                        </label>
+
+                        <textarea
+                            name="adresse"
+                            placeholder="Votre adresse"
+                        >{{ old('adresse') }}</textarea>
+
+                        @error('adresse')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                     </div>
 
                 </div>
 
+            </div>
 
-                <h3 class="section-title">Informations académiques</h3>
 
-                <div class="form-grid">
+            <!-- ===================================================== -->
+            <!-- INFORMATIONS UNIVERSITAIRES -->
+            <!-- ===================================================== -->
 
-                    <div class="form-group full">
-                        <label for="etablissement">Établissement</label>
+            <div class="section">
 
-                        <input
-                            type="text"
-                            id="etablissement"
-                            name="etablissement"
-                            value="{{ old('etablissement') }}"
-                            placeholder="Nom de votre établissement"
-                        >
-                    </div>
+                <div class="section-title">
+                    Informations universitaires
+                </div>
+
+
+                <div class="row">
+
+                    <!-- ETABLISSEMENT -->
 
                     <div class="form-group">
-                        <label for="formation">Formation</label>
+
+                        <label>
+                            Établissement
+                        </label>
 
                         <input
                             type="text"
-                            id="formation"
+                            name="etablissement"
+                            value="{{ old('etablissement') }}"
+                            placeholder="Ex : Faculté Polydisciplinaire"
+                        >
+
+                        @error('etablissement')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+
+
+                    <!-- FORMATION -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Formation
+                        </label>
+
+                        <input
+                            type="text"
                             name="formation"
                             value="{{ old('formation') }}"
                             placeholder="Ex : MIACSD"
                         >
+
+                        @error('formation')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                     </div>
 
+
+                    <!-- NIVEAU -->
+
                     <div class="form-group">
-                        <label for="niveauEtude">Niveau d'étude</label>
+
+                        <label>
+                            Niveau d'étude
+                        </label>
 
                         <input
                             type="text"
-                            id="niveauEtude"
                             name="niveauEtude"
                             value="{{ old('niveauEtude') }}"
-                            placeholder="Ex : Licence / Bac+3"
+                            placeholder="Ex : Licence / S6"
                         >
+
+                        @error('niveauEtude')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+
+
+                    <!-- ANNEE UNIVERSITAIRE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Année universitaire
+                        </label>
+
+                        <input
+                            type="text"
+                            name="anneeUniversitaire"
+                            value="{{ old('anneeUniversitaire') }}"
+                            placeholder="Ex : 2025-2026"
+                        >
+
+                        @error('anneeUniversitaire')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                     </div>
 
                 </div>
 
+            </div>
 
-                <h3 class="section-title">Informations de connexion</h3>
 
-                <div class="form-grid">
+            <!-- ===================================================== -->
+            <!-- INFORMATIONS DU COMPTE -->
+            <!-- ===================================================== -->
+
+            <div class="section">
+
+                <div class="section-title">
+                    Informations du compte
+                </div>
+
+
+                <div class="row">
+
+                    <!-- LOGIN -->
 
                     <div class="form-group full">
-                        <label for="login">Login *</label>
+
+                        <label>
+                            Login <span class="required">*</span>
+                        </label>
 
                         <input
                             type="text"
-                            id="login"
                             name="login"
                             value="{{ old('login') }}"
-                            placeholder="Choisissez votre login"
                             required
+                            placeholder="Choisissez votre identifiant"
                         >
+
+                        @error('login')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                     </div>
 
-                    <div class="form-group">
-                        <label for="motDePasse">Mot de passe *</label>
 
-                        <input
-                            type="password"
-                            id="motDePasse"
-                            name="motDePasse"
-                            placeholder="Votre mot de passe"
-                            required
-                        >
-                    </div>
+                    <!-- MOT DE PASSE -->
 
                     <div class="form-group">
-                        <label for="motDePasse_confirmation">
-                            Confirmer le mot de passe *
+
+                        <label>
+                            Mot de passe <span class="required">*</span>
                         </label>
 
                         <input
                             type="password"
-                            id="motDePasse_confirmation"
-                            name="motDePasse_confirmation"
-                            placeholder="Confirmez votre mot de passe"
+                            name="motDePasse"
                             required
                         >
+
+                        @error('motDePasse')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+
+
+                    <!-- CONFIRMATION -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Confirmer le mot de passe <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="password"
+                            name="motDePasse_confirmation"
+                            required
+                        >
+
                     </div>
 
                 </div>
 
-
-                <div class="button-container">
-                    <button type="submit">
-                        Créer mon compte
-                    </button>
-                </div>
-
-            </form>
-
-            <div class="login-link">
-                Déjà inscrit ?
-                <a href="{{ route('login') }}">
-                    Se connecter
-                </a>
             </div>
 
-        </div>
+
+            <!-- ACTIONS -->
+
+            <div class="actions">
+
+                <a
+                    href="{{ route('login') }}"
+                    class="btn btn-secondary"
+                >
+                    ← Retour à la connexion
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Créer mon compte
+                </button>
+
+            </div>
+
+
+            <div class="required-info">
+                * Champs obligatoires.
+            </div>
+
+        </form>
 
     </div>
 
+</div>
+
 </body>
+
 </html>

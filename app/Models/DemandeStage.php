@@ -5,16 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class DemandeStage extends Model
 {
+    /**
+     * Nom de la table.
+     */
     protected $table = 'demande_stage';
 
+    /**
+     * Clé primaire.
+     */
     protected $primaryKey = 'idDemande';
 
+    /**
+     * La table n'utilise pas created_at / updated_at.
+     */
     public $timestamps = false;
 
+    /**
+     * Champs autorisés pour l'affectation de masse.
+     */
     protected $fillable = [
         'idCandidat',
         'idService',
@@ -29,12 +40,18 @@ class DemandeStage extends Model
         'observation',
     ];
 
+    /**
+     * Conversion des dates.
+     */
     protected $casts = [
         'dateDepot' => 'date',
         'dateDebut' => 'date',
         'dateFin' => 'date',
     ];
 
+    /**
+     * Une demande appartient à un candidat.
+     */
     public function candidat(): BelongsTo
     {
         return $this->belongsTo(
@@ -44,6 +61,9 @@ class DemandeStage extends Model
         );
     }
 
+    /**
+     * Une demande appartient à un service.
+     */
     public function service(): BelongsTo
     {
         return $this->belongsTo(
@@ -53,28 +73,13 @@ class DemandeStage extends Model
         );
     }
 
+    /**
+     * Une demande possède plusieurs documents.
+     */
     public function documents(): HasMany
     {
         return $this->hasMany(
             Document::class,
-            'idDemande',
-            'idDemande'
-        );
-    }
-
-    public function affectation(): HasOne
-    {
-        return $this->hasOne(
-            Affectation::class,
-            'idDemande',
-            'idDemande'
-        );
-    }
-
-    public function historiques(): HasMany
-    {
-        return $this->hasMany(
-            Historique::class,
             'idDemande',
             'idDemande'
         );

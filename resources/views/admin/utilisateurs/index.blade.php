@@ -2,12 +2,16 @@
 <html lang="fr">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Utilisateurs - ABHOER</title>
 
     <style>
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -17,13 +21,14 @@
         body {
             font-family: Arial, sans-serif;
             background: #f4f7fb;
-            color: #333;
+            color: #1f2937;
         }
 
         .navbar {
             background: #075985;
             color: white;
             padding: 18px 30px;
+
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -33,39 +38,75 @@
             font-size: 22px;
         }
 
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
         .navbar a {
             color: white;
             text-decoration: none;
-            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
         }
 
         .container {
             padding: 30px;
+            max-width: 1400px;
+            margin: auto;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+
             margin-bottom: 25px;
         }
 
         .header h2 {
             color: #075985;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-top: 6px;
         }
 
         .btn {
             display: inline-block;
+
             padding: 10px 16px;
-            border-radius: 6px;
+
+            border-radius: 7px;
+
             text-decoration: none;
+
             border: none;
+
             cursor: pointer;
+
             font-weight: bold;
+
+            font-size: 14px;
         }
 
         .btn-primary {
             background: #075985;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #064e73;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
             color: white;
         }
 
@@ -79,18 +120,39 @@
             color: white;
         }
 
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+
         .message {
+            padding: 14px 18px;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+
+            font-weight: bold;
+        }
+
+        .success {
             background: #dcfce7;
             color: #166534;
-            padding: 12px 16px;
-            border-radius: 6px;
-            margin-bottom: 20px;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
         }
 
         .table-container {
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.08);
+
             overflow-x: auto;
         }
 
@@ -103,22 +165,34 @@
         td {
             padding: 15px;
             text-align: left;
-            border-bottom: 1px solid #eee;
+
+            border-bottom: 1px solid #e5e7eb;
         }
 
         th {
             background: #075985;
             color: white;
+
+            font-size: 14px;
         }
 
-        tr:hover {
+        td {
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
             background: #f8fafc;
         }
 
         .badge {
-            padding: 5px 10px;
+            display: inline-block;
+
+            padding: 6px 11px;
+
             border-radius: 20px;
-            font-size: 13px;
+
+            font-size: 12px;
+
             font-weight: bold;
         }
 
@@ -132,9 +206,15 @@
             color: #991b1b;
         }
 
+        .badge-role {
+            background: #e0f2fe;
+            color: #075985;
+        }
+
         .actions {
             display: flex;
-            gap: 8px;
+            gap: 7px;
+            flex-wrap: wrap;
         }
 
         .actions form {
@@ -143,59 +223,160 @@
 
         .empty {
             text-align: center;
-            padding: 30px;
-            color: #666;
+
+            padding: 50px;
+
+            color: #64748b;
         }
+
+        .back {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 800px) {
+
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+        }
+
     </style>
 
 </head>
 
+
 <body>
+
+
+    <!-- NAVBAR -->
 
     <div class="navbar">
 
-        <h1>ABHOER - Gestion des stages</h1>
+        <h1>
+            ABHOER - Gestion des stages
+        </h1>
 
-        <div>
+
+        <div class="navbar-links">
+
             <a href="{{ route('admin.dashboard') }}">
-                Dashboard
+                Tableau de bord
             </a>
 
-            <a href="{{ route('logout') }}"
-               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+
+            <a href="{{ route('admin.utilisateurs.index') }}">
+                Utilisateurs
+            </a>
+
+
+            <form
+                id="logout-form"
+                action="{{ route('logout') }}"
+                method="POST"
+                style="display: none;"
+            >
+                @csrf
+            </form>
+
+
+            <a
+                href="{{ route('logout') }}"
+                onclick="
+                    event.preventDefault();
+                    document.getElementById('logout-form').submit();
+                "
+            >
                 Déconnexion
             </a>
 
-            <form id="logout-form"
-                  action="{{ route('logout') }}"
-                  method="POST"
-                  style="display: none;">
-                @csrf
-            </form>
         </div>
 
     </div>
 
+
+    <!-- CONTENU -->
+
     <div class="container">
+
+
+        <div class="back">
+
+            <a
+                href="{{ route('admin.dashboard') }}"
+                class="btn btn-secondary"
+            >
+                ← Retour au tableau de bord
+            </a>
+
+        </div>
+
+
+        <!-- HEADER -->
 
         <div class="header">
 
-            <h2>Gestion des utilisateurs</h2>
+            <div>
 
-            <a href="{{ route('admin.utilisateurs.create') }}"
-               class="btn btn-primary">
+                <h2>
+                    Gestion des utilisateurs
+                </h2>
+
+                <p class="subtitle">
+                    Gérez les comptes utilisateurs de l'application ABHOER.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ route('admin.utilisateurs.create') }}"
+                class="btn btn-primary"
+            >
                 + Ajouter un utilisateur
             </a>
 
         </div>
 
+
+        <!-- MESSAGE SUCCÈS -->
+
         @if(session('success'))
 
-            <div class="message">
+            <div class="message success">
+
                 {{ session('success') }}
+
             </div>
 
         @endif
+
+
+        <!-- MESSAGE ERREUR -->
+
+        @if(session('error'))
+
+            <div class="message error">
+
+                {{ session('error') }}
+
+            </div>
+
+        @endif
+
+
+        <!-- TABLEAU -->
 
         <div class="table-container">
 
@@ -206,16 +387,39 @@
                     <thead>
 
                         <tr>
-                            <th>ID</th>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Login</th>
-                            <th>Rôle</th>
-                            <th>État</th>
-                            <th>Actions</th>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Nom
+                            </th>
+
+                            <th>
+                                Prénom
+                            </th>
+
+                            <th>
+                                Login
+                            </th>
+
+                            <th>
+                                Rôle
+                            </th>
+
+                            <th>
+                                État
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
                         </tr>
 
                     </thead>
+
 
                     <tbody>
 
@@ -227,21 +431,32 @@
                                     {{ $utilisateur->idUtilisateur }}
                                 </td>
 
+
                                 <td>
                                     {{ $utilisateur->nom }}
                                 </td>
+
 
                                 <td>
                                     {{ $utilisateur->prenom }}
                                 </td>
 
+
                                 <td>
                                     {{ $utilisateur->login }}
                                 </td>
 
+
                                 <td>
-                                    {{ $utilisateur->role }}
+
+                                    <span class="badge badge-role">
+
+                                        {{ $utilisateur->role }}
+
+                                    </span>
+
                                 </td>
+
 
                                 <td>
 
@@ -261,23 +476,50 @@
 
                                 </td>
 
+
                                 <td>
 
                                     <div class="actions">
 
+
+                                        <!-- MODIFIER -->
+
+                                        <a
+                                            href="{{ route(
+                                                'admin.utilisateurs.edit',
+                                                $utilisateur->idUtilisateur
+                                            ) }}"
+                                            class="btn btn-warning"
+                                        >
+                                            Modifier
+                                        </a>
+
+
+                                        <!-- ACTIVER / DESACTIVER -->
+
                                         <form
                                             method="POST"
-                                            action="{{ route('admin.utilisateurs.toggle', $utilisateur->idUtilisateur) }}"
+                                            action="{{ route(
+                                                'admin.utilisateurs.toggle',
+                                                $utilisateur->idUtilisateur
+                                            ) }}"
                                         >
 
                                             @csrf
+
                                             @method('PUT')
+
 
                                             @if($utilisateur->actif)
 
                                                 <button
                                                     type="submit"
                                                     class="btn btn-danger"
+                                                    onclick="
+                                                        return confirm(
+                                                            'Voulez-vous désactiver cet utilisateur ?'
+                                                        );
+                                                    "
                                                 >
                                                     Désactiver
                                                 </button>
@@ -295,6 +537,37 @@
 
                                         </form>
 
+
+                                        <!-- SUPPRIMER -->
+
+                                        <form
+                                            method="POST"
+                                            action="{{ route(
+                                                'admin.utilisateurs.destroy',
+                                                $utilisateur->idUtilisateur
+                                            ) }}"
+                                        >
+
+                                            @csrf
+
+                                            @method('DELETE')
+
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-danger"
+                                                onclick="
+                                                    return confirm(
+                                                        'Êtes-vous sûr de vouloir supprimer cet utilisateur ?'
+                                                    );
+                                                "
+                                            >
+                                                Supprimer
+                                            </button>
+
+                                        </form>
+
+
                                     </div>
 
                                 </td>
@@ -310,7 +583,15 @@
             @else
 
                 <div class="empty">
-                    Aucun utilisateur trouvé.
+
+                    <h3>
+                        Aucun utilisateur trouvé
+                    </h3>
+
+                    <p>
+                        Aucun compte utilisateur n'est actuellement enregistré.
+                    </p>
+
                 </div>
 
             @endif

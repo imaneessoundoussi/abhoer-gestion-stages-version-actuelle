@@ -4,50 +4,57 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Candidat extends Model
 {
+    /**
+     * Nom de la table.
+     */
     protected $table = 'candidat';
 
+    /**
+     * Clé primaire.
+     */
     protected $primaryKey = 'idCandidat';
 
-    protected $keyType = 'int';
-
-    public $incrementing = true;
-
+    /**
+     * La table n'utilise pas created_at / updated_at.
+     */
     public $timestamps = false;
 
+    /**
+     * Champs autorisés pour l'affectation de masse.
+     */
     protected $fillable = [
         'nom',
         'prenom',
         'cin',
-        'telephone',
+        'cne',
         'email',
+        'telephone',
+        'adresse',
+        'dateNaissance',
         'etablissement',
         'formation',
         'niveauEtude',
+        'anneeUniversitaire',
+        'niveau',
     ];
 
     /**
-     * Un candidat possède plusieurs demandes.
+     * Conversion des attributs.
+     */
+    protected $casts = [
+        'dateNaissance' => 'date',
+    ];
+
+    /**
+     * Un candidat peut avoir plusieurs demandes de stage.
      */
     public function demandes(): HasMany
     {
         return $this->hasMany(
             DemandeStage::class,
-            'idCandidat',
-            'idCandidat'
-        );
-    }
-
-    /**
-     * Un candidat possède normalement un seul compte utilisateur.
-     */
-    public function utilisateur(): HasOne
-    {
-        return $this->hasOne(
-            Utilisateur::class,
             'idCandidat',
             'idCandidat'
         );

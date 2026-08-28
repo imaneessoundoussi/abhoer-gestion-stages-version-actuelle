@@ -3,508 +3,735 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Mon profil - ABHOER</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f1f5f9;
-            color: #1e293b;
-        }
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
 
-        .header {
-            background: #08608c;
-            color: white;
-            padding: 18px 35px;
+<style>
 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+/* =========================================================
+   PROFIL ÉTUDIANT — PREMIUM
+========================================================= */
 
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
+:root {
+    --navy: #102f52;
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+    --bg: #f3f6fa;
+    --text: #172033;
+    --muted: #718096;
+    --border: #e4eaf1;
+}
 
-        .logout button {
-            background: white;
-            color: #08608c;
-            border: none;
 
-            padding: 10px 20px;
+/* BODY */
 
-            border-radius: 6px;
+body {
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(37,99,235,.07),
+            transparent 32%
+        ),
+        var(--bg);
 
-            font-weight: bold;
-            cursor: pointer;
-        }
+    color:
+        var(--text);
 
-        .logout button:hover {
-            background: #e2e8f0;
-        }
+    font-family:
+        Inter,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+}
 
-        .container {
-            width: 90%;
-            max-width: 900px;
-            margin: 35px auto;
-        }
 
-        .card {
-            background: white;
-            padding: 30px;
+/* TOPBAR */
 
-            border-radius: 10px;
+.topbar {
+    background:
+        rgba(255,255,255,.94);
 
-            box-shadow:
-                0 4px 12px rgba(0, 0, 0, 0.08);
-        }
+    backdrop-filter:
+        blur(14px);
 
-        h2 {
-            color: #08608c;
-            margin-top: 0;
-        }
+    border-bottom:
+        1px solid var(--border);
 
-        .subtitle {
-            color: #64748b;
-            margin-bottom: 30px;
-        }
+    padding:
+        17px 30px;
 
-        .section-title {
-            color: #08608c;
+    box-shadow:
+        0 4px 20px rgba(15,35,65,.04);
+}
 
-            border-bottom:
-                2px solid #e2e8f0;
 
-            padding-bottom: 8px;
+/* BRAND */
 
-            margin-top: 25px;
-        }
+.brand {
+    color:
+        var(--navy);
 
-        .grid {
-            display: grid;
+    font-size:
+        21px;
 
-            grid-template-columns: 1fr 1fr;
+    font-weight:
+        800;
 
-            gap: 20px;
+    text-decoration:
+        none;
 
-            margin-top: 20px;
-        }
+    letter-spacing:
+        .4px;
+}
 
-        .info {
-            background: #f8fafc;
+.brand small {
+    color:
+        var(--muted);
 
-            padding: 15px;
+    font-size:
+        11px;
+}
 
-            border-radius: 6px;
-        }
 
-        .info strong {
-            display: block;
+/* CONTENT */
 
-            margin-bottom: 7px;
+.content {
+    max-width:
+        1150px;
 
-            color: #334155;
-        }
+    margin:
+        0 auto;
 
-        .info span {
-            color: #475569;
-        }
+    padding:
+        42px 25px;
+}
 
-        /* Message de succès */
 
-        .success {
-            background: #dcfce7;
-            color: #166534;
+/* TITLE */
 
-            padding: 15px;
+.page-title {
+    color:
+        var(--navy);
 
-            border-radius: 6px;
+    font-size:
+        28px;
 
-            margin-bottom: 20px;
+    font-weight:
+        800;
 
-            border: 1px solid #bbf7d0;
-        }
+    letter-spacing:
+        -.5px;
+}
 
-        /* Message d'erreur */
+.page-subtitle {
+    color:
+        var(--muted);
+}
 
-        .error {
-            background: #fee2e2;
-            color: #991b1b;
 
-            padding: 15px;
+/* PROFILE CARD */
 
-            border-radius: 6px;
+.profile-card {
+    background:
+        #ffffff;
 
-            margin-bottom: 20px;
+    border:
+        1px solid var(--border);
 
-            border: 1px solid #fecaca;
-        }
+    border-radius:
+        18px;
 
-        .actions {
-            margin-top: 30px;
+    box-shadow:
+        0 10px 35px rgba(15,35,65,.07);
 
-            display: flex;
+    overflow:
+        hidden;
+}
 
-            gap: 15px;
-        }
 
-        .button {
-            display: inline-block;
+/* HEADER */
 
-            padding: 11px 20px;
+.profile-header {
+    position:
+        relative;
 
-            border-radius: 6px;
+    background:
+        linear-gradient(
+            135deg,
+            #102f52,
+            #174a78
+        );
 
-            background: #08608c;
+    padding:
+        30px 34px;
+}
 
-            color: white;
+.profile-header::after {
+    content:
+        "";
 
-            text-decoration: none;
+    position:
+        absolute;
 
-            font-weight: bold;
-        }
+    width:
+        180px;
 
-        .button:hover {
-            background: #064d70;
-        }
+    height:
+        180px;
 
-        .button.secondary {
-            background: #64748b;
-        }
+    right:
+        -60px;
 
-        .button.secondary:hover {
-            background: #475569;
-        }
+    top:
+        -80px;
 
-        @media (max-width: 700px) {
+    border-radius:
+        50%;
 
-            .grid {
-                grid-template-columns: 1fr;
-            }
+    background:
+        rgba(255,255,255,.05);
+}
 
-            .header {
-                padding: 15px 20px;
-            }
+.profile-header h4 {
+    font-size:
+        20px;
+}
 
-            .header h1 {
-                font-size: 20px;
-            }
+.profile-header p {
+    color:
+        rgba(255,255,255,.65);
+}
 
-            .container {
-                width: 95%;
-            }
 
-            .card {
-                padding: 20px;
-            }
+/* BODY */
 
-        }
-    </style>
+.profile-body {
+    padding:
+        34px;
+}
 
+
+/* SECTIONS */
+
+.section-title {
+    color:
+        var(--navy);
+
+    font-size:
+        15px;
+
+    font-weight:
+        750;
+
+    padding-bottom:
+        12px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    margin-bottom:
+        20px;
+}
+
+
+/* INFO */
+
+.info-item {
+    position:
+        relative;
+
+    padding:
+        18px 20px;
+
+    background:
+        #f8fafc;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        12px;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+.info-item:hover {
+    background:
+        #ffffff;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(15,35,65,.06);
+}
+
+.info-label {
+    color:
+        #8290a3;
+
+    font-size:
+        10px;
+
+    font-weight:
+        750;
+
+    letter-spacing:
+        .8px;
+}
+
+.info-value {
+    color:
+        #1e293b;
+
+    font-size:
+        15px;
+
+    font-weight:
+        650;
+}
+
+
+/* BUTTONS */
+
+.btn {
+    border-radius:
+        10px;
+
+    font-weight:
+        650;
+
+    padding:
+        10px 17px;
+}
+
+.btn-primary {
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #174ea6
+        );
+
+    border:
+        none;
+
+    box-shadow:
+        0 5px 15px rgba(37,99,235,.20);
+}
+
+.btn-primary:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #1d4ed8,
+            #123d86
+        );
+}
+
+
+/* LOGOUT */
+
+.logout-btn {
+    border:
+        none;
+
+    background:
+        transparent;
+
+    color:
+        #64748b;
+
+    font-weight:
+        600;
+}
+
+.logout-btn:hover {
+    color:
+        #dc2626;
+}
+
+
+/* ALERTS */
+
+.success-message {
+    background:
+        #ecfdf3;
+
+    border:
+        1px solid #bbf7d0;
+
+    color:
+        #166534;
+
+    border-radius:
+        12px;
+
+    padding:
+        14px 17px;
+}
+
+.error-message {
+    background:
+        #fff1f2;
+
+    border:
+        1px solid #fecdd3;
+
+    color:
+        #be123c;
+
+    border-radius:
+        12px;
+
+    padding:
+        14px 17px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 767px) {
+
+    .content {
+        padding:
+            25px 15px;
+    }
+
+    .profile-body {
+        padding:
+            22px;
+    }
+
+    .profile-header {
+        padding:
+            24px;
+    }
+
+}
+
+</style>
 </head>
-
 
 <body>
 
-    <!-- ================================= -->
-    <!-- EN-TÊTE -->
-    <!-- ================================= -->
+<div class="page-wrapper">
 
-    <header class="header">
+    {{-- BARRE SUPERIEURE --}}
+    <div class="topbar">
 
-        <h1>
-            ABHOER - Gestion des stages
-        </h1>
+        <div class="container-fluid">
 
-        <form
-            method="POST"
-            action="{{ route('logout') }}"
-            class="logout"
-        >
-
-            @csrf
-
-            <button type="submit">
-                Se déconnecter
-            </button>
-
-        </form>
-
-    </header>
-
-
-    <!-- ================================= -->
-    <!-- CONTENU PRINCIPAL -->
-    <!-- ================================= -->
-
-    <main class="container">
-
-        <div class="card">
-
-
-            <!-- ================================= -->
-            <!-- MESSAGES -->
-            <!-- ================================= -->
-
-            @if (session('success'))
-
-                <div class="success">
-                    {{ session('success') }}
-                </div>
-
-            @endif
-
-
-            @if (session('error'))
-
-                <div class="error">
-                    {{ session('error') }}
-                </div>
-
-            @endif
-
-
-            <!-- ================================= -->
-            <!-- TITRE -->
-            <!-- ================================= -->
-
-            <h2>
-                Mon profil
-            </h2>
-
-            <p class="subtitle">
-                Consultez vos informations personnelles et académiques.
-            </p>
-
-
-            <!-- ================================= -->
-            <!-- INFORMATIONS PERSONNELLES -->
-            <!-- ================================= -->
-
-            <h3 class="section-title">
-                Informations personnelles
-            </h3>
-
-
-            <div class="grid">
-
-
-                <!-- Nom -->
-
-                <div class="info">
-
-                    <strong>
-                        Nom
-                    </strong>
-
-                    <span>
-                        {{ $candidat->nom ?? $utilisateur->nom }}
-                    </span>
-
-                </div>
-
-
-                <!-- Prénom -->
-
-                <div class="info">
-
-                    <strong>
-                        Prénom
-                    </strong>
-
-                    <span>
-                        {{ $candidat->prenom ?? $utilisateur->prenom }}
-                    </span>
-
-                </div>
-
-
-                <!-- CIN -->
-
-                <div class="info">
-
-                    <strong>
-                        CIN
-                    </strong>
-
-                    <span>
-                        {{ $candidat->cin ?? 'Non renseignée' }}
-                    </span>
-
-                </div>
-
-
-                <!-- Téléphone -->
-
-                <div class="info">
-
-                    <strong>
-                        Téléphone
-                    </strong>
-
-                    <span>
-                        {{ $candidat->telephone ?? 'Non renseigné' }}
-                    </span>
-
-                </div>
-
-
-                <!-- Email -->
-
-                <div class="info">
-
-                    <strong>
-                        Email
-                    </strong>
-
-                    <span>
-                        {{ $candidat->email ?? 'Non renseigné' }}
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- ================================= -->
-            <!-- INFORMATIONS ACADÉMIQUES -->
-            <!-- ================================= -->
-
-            <h3 class="section-title">
-                Informations académiques
-            </h3>
-
-
-            <div class="grid">
-
-
-                <!-- Établissement -->
-
-                <div class="info">
-
-                    <strong>
-                        Établissement
-                    </strong>
-
-                    <span>
-                        {{ $candidat->etablissement ?? 'Non renseigné' }}
-                    </span>
-
-                </div>
-
-
-                <!-- Formation -->
-
-                <div class="info">
-
-                    <strong>
-                        Formation
-                    </strong>
-
-                    <span>
-                        {{ $candidat->formation ?? 'Non renseignée' }}
-                    </span>
-
-                </div>
-
-
-                <!-- Niveau d'étude -->
-
-                <div class="info">
-
-                    <strong>
-                        Niveau d'étude
-                    </strong>
-
-                    <span>
-                        {{ $candidat->niveauEtude ?? 'Non renseigné' }}
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- ================================= -->
-            <!-- INFORMATIONS DU COMPTE -->
-            <!-- ================================= -->
-
-            <h3 class="section-title">
-                Informations du compte
-            </h3>
-
-
-            <div class="grid">
-
-
-                <!-- Login -->
-
-                <div class="info">
-
-                    <strong>
-                        Login
-                    </strong>
-
-                    <span>
-                        {{ $utilisateur->login }}
-                    </span>
-
-                </div>
-
-
-                <!-- Rôle -->
-
-                <div class="info">
-
-                    <strong>
-                        Rôle
-                    </strong>
-
-                    <span>
-                        {{ $utilisateur->role }}
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- ================================= -->
-            <!-- BOUTONS -->
-            <!-- ================================= -->
-
-            <div class="actions">
+            <div class="d-flex justify-content-between align-items-center">
 
                 <a
                     href="{{ route('etudiant.dashboard') }}"
-                    class="button secondary"
+                    class="brand"
                 >
-                    ← Retour
+                    ABHOER
+
+                    <small>
+                        Gestion des stages
+                    </small>
                 </a>
 
+                <div class="d-flex align-items-center gap-3">
 
-                <a
-                    href="{{ route('etudiant.profil.edit') }}"
-                    class="button"
-                >
-                    Modifier mon profil
-                </a>
+                    <span class="text-secondary small">
+                        {{ $user->prenom ?? '' }}
+                        {{ $user->nom ?? '' }}
+                    </span>
+
+                    <form
+                        method="POST"
+                        action="{{ route('logout') }}"
+                    >
+                        @csrf
+
+                        <button
+                            type="submit"
+                            class="logout-btn"
+                        >
+                            <i class="bi bi-box-arrow-right me-1"></i>
+                            Déconnexion
+                        </button>
+                    </form>
+
+                </div>
 
             </div>
 
+        </div>
+
+    </div>
+
+    {{-- CONTENU --}}
+    <main class="content">
+
+        <div class="mb-4">
+
+            <h2 class="page-title">
+                Mon profil
+            </h2>
+
+            <p class="page-subtitle">
+                Consultez et gérez vos informations personnelles et universitaires.
+            </p>
+
+        </div>
+
+        {{-- SUCCESS --}}
+        @if(session('success'))
+
+            <div class="success-message">
+
+                <i class="bi bi-check-circle me-2"></i>
+
+                {{ session('success') }}
+
+            </div>
+
+        @endif
+
+        {{-- ERROR --}}
+        @if(session('error'))
+
+            <div class="error-message">
+
+                <i class="bi bi-exclamation-circle me-2"></i>
+
+                {{ session('error') }}
+
+            </div>
+
+        @endif
+
+        {{-- CARTE --}}
+        <div class="profile-card">
+
+            <div class="profile-header">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h4>
+                            Informations du candidat
+                        </h4>
+
+                        <p>
+                            Vos informations enregistrées dans ABHOER
+                        </p>
+
+                    </div>
+
+                    <i
+                        class="bi bi-person-circle"
+                        style="font-size: 42px;"
+                    ></i>
+
+                </div>
+
+            </div>
+
+            <div class="profile-body">
+
+                {{-- INFORMATIONS PERSONNELLES --}}
+                <div class="section-title">
+
+                    <i class="bi bi-person me-2"></i>
+
+                    Informations personnelles
+
+                </div>
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="info-label">Nom</div>
+                            <div class="info-value">
+                                {{ $candidat->nom ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="info-label">Prénom</div>
+                            <div class="info-value">
+                                {{ $candidat->prenom ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="info-label">CIN</div>
+                            <div class="info-value">
+                                {{ $candidat->cin ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="info-label">CNE</div>
+                            <div class="info-value">
+                                {{ $candidat->cne ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="info-label">Date de naissance</div>
+                            <div class="info-value">
+                                {{ $candidat->dateNaissance ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="info-label">Téléphone</div>
+                            <div class="info-value">
+                                {{ $candidat->telephone ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="info-label">Adresse email</div>
+                            <div class="info-value">
+                                {{ $candidat->email ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="info-label">Adresse</div>
+                            <div class="info-value">
+                                {{ $candidat->adresse ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- INFORMATIONS UNIVERSITAIRES --}}
+                <div class="section-title">
+
+                    <i class="bi bi-mortarboard me-2"></i>
+
+                    Informations universitaires
+
+                </div>
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="info-label">
+                                Établissement
+                            </div>
+
+                            <div class="info-value">
+                                {{ $candidat->etablissement ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="info-label">
+                                Formation
+                            </div>
+
+                            <div class="info-value">
+                                {{ $candidat->formation ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="info-label">
+                                Niveau d'étude
+                            </div>
+
+                            <div class="info-value">
+                                {{ $candidat->niveauEtude ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="info-label">
+                                Année universitaire
+                            </div>
+
+                            <div class="info-value">
+                                {{ $candidat->anneeUniversitaire ?? '-' }}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- BOUTONS --}}
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a
+                        href="{{ route('etudiant.dashboard') }}"
+                        class="btn btn-light-custom"
+                    >
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Retour
+                    </a>
+
+                    <a
+                        href="{{ route('etudiant.profil.edit') }}"
+                        class="btn btn-primary"
+                    >
+                        <i class="bi bi-pencil me-2"></i>
+                        Modifier mon profil
+                    </a>
+
+                </div>
+
+            </div>
 
         </div>
 
     </main>
 
+</div>
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
 
 </body>
 

@@ -11,7 +11,7 @@ class Utilisateur extends Authenticatable
     use Notifiable;
 
     /**
-     * Table utilisée par l'authentification.
+     * Nom de la table.
      */
     protected $table = 'utilisateur';
 
@@ -21,32 +21,21 @@ class Utilisateur extends Authenticatable
     protected $primaryKey = 'idUtilisateur';
 
     /**
-     * Type de la clé primaire.
-     */
-    protected $keyType = 'int';
-
-    /**
-     * La clé primaire est auto-incrémentée.
-     */
-    public $incrementing = true;
-
-    /**
-     * La table utilisateur n'utilise pas
-     * les timestamps Laravel.
+     * La table n'utilise pas created_at / updated_at.
      */
     public $timestamps = false;
 
     /**
-     * Champs pouvant être remplis.
+     * Champs autorisés.
      */
     protected $fillable = [
-        'idCandidat',
         'nom',
         'prenom',
         'login',
         'motDePasse',
         'role',
         'actif',
+        'idCandidat',
     ];
 
     /**
@@ -57,8 +46,7 @@ class Utilisateur extends Authenticatable
     ];
 
     /**
-     * Laravel doit utiliser motDePasse
-     * pour l'authentification.
+     * Mot de passe utilisé par Laravel pour l'authentification.
      */
     public function getAuthPassword()
     {
@@ -66,11 +54,7 @@ class Utilisateur extends Authenticatable
     }
 
     /**
-     * Retourne le candidat associé à cet utilisateur.
-     *
-     * utilisateur.idCandidat
-     *        ↓
-     * candidat.idCandidat
+     * Candidat associé à l'utilisateur.
      */
     public function candidat(): BelongsTo
     {

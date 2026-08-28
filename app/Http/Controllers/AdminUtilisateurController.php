@@ -4,67 +4,317 @@ namespace App\Http\Controllers;
 
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AdminUtilisateurController extends Controller
 {
     /**
-     * Afficher la liste des utilisateurs.
+     * Vérifier que l'utilisateur connecté est administrateur.
+     */
+    private function verifierAdmin(): void
+    {
+        $user = Auth::user();
+
+        if (
+            !$user ||
+            strtoupper(trim($user->role)) !== 'ADMINISTRATEUR'
+        ) {
+            abort(403, 'Accès non autorisé.');
+        }
+    }
+
+
+    /**
+     * Liste des utilisateurs.
      */
     public function index()
     {
-        $utilisateurs = Utilisateur::orderBy('idUtilisateur', 'desc')->get();
+        $this->verifierAdmin();
 
-        return view('admin.utilisateurs.index', compact('utilisateurs'));
+        $utilisateurs = Utilisateur::with([
+            'candidat',
+            'service',
+        ])
+        ->orderBy('nom')
+        ->orderBy('prenom')
+        ->get();
+
+        return view(
+            'admin.utilisateurs.index',
+            compact('utilisateurs')
+        );
     }
 
+
     /**
-     * Afficher le formulaire d'ajout.
+     * Formulaire de création.
      */
     public function create()
     {
+        $this->verifierAdmin();
+
         return view('admin.utilisateurs.create');
     }
+
 
     /**
      * Enregistrer un nouvel utilisateur.
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nom' => ['required', 'string', 'max:100'],
-            'prenom' => ['required', 'string', 'max:100'],
-            'login' => ['required', 'string', 'max:100', 'unique:utilisateur,login'],
-            'motDePasse' => ['required', 'string', 'min:6'],
-            'role' => ['required', 'in:ADMINISTRATEUR,AGENT,RESPONSABLE'],
+        $this->verifierAdmin();
+
+        $validated = $request->validate([
+            'nom' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'prenom' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'login' => [
+                'required',
+                'string',
+                'max:100',
+                'unique:utilisateur,login',
+            ],
+
+            'motDePasse' => [
+                'required',
+                'string',
+                'min:6',
+                'confirmed',
+            ],
+
+            'role' => [
+                'required',
+                'in:ETUDIANT,RESPONSABLE,ADMINISTRATEUR',
+            ],
         ]);
+
 
         Utilisateur::create([
-            'nom' => $request->nom,
-            'prenom' => $request->prenom,
-            'login' => $request->login,
-            'motDePasse' => Hash::make($request->motDePasse),
-            'role' => $request->role,
-            'actif' => 1,
+            'nom' => $validated['nom'],
+            'prenom' => $validated['prenom'],
+            'login' => $validated['login'],
+            'motDePasse' => Hash::make(
+                $validated['motDePasse']
+            ),
+            'role' => $validated['role'],
+            'actif' => true,
         ]);
 
+
         return redirect()
             ->route('admin.utilisateurs.index')
-            ->with('success', 'Utilisateur ajouté avec succès.');
+            ->with(
+                'success',
+                'Utilisateur créé avec succès.'
+            );
     }
 
-    /**
-     * Activer ou désactiver un utilisateur.
-     */
-    public function toggle($id)
-    {
-        $utilisateur = Utilisateur::findOrFail($id);
 
-        $utilisateur->actif = !$utilisateur->actif;
-        $utilisateur->save();
+    /**
+     * Formulaire de modification.
+     */
+    public function edit(int $idUtilisateur)
+    {
+        $this->verifierAdmin();
+
+        $utilisateur = Utilisateur::findOrFail(
+            $idUtilisateur
+        );
+
+        return view(
+            'admin.utilisateurs.edit',
+            compact('utilisateur')
+        );
+    }
+
+
+    /**
+     * Modifier un utilisateur.
+     */
+    public function update(
+        Request $request,
+        int $idUtilisateur
+    ) {
+        $this->verifierAdmin();
+
+        $utilisateur = Utilisateur::findOrFail(
+            $idUtilisateur
+        );
+
+
+        $validated = $request->validate([
+            'nom' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'prenom' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'login' => [
+                'required',
+                'string',
+                'max:100',
+                'unique:utilisateur,login,' .
+                    $idUtilisateur .
+                    ',idUtilisateur',
+            ],
+
+            'role' => [
+                'required',
+                'in:ETUDIANT,RESPONSABLE,ADMINISTRATEUR',
+            ],
+
+            'actif' => [
+                'nullable',
+                'boolean',
+            ],
+        ]);
+
+
+        $utilisateur->update([
+            'nom' => $validated['nom'],
+            'prenom' => $validated['prenom'],
+            'login' => $validated['login'],
+            'role' => $validated['role'],
+            'actif' => $request->boolean('actif'),
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Modifier le mot de passe uniquement s'il est fourni
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->filled('motDePasse')) {
+
+            $request->validate([
+                'motDePasse' => [
+                    'string',
+                    'min:6',
+                    'confirmed',
+                ],
+            ]);
+
+            $utilisateur->update([
+                'motDePasse' => Hash::make(
+                    $request->input('motDePasse')
+                ),
+            ]);
+        }
+
 
         return redirect()
             ->route('admin.utilisateurs.index')
-           ->with('success', "Statut de l'utilisateur modifié.");
+            ->with(
+                'success',
+                'Utilisateur modifié avec succès.'
+            );
+    }
+
+
+    /**
+     * Activer / désactiver un utilisateur.
+     */
+    public function toggle(int $idUtilisateur)
+    {
+        $this->verifierAdmin();
+
+        $utilisateur = Utilisateur::findOrFail(
+            $idUtilisateur
+        );
+
+        $userConnecte = Auth::user();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Empêcher l'administrateur de désactiver son propre compte
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $userConnecte &&
+            $userConnecte->idUtilisateur ===
+            $utilisateur->idUtilisateur
+        ) {
+            return back()->with(
+                'error',
+                'Vous ne pouvez pas désactiver votre propre compte.'
+            );
+        }
+
+
+        $utilisateur->actif = !$utilisateur->actif;
+
+        $utilisateur->save();
+
+
+        $message = $utilisateur->actif
+            ? 'Utilisateur activé avec succès.'
+            : 'Utilisateur désactivé avec succès.';
+
+
+        return back()->with(
+            'success',
+            $message
+        );
+    }
+
+
+    /**
+     * Supprimer un utilisateur.
+     */
+    public function destroy(int $idUtilisateur)
+    {
+        $this->verifierAdmin();
+
+        $utilisateur = Utilisateur::findOrFail(
+            $idUtilisateur
+        );
+
+        $userConnecte = Auth::user();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Empêcher l'administrateur de supprimer son propre compte
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $userConnecte &&
+            $userConnecte->idUtilisateur ===
+            $utilisateur->idUtilisateur
+        ) {
+            return back()->with(
+                'error',
+                'Vous ne pouvez pas supprimer votre propre compte.'
+            );
+        }
+
+
+        $utilisateur->delete();
+
+
+        return back()->with(
+            'success',
+            'Utilisateur supprimé avec succès.'
+        );
     }
 }

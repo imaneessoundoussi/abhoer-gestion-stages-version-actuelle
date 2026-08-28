@@ -6,6 +6,7 @@ use App\Models\Candidat;
 use App\Models\DemandeStage;
 use App\Models\Document;
 use App\Models\Service;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -13,163 +14,104 @@ use Illuminate\Support\Str;
 
 class EtudiantDemandeStageController extends Controller
 {
-    /**
-     * ============================================================
-     * RÉCUPÉRER LE CANDIDAT CONNECTÉ
-     * ============================================================
-     */
-    private function getCandidatConnecte()
-    {
-        $utilisateur = Auth::user();
+    /*
+    |--------------------------------------------------------------------------
+    | Liste des demandes
+    |--------------------------------------------------------------------------
+    */
 
-        if (!$utilisateur) {
-            return null;
-        }
-
-        /*
-         * Dans la table utilisateur, nous avons :
-         * idUtilisateur
-         * nom
-         * prenom
-         * login
-         * motDePasse
-         * role
-         * actif
-         *
-         * Il n'y a pas de idCandidat.
-         *
-         * On recherche donc le candidat avec son email
-         * correspondant au login de l'utilisateur.
-         */
-        return Candidat::where('email', $utilisateur->login)->first();
-    }
-
-
-    /**
-     * ============================================================
-     * LISTE DES DEMANDES DE L'ÉTUDIANT
-     * ============================================================
-     */
     public function index()
     {
-        $utilisateur = Auth::user();
+        $user = Auth::user();
 
-        if (!$utilisateur) {
-            return redirect()
-                ->route('login')
-                ->with('error', 'Vous devez être connecté.');
+        if (!$user) {
+            return redirect()->route('login');
         }
 
-        $candidat = $this->getCandidatConnecte();
+        $candidat = Candidat::find($user->idCandidat);
 
         if (!$candidat) {
             return redirect()
                 ->route('etudiant.profil')
-                ->with(
-                    'error',
-                    'Aucun profil étudiant n\'est associé à votre compte.'
-                );
+                ->with('error', 'Profil étudiant introuvable.');
         }
 
-        /*
-         * Récupérer uniquement les demandes
-         * de l'étudiant connecté.
-         */
         $demandes = DemandeStage::with([
             'service',
-            'documents'
+            'documents',
         ])
             ->where('idCandidat', $candidat->idCandidat)
-            ->orderByDesc('idDemande')
+            ->orderByDesc('dateDepot')
             ->get();
 
-        return view(
-            'etudiant.demande-stage.index',
-            compact(
-                'utilisateur',
-                'candidat',
-                'demandes'
-            )
+        return view('etudiant.demandes.index', [
+            'demandes' => $demandes,
+            'candidat' => $candidat,
+            'user' => $user,
+        ]);
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Nouvelle demande
+    |--------------------------------------------------------------------------
+    */
+
+    public function create()
+    {
+        return redirect()->route(
+            'etudiant.demandes.informations'
         );
     }
 
 
-    /**
-     * ============================================================
-     * ÉTAPE 1 : AFFICHER LE FORMULAIRE
-     * ============================================================
-     */
-    public function create()
-    {
-        $utilisateur = Auth::user();
+    /*
+    |--------------------------------------------------------------------------
+    | Étape 1 : informations
+    |--------------------------------------------------------------------------
+    */
 
-        if (!$utilisateur) {
-            return redirect()
-                ->route('login')
-                ->with('error', 'Vous devez être connecté.');
+    public function informations()
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login');
         }
 
-        $candidat = $this->getCandidatConnecte();
+        $candidat = Candidat::find($user->idCandidat);
 
         if (!$candidat) {
             return redirect()
                 ->route('etudiant.profil')
                 ->with(
                     'error',
-                    'Aucun profil étudiant n\'est associé à votre compte.'
+                    'Profil étudiant introuvable.'
                 );
         }
 
-        /*
-         * Récupérer les services.
-         */
         $services = Service::orderBy(
             'nomService',
             'asc'
         )->get();
 
-        return view(
-            'etudiant.demande-stage.create',
-            compact(
-                'utilisateur',
-                'candidat',
-                'services'
-            )
-        );
+        return view('etudiant.demandes.informations', [
+            'services' => $services,
+            'candidat' => $candidat,
+            'user' => $user,
+        ]);
     }
 
 
-    /**
-     * ============================================================
-     * ÉTAPE 1 : ENREGISTRER LES INFORMATIONS
-     * ============================================================
-     */
-    public function store(Request $request)
+    /*
+    |--------------------------------------------------------------------------
+    | Enregistrer l'étape 1
+    |--------------------------------------------------------------------------
+    */
+
+    public function storeInformations(Request $request)
     {
-        $utilisateur = Auth::user();
-
-        if (!$utilisateur) {
-            return redirect()
-                ->route('login')
-                ->with('error', 'Vous devez être connecté.');
-        }
-
-        $candidat = $this->getCandidatConnecte();
-
-        if (!$candidat) {
-            return redirect()
-                ->route('etudiant.profil')
-                ->with(
-                    'error',
-                    'Aucun profil étudiant n\'est associé à votre compte.'
-                );
-        }
-
-        /*
-         * ========================================================
-         * VALIDATION
-         * ========================================================
-         */
         $validated = $request->validate(
             [
                 'idService' => [
@@ -218,39 +160,50 @@ class EtudiantDemandeStageController extends Controller
                     'Veuillez sélectionner le type de stage.',
 
                 'dateDebut.required' =>
-                    'La date de début est obligatoire.',
-
-                'dateDebut.date' =>
-                    'La date de début est invalide.',
+                    'Veuillez indiquer la date de début.',
 
                 'dateFin.required' =>
-                    'La date de fin est obligatoire.',
-
-                'dateFin.date' =>
-                    'La date de fin est invalide.',
+                    'Veuillez indiquer la date de fin.',
 
                 'dateFin.after_or_equal' =>
-                    'La date de fin doit être supérieure ou égale à la date de début.',
+                    'La date de fin doit être après ou égale à la date de début.',
 
                 'theme.required' =>
-                    'Le thème du stage est obligatoire.',
+                    'Veuillez indiquer le thème du stage.',
 
                 'motivation.required' =>
-                    'La motivation est obligatoire.',
+                    'Veuillez indiquer votre motivation.',
 
                 'motivation.min' =>
                     'La motivation doit contenir au moins 10 caractères.',
             ]
         );
 
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $candidat = Candidat::find($user->idCandidat);
+
+        if (!$candidat) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Aucun profil candidat associé à cet utilisateur.'
+                );
+        }
+
 
         /*
-         * ========================================================
-         * GÉNÉRER UN NUMÉRO UNIQUE
-         * ========================================================
-         */
-        do {
+        |--------------------------------------------------------------------------
+        | Génération du numéro unique
+        |--------------------------------------------------------------------------
+        */
 
+        do {
             $numeroDemande =
                 'DEM-' .
                 date('Y') .
@@ -266,255 +219,331 @@ class EtudiantDemandeStageController extends Controller
 
 
         /*
-         * ========================================================
-         * CRÉER LA DEMANDE
-         * ========================================================
-         */
+        |--------------------------------------------------------------------------
+        | Création de la demande
+        |--------------------------------------------------------------------------
+        */
+
         $demande = DemandeStage::create([
-            'idCandidat' =>
-                $candidat->idCandidat,
-
-            'idService' =>
-                $validated['idService'],
-
-            'numeroDemande' =>
-                $numeroDemande,
-
-            'dateDepot' =>
-                now()->format('Y-m-d'),
-
-            'dateDebut' =>
-                $validated['dateDebut'],
-
-            'dateFin' =>
-                $validated['dateFin'],
-
-            'theme' =>
-                $validated['theme'],
-
-            'motivation' =>
-                $validated['motivation'],
-
-            'statut' =>
-                'EN_ATTENTE',
-
-            'typeDepot' =>
-                $validated['typeDepot'],
-
-            'observation' =>
-                null,
+            'idCandidat' => $candidat->idCandidat,
+            'idService' => $validated['idService'],
+            'numeroDemande' => $numeroDemande,
+            'dateDepot' => now()->format('Y-m-d'),
+            'dateDebut' => $validated['dateDebut'],
+            'dateFin' => $validated['dateFin'],
+            'theme' => $validated['theme'],
+            'motivation' => $validated['motivation'],
+            'statut' => 'EN_ATTENTE',
+            'typeDepot' => $validated['typeDepot'],
+            'observation' => null,
         ]);
 
-
-        /*
-         * Aller vers l'étape 2
-         */
         return redirect()
             ->route(
-                'etudiant.demande.documents',
-                $demande->idDemande
+                'etudiant.demandes.documents',
+                [
+                    'idDemande' => $demande->idDemande,
+                ]
             )
             ->with(
                 'success',
-                'Les informations de votre demande ont été enregistrées avec succès.'
+                'Les informations de votre demande ont été enregistrées.'
             );
     }
 
 
-    /**
-     * ============================================================
-     * ÉTAPE 2 : AFFICHER LES DOCUMENTS
-     * ============================================================
-     */
-    public function documents(int $idDemande)
+    /*
+    |--------------------------------------------------------------------------
+    | Compatibilité avec store()
+    |--------------------------------------------------------------------------
+    */
+
+    public function store(Request $request)
     {
-        $utilisateur = Auth::user();
-
-        if (!$utilisateur) {
-            return redirect()
-                ->route('login');
-        }
-
-        $candidat = $this->getCandidatConnecte();
-
-        if (!$candidat) {
-            return redirect()
-                ->route('etudiant.profil')
-                ->with(
-                    'error',
-                    'Profil étudiant introuvable.'
-                );
-        }
-
-        /*
-         * Vérifier que la demande appartient
-         * bien à l'étudiant connecté.
-         */
-        $demande = DemandeStage::with([
-            'service',
-            'documents'
-        ])
-            ->where(
-                'idDemande',
-                $idDemande
-            )
-            ->where(
-                'idCandidat',
-                $candidat->idCandidat
-            )
-            ->firstOrFail();
-
-        $documents = $demande->documents;
-
-        return view(
-            'etudiant.demande-stage.documents',
-            compact(
-                'demande',
-                'candidat',
-                'utilisateur',
-                'documents'
-            )
-        );
+        return $this->storeInformations($request);
     }
 
 
-    /**
-     * ============================================================
-     * ÉTAPE 2 : ENREGISTRER LES DOCUMENTS
-     * ============================================================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Afficher les documents d'une demande
+    |--------------------------------------------------------------------------
+    */
+
+    public function documents(int $idDemande)
+    {
+        $demande = $this->getDemandeEtudiant($idDemande);
+
+        $documents = Document::where(
+            'idDemande',
+            $demande->idDemande
+        )
+            ->orderByDesc('dateAjout')
+            ->get();
+
+        return view('etudiant.demandes.documents', [
+            'demande' => $demande,
+            'documents' => $documents,
+            'user' => Auth::user(),
+        ]);
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enregistrer les documents
+    |--------------------------------------------------------------------------
+    */
+
     public function storeDocuments(
         Request $request,
         int $idDemande
     ) {
-        $utilisateur = Auth::user();
+        $demande = $this->getDemandeEtudiant($idDemande);
 
-        if (!$utilisateur) {
+        $statut = strtoupper(
+            (string) $demande->statut
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Une demande traitée ne peut plus être modifiée
+        |--------------------------------------------------------------------------
+        */
+
+        if (!in_array(
+            $statut,
+            [
+                'EN_ATTENTE',
+                'BROUILLON',
+            ],
+            true
+        )) {
             return redirect()
-                ->route('login');
-        }
-
-        $candidat = $this->getCandidatConnecte();
-
-        if (!$candidat) {
-            return redirect()
-                ->route('etudiant.profil')
+                ->route(
+                    'etudiant.demandes.documents',
+                    [
+                        'idDemande' => $demande->idDemande,
+                    ]
+                )
                 ->with(
                     'error',
-                    'Profil étudiant introuvable.'
+                    'Les documents ne peuvent plus être modifiés car cette demande est déjà en cours de traitement.'
                 );
         }
 
-        /*
-         * Vérifier la demande.
-         */
-        $demande = DemandeStage::where(
-            'idDemande',
-            $idDemande
-        )
-            ->where(
-                'idCandidat',
-                $candidat->idCandidat
-            )
-            ->firstOrFail();
-
 
         /*
-         * ========================================================
-         * VALIDATION
-         * ========================================================
-         */
+        |--------------------------------------------------------------------------
+        | Validation
+        |--------------------------------------------------------------------------
+        */
+
         $request->validate(
             [
                 'documents' => [
                     'required',
                     'array',
-                    'min:1',
+                    'size:4',
                 ],
 
-                'documents.*' => [
-                    'required',
-                    'file',
-                    'mimes:pdf,doc,docx,jpg,jpeg,png',
-                    'max:5120',
-                ],
-
-                'types' => [
-                    'required',
-                    'array',
-                ],
-
-                'types.*' => [
+                'documents.*.type' => [
                     'required',
                     'string',
                     'max:100',
                 ],
+
+                'documents.*.fichier' => [
+                    'required',
+                    'file',
+                    'mimes:pdf,jpg,jpeg,png',
+                    'max:5120',
+                ],
             ],
             [
                 'documents.required' =>
-                    'Veuillez ajouter au moins un document.',
+                    'Veuillez ajouter les documents demandés.',
 
-                'documents.min' =>
-                    'Veuillez ajouter au moins un document.',
+                'documents.size' =>
+                    'Les quatre documents sont obligatoires.',
 
-                'documents.*.required' =>
-                    'Veuillez sélectionner un fichier.',
-
-                'documents.*.mimes' =>
-                    'Les formats autorisés sont PDF, DOC, DOCX, JPG, JPEG et PNG.',
-
-                'documents.*.max' =>
-                    'Chaque fichier ne doit pas dépasser 5 Mo.',
-
-                'types.required' =>
-                    'Veuillez préciser le type de document.',
-
-                'types.*.required' =>
+                'documents.*.type.required' =>
                     'Le type du document est obligatoire.',
+
+                'documents.*.fichier.required' =>
+                    'Veuillez sélectionner tous les documents.',
+
+                'documents.*.fichier.file' =>
+                    'Le fichier sélectionné est invalide.',
+
+                'documents.*.fichier.mimes' =>
+                    'Le document doit être au format PDF, JPG, JPEG ou PNG.',
+
+                'documents.*.fichier.max' =>
+                    'Le fichier ne doit pas dépasser 5 MB.',
             ]
         );
 
 
         /*
-         * ========================================================
-         * ENREGISTRER LES FICHIERS
-         * ========================================================
-         */
-        foreach (
-            $request->file('documents') as $index => $file
-        ) {
+        |--------------------------------------------------------------------------
+        | Types autorisés
+        |--------------------------------------------------------------------------
+        */
 
-            $chemin = $file->store(
-                'documents/demandes/' . $demande->idDemande,
+        $typesAutorises = [
+            'CIN',
+            'Demande de stage',
+            'Assurance',
+            'CV',
+        ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Enregistrement des documents
+        |--------------------------------------------------------------------------
+        */
+
+        foreach (
+            $request->input('documents', [])
+            as $index => $documentData
+        ) {
+            if (!is_array($documentData)) {
+                continue;
+            }
+
+            $type = $documentData['type'] ?? null;
+
+            if (!$type) {
+                continue;
+            }
+
+            if (!in_array(
+                $type,
+                $typesAutorises,
+                true
+            )) {
+                continue;
+            }
+
+            $fichier = $request->file(
+                "documents.$index.fichier"
+            );
+
+            if (!$fichier) {
+                continue;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Chercher un ancien document du même type
+            |--------------------------------------------------------------------------
+            */
+
+            $ancienDocument = Document::where(
+                'idDemande',
+                $demande->idDemande
+            )
+                ->where(
+                    'typeDocument',
+                    $type
+                )
+                ->first();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Supprimer ancien fichier
+            |--------------------------------------------------------------------------
+            */
+
+            if ($ancienDocument) {
+
+                if (
+                    $ancienDocument->cheminFichier &&
+                    Storage::disk('public')->exists(
+                        $ancienDocument->cheminFichier
+                    )
+                ) {
+                    Storage::disk('public')->delete(
+                        $ancienDocument->cheminFichier
+                    );
+                }
+
+                $ancienDocument->delete();
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Stocker le nouveau fichier
+            |--------------------------------------------------------------------------
+            */
+
+            $chemin = $fichier->store(
+                'documents',
                 'public'
             );
 
+
+            /*
+            |--------------------------------------------------------------------------
+            | Enregistrer dans la base de données
+            |--------------------------------------------------------------------------
+            */
+
             Document::create([
-                'idDemande' =>
-                    $demande->idDemande,
+                'idDemande' => $demande->idDemande,
+
+                'typeDocument' => $type,
 
                 'nomFichier' =>
-                    $file->getClientOriginalName(),
+                    $fichier->getClientOriginalName(),
 
-                'typeDocument' =>
-                    $request->types[$index] ?? 'Autre',
+                'cheminFichier' => $chemin,
 
-                'cheminFichier' =>
-                    $chemin,
-
-                'dateAjout' =>
-                    now(),
+                'dateAjout' => now(),
             ]);
         }
 
 
         /*
-         * Aller à l'étape 3.
-         */
+        |--------------------------------------------------------------------------
+        | Vérifier les 4 documents
+        |--------------------------------------------------------------------------
+        */
+
+        $nombreDocuments = Document::where(
+            'idDemande',
+            $demande->idDemande
+        )->count();
+
+        if ($nombreDocuments < 4) {
+
+            return redirect()
+                ->route(
+                    'etudiant.demandes.documents',
+                    [
+                        'idDemande' =>
+                            $demande->idDemande,
+                    ]
+                )
+                ->with(
+                    'error',
+                    'Les quatre documents obligatoires doivent être ajoutés.'
+                );
+        }
+
+
         return redirect()
             ->route(
-                'etudiant.demande.confirmation',
-                $demande->idDemande
+                'etudiant.demandes.confirmation',
+                [
+                    'idDemande' =>
+                        $demande->idDemande,
+                ]
             )
             ->with(
                 'success',
@@ -523,21 +552,121 @@ class EtudiantDemandeStageController extends Controller
     }
 
 
-    /**
-     * ============================================================
-     * ÉTAPE 3 : CONFIRMATION
-     * ============================================================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Confirmation
+    |--------------------------------------------------------------------------
+    */
+
     public function confirmation(int $idDemande)
     {
-        $utilisateur = Auth::user();
+        $demande = $this->getDemandeEtudiant($idDemande);
 
-        if (!$utilisateur) {
+        $demande->load([
+            'candidat',
+            'service',
+            'documents',
+        ]);
+
+        return view(
+            'etudiant.demandes.confirmation',
+            [
+                'demande' => $demande,
+                'user' => Auth::user(),
+            ]
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Confirmation définitive
+    |--------------------------------------------------------------------------
+    */
+
+    public function confirmer(int $idDemande)
+    {
+        $demande = $this->getDemandeEtudiant($idDemande);
+
+        $nombreDocuments =
+            $demande->documents()->count();
+
+        if ($nombreDocuments < 4) {
+
             return redirect()
-                ->route('login');
+                ->route(
+                    'etudiant.demandes.documents',
+                    [
+                        'idDemande' =>
+                            $demande->idDemande,
+                    ]
+                )
+                ->with(
+                    'error',
+                    'Vous devez ajouter les 4 documents obligatoires avant de confirmer.'
+                );
         }
 
-        $candidat = $this->getCandidatConnecte();
+
+        $demande->statut = 'EN_ATTENTE';
+
+        $demande->save();
+
+
+        return redirect()
+            ->route(
+                'etudiant.demandes.index'
+            )
+            ->with(
+                'success',
+                'Votre demande de stage a été envoyée avec succès.'
+            );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Voir une demande
+    |--------------------------------------------------------------------------
+    */
+
+    public function show(int $idDemande)
+    {
+        $demande = $this->getDemandeEtudiant($idDemande);
+
+        $demande->load([
+            'candidat',
+            'service',
+            'documents',
+        ]);
+
+        return view(
+            'etudiant.demandes.show',
+            [
+                'demande' => $demande,
+                'user' => Auth::user(),
+            ]
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mes documents
+    |--------------------------------------------------------------------------
+    */
+
+    public function documentsIndex()
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $candidat = Candidat::find(
+            $user->idCandidat
+        );
 
         if (!$candidat) {
             return redirect()
@@ -548,10 +677,406 @@ class EtudiantDemandeStageController extends Controller
                 );
         }
 
-        $demande = DemandeStage::with([
-            'candidat',
+        $demandes = DemandeStage::with([
             'service',
-            'documents'
+            'documents',
+        ])
+            ->where(
+                'idCandidat',
+                $candidat->idCandidat
+            )
+            ->orderByDesc('dateDepot')
+            ->get();
+
+        return view(
+            'etudiant.documents.index',
+            [
+                'demandes' => $demandes,
+                'candidat' => $candidat,
+                'user' => $user,
+            ]
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SUPPRIMER UNE DEMANDE
+    |--------------------------------------------------------------------------
+    |
+    | Supprime :
+    | - les documents de la base
+    | - les fichiers physiques
+    | - la demande
+    |
+    */
+
+    public function destroy(int $idDemande)
+    {
+        $demande = $this->getDemandeEtudiant($idDemande);
+
+        $statut = strtoupper(
+            (string) $demande->statut
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Vérifier le statut
+        |--------------------------------------------------------------------------
+        */
+
+        if (!in_array(
+            $statut,
+            [
+                'EN_ATTENTE',
+                'BROUILLON',
+            ],
+            true
+        )) {
+
+            return redirect()
+                ->route(
+                    'etudiant.demandes.index'
+                )
+                ->with(
+                    'error',
+                    'Cette demande ne peut plus être supprimée car elle est déjà en cours de traitement.'
+                );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Supprimer les documents et fichiers
+        |--------------------------------------------------------------------------
+        */
+
+        $documents = Document::where(
+            'idDemande',
+            $demande->idDemande
+        )->get();
+
+        foreach ($documents as $document) {
+
+            if (
+                $document->cheminFichier &&
+                Storage::disk('public')->exists(
+                    $document->cheminFichier
+                )
+            ) {
+                Storage::disk('public')->delete(
+                    $document->cheminFichier
+                );
+            }
+
+            $document->delete();
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Supprimer la demande
+        |--------------------------------------------------------------------------
+        */
+
+        $demande->delete();
+
+
+        return redirect()
+            ->route(
+                'etudiant.demandes.index'
+            )
+            ->with(
+                'success',
+                'La demande et tous ses documents ont été supprimés avec succès.'
+            );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | VOIR UN DOCUMENT
+    |--------------------------------------------------------------------------
+    */
+
+    public function voirDocument(
+        int $idDemande,
+        int $idDocument
+    ) {
+        $demande = $this->getDemandeEtudiant(
+            $idDemande
+        );
+
+        $document = Document::where(
+            'idDocument',
+            $idDocument
+        )
+            ->where(
+                'idDemande',
+                $demande->idDemande
+            )
+            ->firstOrFail();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Vérifier le fichier
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !$document->cheminFichier ||
+            !Storage::disk('public')->exists(
+                $document->cheminFichier
+            )
+        ) {
+            abort(
+                404,
+                'Fichier introuvable.'
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Chemin physique
+        |--------------------------------------------------------------------------
+        */
+
+        $path = Storage::disk('public')->path(
+            $document->cheminFichier
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Type MIME
+        |--------------------------------------------------------------------------
+        */
+
+        $mimeType = mime_content_type(
+            $path
+        );
+
+        if (!$mimeType) {
+            $mimeType =
+                'application/octet-stream';
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Afficher le document dans le navigateur
+        |--------------------------------------------------------------------------
+        */
+
+        return response()->file(
+            $path,
+            [
+                'Content-Type' => $mimeType,
+
+                'Content-Disposition' =>
+                    'inline; filename="' .
+                    addslashes(
+                        $document->nomFichier
+                    ) .
+                    '"',
+            ]
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TÉLÉCHARGER UN DOCUMENT
+    |--------------------------------------------------------------------------
+    */
+
+    public function telechargerDocument(
+        int $idDemande,
+        int $idDocument
+    ) {
+        $demande = $this->getDemandeEtudiant(
+            $idDemande
+        );
+
+        $document = Document::where(
+            'idDocument',
+            $idDocument
+        )
+            ->where(
+                'idDemande',
+                $demande->idDemande
+            )
+            ->firstOrFail();
+
+
+        if (
+            !$document->cheminFichier ||
+            !Storage::disk('public')->exists(
+                $document->cheminFichier
+            )
+        ) {
+            abort(
+                404,
+                'Fichier introuvable.'
+            );
+        }
+
+
+        $path = Storage::disk('public')->path(
+            $document->cheminFichier
+        );
+
+
+        return response()->download(
+            $path,
+            $document->nomFichier
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SUPPRIMER UN DOCUMENT
+    |--------------------------------------------------------------------------
+    */
+
+    public function destroyDocument(
+        int $idDemande,
+        int $idDocument
+    ) {
+        $demande = $this->getDemandeEtudiant(
+            $idDemande
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Vérifier le statut
+        |--------------------------------------------------------------------------
+        */
+
+        $statut = strtoupper(
+            (string) $demande->statut
+        );
+
+        if (!in_array(
+            $statut,
+            [
+                'EN_ATTENTE',
+                'BROUILLON',
+            ],
+            true
+        )) {
+
+            return redirect()
+                ->route(
+                    'etudiant.demandes.documents',
+                    [
+                        'idDemande' =>
+                            $demande->idDemande,
+                    ]
+                )
+                ->with(
+                    'error',
+                    'Ce document ne peut plus être supprimé car la demande est déjà en cours de traitement.'
+                );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Trouver le document
+        |--------------------------------------------------------------------------
+        */
+
+        $document = Document::where(
+            'idDocument',
+            $idDocument
+        )
+            ->where(
+                'idDemande',
+                $demande->idDemande
+            )
+            ->firstOrFail();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Supprimer le fichier physique
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $document->cheminFichier &&
+            Storage::disk('public')->exists(
+                $document->cheminFichier
+            )
+        ) {
+            Storage::disk('public')->delete(
+                $document->cheminFichier
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Supprimer de la base
+        |--------------------------------------------------------------------------
+        */
+
+        $document->delete();
+
+
+        return redirect()
+            ->route(
+                'etudiant.demandes.documents',
+                [
+                    'idDemande' =>
+                        $demande->idDemande,
+                ]
+            )
+            ->with(
+                'success',
+                'Le document a été supprimé avec succès.'
+            );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Vérifier que la demande appartient à l'étudiant
+    |--------------------------------------------------------------------------
+    */
+
+    private function getDemandeEtudiant(
+        int $idDemande
+    ): DemandeStage {
+
+        $user = Auth::user();
+
+        if (!$user) {
+            abort(403);
+        }
+
+        if (!$user->idCandidat) {
+            abort(
+                403,
+                'Aucun candidat associé à cet utilisateur.'
+            );
+        }
+
+        $candidat = Candidat::findOrFail(
+            $user->idCandidat
+        );
+
+
+        return DemandeStage::with([
+            'service',
+            'candidat',
+            'documents',
         ])
             ->where(
                 'idDemande',
@@ -562,96 +1087,5 @@ class EtudiantDemandeStageController extends Controller
                 $candidat->idCandidat
             )
             ->firstOrFail();
-
-        $documents = $demande->documents;
-
-        return view(
-            'etudiant.demande-stage.confirmation',
-            compact(
-                'demande',
-                'candidat',
-                'utilisateur',
-                'documents'
-            )
-        );
-    }
-
-
-    /**
-     * ============================================================
-     * CONFIRMATION DÉFINITIVE
-     * ============================================================
-     */
-    public function confirmer(int $idDemande)
-    {
-        $utilisateur = Auth::user();
-
-        if (!$utilisateur) {
-            return redirect()
-                ->route('login');
-        }
-
-        $candidat = $this->getCandidatConnecte();
-
-        if (!$candidat) {
-            return redirect()
-                ->route('etudiant.profil')
-                ->with(
-                    'error',
-                    'Profil étudiant introuvable.'
-                );
-        }
-
-        $demande = DemandeStage::where(
-            'idDemande',
-            $idDemande
-        )
-            ->where(
-                'idCandidat',
-                $candidat->idCandidat
-            )
-            ->firstOrFail();
-
-
-        /*
-         * Vérifier qu'il existe au moins
-         * un document.
-         */
-        $nombreDocuments = Document::where(
-            'idDemande',
-            $demande->idDemande
-        )->count();
-
-
-        if ($nombreDocuments === 0) {
-
-            return redirect()
-                ->route(
-                    'etudiant.demande.documents',
-                    $demande->idDemande
-                )
-                ->with(
-                    'error',
-                    'Vous devez ajouter au moins un document avant de confirmer votre demande.'
-                );
-        }
-
-
-        /*
-         * La demande reste EN_ATTENTE.
-         */
-        $demande->update([
-            'statut' => 'EN_ATTENTE',
-        ]);
-
-
-        return redirect()
-            ->route(
-                'etudiant.demande.index'
-            )
-            ->with(
-                'success',
-                'Votre demande de stage a été envoyée avec succès.'
-            );
     }
 }

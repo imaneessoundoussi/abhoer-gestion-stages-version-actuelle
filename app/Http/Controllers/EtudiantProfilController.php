@@ -2,85 +2,244 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Candidat;
+use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class EtudiantProfilController extends Controller
 {
     /**
-     * Afficher le profil de l'étudiant.
+     * Afficher le profil de l'étudiant connecté.
      */
     public function index()
     {
-        $utilisateur = Auth::user();
+        $user = Auth::user();
 
-        $candidat = $utilisateur->candidat;
+        if (!$user instanceof Utilisateur) {
+            return redirect()->route('login');
+        }
 
-        return view(
-            'etudiant.profil',
-            compact('utilisateur', 'candidat')
-        );
+        $candidat = Candidat::find($user->idCandidat);
+
+        if (!$candidat) {
+            return redirect()
+                ->route('etudiant.dashboard')
+                ->with('error', 'Profil étudiant introuvable.');
+        }
+
+        return view('etudiant.profil', [
+            'user' => $user,
+            'candidat' => $candidat,
+        ]);
     }
 
     /**
-     * Afficher le formulaire de modification.
+     * Afficher le formulaire de modification du profil.
      */
     public function edit()
     {
-        $utilisateur = Auth::user();
+        $user = Auth::user();
 
-        $candidat = $utilisateur->candidat;
+        if (!$user instanceof Utilisateur) {
+            return redirect()->route('login');
+        }
 
-        return view(
-            'etudiant.modifier-profil',
-            compact('utilisateur', 'candidat')
-        );
+        $candidat = Candidat::find($user->idCandidat);
+
+        if (!$candidat) {
+            return redirect()
+                ->route('etudiant.dashboard')
+                ->with('error', 'Profil étudiant introuvable.');
+        }
+
+        return view('etudiant.modifier-profil', [
+            'user' => $user,
+            'candidat' => $candidat,
+        ]);
     }
 
     /**
-     * Enregistrer les modifications du profil.
+     * Mettre à jour le profil.
      */
     public function update(Request $request)
     {
-        $utilisateur = Auth::user();
+        $user = Auth::user();
 
-        $candidat = $utilisateur->candidat;
-
-        // Vérifier que le candidat existe
-        if (!$candidat) {
-            return redirect()
-                ->route('etudiant.profil')
-                ->with('error', 'Profil candidat introuvable.');
+        if (!$user instanceof Utilisateur) {
+            return redirect()->route('login');
         }
 
-        // Validation des données
-        $validated = $request->validate([
-            'cin' => 'required|string|max:20',
-            'telephone' => 'nullable|string|max:20',
-            'email' => 'required|email|max:100',
-            'etablissement' => 'nullable|string|max:150',
-            'formation' => 'nullable|string|max:150',
-            'niveauEtude' => 'nullable|string|max:100',
-        ], [
-            'cin.required' => 'La CIN est obligatoire.',
-            'cin.max' => 'La CIN ne doit pas dépasser 20 caractères.',
-            'email.required' => 'L\'email est obligatoire.',
-            'email.email' => 'Veuillez saisir une adresse email valide.',
-        ]);
+        $candidat = Candidat::find($user->idCandidat);
 
-        // Mise à jour du candidat
+        if (!$candidat) {
+            return redirect()
+                ->route('etudiant.dashboard')
+                ->with('error', 'Profil étudiant introuvable.');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validation
+        |--------------------------------------------------------------------------
+        */
+
+        $validated = $request->validate(
+            [
+                'nom' => [
+                    'required',
+                    'string',
+                    'max:100',
+                ],
+
+                'prenom' => [
+                    'required',
+                    'string',
+                    'max:100',
+                ],
+
+                'cin' => [
+                    'required',
+                    'string',
+                    'max:30',
+                ],
+
+                'cne' => [
+                    'nullable',
+                    'string',
+                    'max:50',
+                ],
+
+                'dateNaissance' => [
+                    'nullable',
+                    'date',
+                ],
+
+                'telephone' => [
+                    'nullable',
+                    'string',
+                    'max:30',
+                ],
+
+                'email' => [
+                    'required',
+                    'email',
+                    'max:150',
+                ],
+
+                'adresse' => [
+                    'nullable',
+                    'string',
+                    'max:500',
+                ],
+
+                'etablissement' => [
+                    'nullable',
+                    'string',
+                    'max:255',
+                ],
+
+                'formation' => [
+                    'nullable',
+                    'string',
+                    'max:255',
+                ],
+
+                'niveauEtude' => [
+                    'nullable',
+                    'string',
+                    'max:100',
+                ],
+
+                'anneeUniversitaire' => [
+                    'nullable',
+                    'string',
+                    'max:50',
+                ],
+            ],
+            [
+                'nom.required' =>
+                    'Le nom est obligatoire.',
+
+                'prenom.required' =>
+                    'Le prénom est obligatoire.',
+
+                'cin.required' =>
+                    'La CIN est obligatoire.',
+
+                'email.required' =>
+                    'L’adresse email est obligatoire.',
+
+                'email.email' =>
+                    'Veuillez saisir une adresse email valide.',
+            ]
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Mise à jour du candidat
+        |--------------------------------------------------------------------------
+        */
+
+        $candidat->nom = $validated['nom'];
+        $candidat->prenom = $validated['prenom'];
         $candidat->cin = $validated['cin'];
+        $candidat->cne = $validated['cne'] ?? null;
+        $candidat->dateNaissance = $validated['dateNaissance'] ?? null;
         $candidat->telephone = $validated['telephone'] ?? null;
         $candidat->email = $validated['email'];
+        $candidat->adresse = $validated['adresse'] ?? null;
         $candidat->etablissement = $validated['etablissement'] ?? null;
         $candidat->formation = $validated['formation'] ?? null;
         $candidat->niveauEtude = $validated['niveauEtude'] ?? null;
+        $candidat->anneeUniversitaire =
+            $validated['anneeUniversitaire'] ?? null;
 
         $candidat->save();
 
-        // Retour au profil avec message de succès
+        /*
+        |--------------------------------------------------------------------------
+        | Synchronisation avec la table utilisateur
+        |--------------------------------------------------------------------------
+        |
+        | Dans ta base, certaines informations peuvent également
+        | être présentes dans la table utilisateur.
+        |
+        */
+
+        $utilisateurModifie = false;
+
+        if (Schema::hasColumn('utilisateur', 'nom')) {
+            $user->nom = $validated['nom'];
+            $utilisateurModifie = true;
+        }
+
+        if (Schema::hasColumn('utilisateur', 'prenom')) {
+            $user->prenom = $validated['prenom'];
+            $utilisateurModifie = true;
+        }
+
+        if (Schema::hasColumn('utilisateur', 'email')) {
+            $user->email = $validated['email'];
+            $utilisateurModifie = true;
+        }
+
+        if ($utilisateurModifie) {
+            $user->save();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Retour
+        |--------------------------------------------------------------------------
+        */
+
         return redirect()
             ->route('etudiant.profil')
-            ->with('success', 'Votre profil a été modifié avec succès.');
+            ->with(
+                'success',
+                'Votre profil a été mis à jour avec succès.'
+            );
     }
 }

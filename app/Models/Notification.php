@@ -3,30 +3,34 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Historique extends Model
+class Notification extends Model
 {
-    protected $table = 'historique';
+    protected $table = 'notification';
 
-    protected $primaryKey = 'idHistorique';
+    protected $primaryKey = 'idNotification';
 
     public $timestamps = false;
 
     protected $fillable = [
         'idUtilisateur',
         'idDemande',
-        'action',
-        'dateAction',
-        'ancienneValeur',
-        'nouvelleValeur',
+        'titre',
+        'message',
+        'type',
+        'lu',
+        'dateNotification',
     ];
 
     protected $casts = [
-        'dateAction' => 'datetime',
+        'lu' => 'boolean',
+        'dateNotification' => 'datetime',
     ];
 
-    public function utilisateur(): BelongsTo
+    /**
+     * Utilisateur destinataire
+     */
+    public function utilisateur()
     {
         return $this->belongsTo(
             Utilisateur::class,
@@ -35,7 +39,10 @@ class Historique extends Model
         );
     }
 
-    public function demande(): BelongsTo
+    /**
+     * Demande concernée
+     */
+    public function demande()
     {
         return $this->belongsTo(
             DemandeStage::class,
