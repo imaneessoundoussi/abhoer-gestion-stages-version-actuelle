@@ -1,88 +1,313 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\AdminDashboardController; 
+
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminUtilisateurController;
+use App\Http\Controllers\AdminServiceController;
+use App\Http\Controllers\AdminDepartementController;
+use App\Http\Controllers\AdminDemandeController;
+use App\Http\Controllers\AdminStageController;
+
 use App\Http\Controllers\Responsable\ResponsableDashboardController;
 use App\Http\Controllers\Responsable\ResponsableDemandeController;
 use App\Http\Controllers\Responsable\ResponsableHistoriqueController;
 use App\Http\Controllers\Responsable\ResponsableStageController;
 
-Route::get('/', function () {
-    return redirect('/login');
-});
-
-Route::get('/login', [LoginController::class, 'showLogin'])
-    ->name('login');
-
-Route::post('/login', [LoginController::class, 'login'])
-    ->name('login.submit');
-
-Route::post('/logout', [LoginController::class, 'logout'])
-    ->name('logout');
-
-Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
-    ->name('admin.dashboard');
-
-Route::get('/admin/utilisateurs', [AdminUtilisateurController::class, 'index'])
-    ->name('admin.utilisateurs.index');
-
-Route::get('/admin/utilisateurs/create', [AdminUtilisateurController::class, 'create'])
-    ->name('admin.utilisateurs.create');
-
-Route::post('/admin/utilisateurs', [AdminUtilisateurController::class, 'store'])
-    ->name('admin.utilisateurs.store');
-
-Route::put('/admin/utilisateurs/{id}/toggle', [AdminUtilisateurController::class, 'toggle'])
-    ->name('admin.utilisateurs.toggle');
 
 /*
 |--------------------------------------------------------------------------
-| Espace Responsable (fusionné avec l'espace Agent)
+| ACCUEIL
 |--------------------------------------------------------------------------
 */
+
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| AUTHENTIFICATION
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/login', [
+    LoginController::class,
+    'showLogin'
+])->name('login');
+
+Route::post('/login', [
+    LoginController::class,
+    'login'
+])->name('login.submit');
+
+Route::post('/logout', [
+    LoginController::class,
+    'logout'
+])->name('logout');
+
+
+/*
+|--------------------------------------------------------------------------
+| ESPACE ADMINISTRATEUR
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth', 'role:ADMINISTRATEUR'])
+    ->group(function () {
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tableau de bord
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/dashboard', [
+            AdminDashboardController::class,
+            'index'
+        ])->name('dashboard');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Utilisateurs
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/utilisateurs', [
+            AdminUtilisateurController::class,
+            'index'
+        ])->name('utilisateurs.index');
+
+        Route::get('/utilisateurs/create', [
+            AdminUtilisateurController::class,
+            'create'
+        ])->name('utilisateurs.create');
+
+        Route::post('/utilisateurs', [
+            AdminUtilisateurController::class,
+            'store'
+        ])->name('utilisateurs.store');
+
+        Route::put('/utilisateurs/{id}/toggle', [
+            AdminUtilisateurController::class,
+            'toggle'
+        ])->name('utilisateurs.toggle');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Départements
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/departements', [
+            AdminDepartementController::class,
+            'index'
+        ])->name('departements.index');
+
+        Route::get('/departements/create', [
+            AdminDepartementController::class,
+            'create'
+        ])->name('departements.create');
+
+        Route::post('/departements', [
+            AdminDepartementController::class,
+            'store'
+        ])->name('departements.store');
+
+        Route::get('/departements/{id}/edit', [
+            AdminDepartementController::class,
+            'edit'
+        ])->name('departements.edit');
+
+        Route::put('/departements/{id}', [
+            AdminDepartementController::class,
+            'update'
+        ])->name('departements.update');
+
+        Route::delete('/departements/{id}', [
+            AdminDepartementController::class,
+            'destroy'
+        ])->name('departements.destroy');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Services
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/services', [
+            AdminServiceController::class,
+            'index'
+        ])->name('services.index');
+
+        Route::get('/services/create', [
+            AdminServiceController::class,
+            'create'
+        ])->name('services.create');
+
+        Route::post('/services', [
+            AdminServiceController::class,
+            'store'
+        ])->name('services.store');
+
+        Route::get('/services/{id}/edit', [
+            AdminServiceController::class,
+            'edit'
+        ])->name('services.edit');
+
+        Route::put('/services/{id}', [
+            AdminServiceController::class,
+            'update'
+        ])->name('services.update');
+
+        Route::delete('/services/{id}', [
+            AdminServiceController::class,
+            'destroy'
+        ])->name('services.destroy');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Demandes de stage
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/demandes', [
+            AdminDemandeController::class,
+            'index'
+        ])->name('demandes.index');
+
+        Route::get('/demandes/{id}', [
+            AdminDemandeController::class,
+            'show'
+        ])->name('demandes.show');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Stages
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/stages', [
+            AdminStageController::class,
+            'index'
+        ])->name('stages.index');
+
+        Route::get('/stages/{idDemande}', [
+            AdminStageController::class,
+            'show'
+        ])->name('stages.show');
+
+    });
+
+
+/*
+|--------------------------------------------------------------------------
+| ESPACE RESPONSABLE / AGENT
+|--------------------------------------------------------------------------
+*/
+
 Route::prefix('responsable')
     ->name('responsable.')
     ->middleware(['auth', 'role:RESPONSABLE,AGENT'])
     ->group(function () {
 
-        Route::get('/dashboard', [ResponsableDashboardController::class, 'index'])
-            ->name('dashboard');
 
-        // Liste des demandes (recherche, filtres)
-        Route::get('/demandes', [ResponsableDemandeController::class, 'index'])
-            ->name('demandes.index');
+        /*
+        |--------------------------------------------------------------------------
+        | Tableau de bord
+        |--------------------------------------------------------------------------
+        */
 
-        // Enregistrement d'une demande déposée physiquement au bureau (tâche Agent)
-        Route::get('/demandes/create', [ResponsableDemandeController::class, 'create'])
-            ->name('demandes.create');
-        Route::post('/demandes', [ResponsableDemandeController::class, 'store'])
-            ->name('demandes.store');
+        Route::get('/dashboard', [
+            ResponsableDashboardController::class,
+            'index'
+        ])->name('dashboard');
 
-        // Détail d'une demande
-        Route::get('/demandes/{id}', [ResponsableDemandeController::class, 'show'])
-            ->name('demandes.show');
 
-        // Actions de traitement
-        Route::post('/demandes/{id}/accepter', [ResponsableDemandeController::class, 'accepter'])
-            ->name('demandes.accepter');
-        Route::post('/demandes/{id}/refuser', [ResponsableDemandeController::class, 'refuser'])
-            ->name('demandes.refuser');
-        Route::post('/demandes/{id}/demander-infos', [ResponsableDemandeController::class, 'demanderInfos'])
-            ->name('demandes.demander-infos');
-        Route::post('/demandes/{id}/affecter', [ResponsableDemandeController::class, 'affecter'])
-            ->name('demandes.affecter');
+        /*
+        |--------------------------------------------------------------------------
+        | Demandes
+        |--------------------------------------------------------------------------
+        */
 
-        // Ajout de documents à une demande existante (tâche Agent)
-        Route::post('/demandes/{id}/documents', [ResponsableDemandeController::class, 'storeDocument'])
-            ->name('demandes.documents.store');
+        Route::get('/demandes', [
+            ResponsableDemandeController::class,
+            'index'
+        ])->name('demandes.index');
 
-        // Suivi des stages (à venir, en cours, terminés)
-        Route::get('/stages', [ResponsableStageController::class, 'index'])
-            ->name('stages.index');
+        Route::get('/demandes/create', [
+            ResponsableDemandeController::class,
+            'create'
+        ])->name('demandes.create');
 
-        // Historique complet des actions
-        Route::get('/historique', [ResponsableHistoriqueController::class, 'index'])
-            ->name('historique.index');
+        Route::post('/demandes', [
+            ResponsableDemandeController::class,
+            'store'
+        ])->name('demandes.store');
+
+        Route::get('/demandes/{id}', [
+            ResponsableDemandeController::class,
+            'show'
+        ])->name('demandes.show');
+
+        Route::post('/demandes/{id}/accepter', [
+            ResponsableDemandeController::class,
+            'accepter'
+        ])->name('demandes.accepter');
+
+        Route::post('/demandes/{id}/refuser', [
+            ResponsableDemandeController::class,
+            'refuser'
+        ])->name('demandes.refuser');
+
+        Route::post('/demandes/{id}/demander-infos', [
+            ResponsableDemandeController::class,
+            'demanderInfos'
+        ])->name('demandes.demander-infos');
+
+        Route::post('/demandes/{id}/affecter', [
+            ResponsableDemandeController::class,
+            'affecter'
+        ])->name('demandes.affecter');
+
+        Route::post('/demandes/{id}/documents', [
+            ResponsableDemandeController::class,
+            'storeDocument'
+        ])->name('demandes.documents.store');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Stages
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/stages', [
+            ResponsableStageController::class,
+            'index'
+        ])->name('stages.index');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Historique
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/historique', [
+            ResponsableHistoriqueController::class,
+            'index'
+        ])->name('historique.index');
+
     });

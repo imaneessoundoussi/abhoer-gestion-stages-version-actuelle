@@ -1,289 +1,931 @@
-<!DOCTYPE html>
-<html lang="fr">
+@extends('layouts.admin')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@section('title', 'Tableau de bord administrateur')
 
-    <title>Dashboard Administrateur - ABHOER</title>
+@section('page-title', 'Tableau de bord administrateur')
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+@section('page-description')
+    Bienvenue dans votre espace d'administration de l'ABHOER.
+@endsection
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f7fb;
-            color: #333;
-        }
 
-        .navbar {
-            background: linear-gradient(135deg, #1a7a86, #2fa9b0);
-            color: white;
-            padding: 18px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+@section('content')
 
-        .navbar h1 {
-            font-size: 22px;
-        }
+<div class="container-fluid px-0">
 
-        .logout button {
-            background: white;
-            color: #1a7a86;
-            border: none;
-            padding: 9px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
 
-        .container {
-            padding: 30px;
-        }
+    {{-- =====================================================
+         STATISTIQUES PRINCIPALES
+    ====================================================== --}}
 
-        .welcome {
-            margin-bottom: 25px;
-        }
+    <div class="row g-4 mb-4">
 
-        .welcome h2 {
-            margin-bottom: 8px;
-        }
 
-        .welcome p {
-            color: #666;
-        }
+        {{-- TOTAL DEMANDES --}}
 
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+        <div class="col-xl-3 col-md-6">
 
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-        }
+            <div class="admin-stat-card">
 
-        .card h3 {
-            font-size: 15px;
-            color: #666;
-            margin-bottom: 12px;
-        }
+                <div class="admin-stat-content">
 
-        .card .number {
-            font-size: 32px;
-            font-weight: bold;
-            color: #1a7a86;
-        }
+                    <div>
 
-        .card.pending .number {
-            color: #d97706;
-        }
+                        <div class="admin-stat-label">
+                            Total demandes
+                        </div>
 
-        .card.accepted .number {
-            color: #16a34a;
-        }
+                        <div class="admin-stat-number">
+                            {{ $totalDemandes }}
+                        </div>
 
-        .card.refused .number {
-            color: #dc2626;
-        }
+                        <div class="admin-stat-description">
+                            Demandes enregistrées
+                        </div>
 
-        .info-section {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
+                    </div>
 
-        .info-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-        }
 
-        .info-card h3 {
-            margin-bottom: 12px;
-        }
+                    <div class="admin-stat-icon icon-primary">
 
-        @media (max-width: 900px) {
-            .cards {
-                grid-template-columns: repeat(2, 1fr);
-            }
+                        <i class="bi bi-file-earmark-text"></i>
 
-            .info-section {
-                grid-template-columns: 1fr;
-            }
-        }
+                    </div>
 
-        @media (max-width: 600px) {
-            .cards {
-                grid-template-columns: 1fr;
-            }
+                </div>
 
-            .container {
-                padding: 15px;
-            }
-        }
-            /* --- Identité visuelle ABHOER (logo + vagues) --- */
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+            </div>
 
-        .navbar-logo {
-            height: 42px;
-            width: auto;
-            background: white;
-            border-radius: 8px;
-            padding: 3px 6px;
-        }
+        </div>
 
-        .navbar-brand h1 {
-            font-size: 19px;
-            line-height: 1.1;
-        }
 
-        .navbar-subtitle {
-            display: block;
-            font-size: 11px;
-            opacity: 0.85;
-            letter-spacing: 0.3px;
-            margin-top: 2px;
-        }
+        {{-- EN ATTENTE --}}
 
-        .wave-divider {
-            line-height: 0;
-            margin-top: -1px;
-        }
+        <div class="col-xl-3 col-md-6">
 
-        .wave-divider svg {
-            width: 100%;
-            height: 26px;
-            display: block;
-        }
+            <div class="admin-stat-card">
 
-    </style>
-</head>
+                <div class="admin-stat-content">
 
-<body>
+                    <div>
 
-    <div class="navbar">
+                        <div class="admin-stat-label">
+                            En attente
+                        </div>
 
-        <div class="navbar-brand">
-            <img src="{{ asset('images/logo-abhoer.png') }}" alt="Logo ABHOER" class="navbar-logo">
+                        <div class="admin-stat-number text-warning">
+                            {{ $demandesEnAttente }}
+                        </div>
+
+                        <div class="admin-stat-description">
+                            À traiter
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-stat-icon icon-warning">
+
+                        <i class="bi bi-hourglass-split"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- ACCEPTEES --}}
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="admin-stat-card">
+
+                <div class="admin-stat-content">
+
+                    <div>
+
+                        <div class="admin-stat-label">
+                            Acceptées
+                        </div>
+
+                        <div class="admin-stat-number text-success">
+                            {{ $demandesAcceptees }}
+                        </div>
+
+                        <div class="admin-stat-description">
+                            Demandes acceptées
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-stat-icon icon-success">
+
+                        <i class="bi bi-check-circle"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- REFUSEES --}}
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="admin-stat-card">
+
+                <div class="admin-stat-content">
+
+                    <div>
+
+                        <div class="admin-stat-label">
+                            Refusées
+                        </div>
+
+                        <div class="admin-stat-number text-danger">
+                            {{ $demandesRefusees }}
+                        </div>
+
+                        <div class="admin-stat-description">
+                            Demandes refusées
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-stat-icon icon-danger">
+
+                        <i class="bi bi-x-circle"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- =====================================================
+         INFORMATIONS SYSTEME
+    ====================================================== --}}
+
+    <div class="row g-4">
+
+
+        {{-- UTILISATEURS --}}
+
+        <div class="col-xl-4 col-md-6">
+
+            <div class="admin-info-card">
+
+                <div class="admin-info-header">
+
+
+                    <div class="admin-info-icon">
+
+                        <i class="bi bi-people"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h5 class="admin-info-title">
+                            Utilisateurs
+                        </h5>
+
+                        <p class="admin-info-text">
+                            Comptes enregistrés sur la plateforme
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-info-value">
+
+                    {{ $totalUtilisateurs }}
+
+                </div>
+
+
+                <div class="admin-info-footer">
+
+                    <span>
+                        Utilisateur(s)
+                    </span>
+
+
+                    <a
+                        href="{{ route('admin.utilisateurs.index') }}"
+                        class="admin-link"
+                    >
+
+                        Gérer
+
+                        <i class="bi bi-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- CANDIDATS --}}
+
+        <div class="col-xl-4 col-md-6">
+
+            <div class="admin-info-card">
+
+                <div class="admin-info-header">
+
+
+                    <div class="admin-info-icon">
+
+                        <i class="bi bi-person-badge"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h5 class="admin-info-title">
+                            Candidats
+                        </h5>
+
+                        <p class="admin-info-text">
+                            Étudiants inscrits dans la plateforme
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-info-value">
+
+                    {{ $totalCandidats }}
+
+                </div>
+
+
+                <div class="admin-info-footer">
+
+                    <span>
+                        Candidat(s)
+                    </span>
+
+
+                    <span class="text-success">
+
+                        <i class="bi bi-check-circle me-1"></i>
+
+                        Actifs
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- SERVICES --}}
+
+        <div class="col-xl-4 col-md-6">
+
+            <div class="admin-info-card">
+
+                <div class="admin-info-header">
+
+
+                    <div class="admin-info-icon">
+
+                        <i class="bi bi-diagram-3"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h5 class="admin-info-title">
+                            Services
+                        </h5>
+
+                        <p class="admin-info-text">
+                            Services disponibles pour les stages
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-info-value">
+
+                    {{ $totalServices }}
+
+                </div>
+
+
+                <div class="admin-info-footer">
+
+                    <span>
+                        Service(s)
+                    </span>
+
+
+                    <span class="text-primary">
+
+                        <i class="bi bi-building me-1"></i>
+
+                        ABHOER
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- =====================================================
+         ACTIONS RAPIDES
+    ====================================================== --}}
+
+    <div class="admin-section-card mt-4">
+
+
+        <div class="admin-section-header">
+
             <div>
-                <h1>ABHOER</h1>
-                <span class="navbar-subtitle">Gestion des stages</span>
+
+                <h5 class="admin-section-title">
+                    Actions rapides
+                </h5>
+
+                <p class="admin-section-description">
+                    Accédez rapidement aux principales fonctions
+                    d'administration.
+                </p>
+
             </div>
+
         </div>
 
-        <div class="logout">
 
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
+        <div class="row g-3">
 
-                <button type="submit">
-                    Se déconnecter
-                </button>
-            </form>
+
+            {{-- GERER UTILISATEURS --}}
+
+            <div class="col-xl-4 col-md-6">
+
+                <a
+                    href="{{ route('admin.utilisateurs.index') }}"
+                    class="admin-action"
+                >
+
+                    <div class="admin-action-icon">
+
+                        <i class="bi bi-people"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="admin-action-title">
+                            Gérer les utilisateurs
+                        </div>
+
+                        <div class="admin-action-text">
+                            Consulter et gérer les comptes
+                        </div>
+
+                    </div>
+
+
+                    <i class="bi bi-chevron-right ms-auto"></i>
+
+                </a>
+
+            </div>
+
+
+            {{-- AJOUTER UTILISATEUR --}}
+
+            <div class="col-xl-4 col-md-6">
+
+                <a
+                    href="{{ route('admin.utilisateurs.create') }}"
+                    class="admin-action"
+                >
+
+                    <div class="admin-action-icon">
+
+                        <i class="bi bi-person-plus"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="admin-action-title">
+                            Ajouter un utilisateur
+                        </div>
+
+                        <div class="admin-action-text">
+                            Créer un nouveau compte
+                        </div>
+
+                    </div>
+
+
+                    <i class="bi bi-chevron-right ms-auto"></i>
+
+                </a>
+
+            </div>
+
+
+            {{-- VOIR LES DEMANDES --}}
+
+            <div class="col-xl-4 col-md-6">
+
+                <a
+                    href="{{ route('admin.demandes.index') }}"
+                    class="admin-action"
+                >
+
+                    <div class="admin-action-icon">
+
+                        <i class="bi bi-file-earmark-text"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="admin-action-title">
+                            Voir les demandes
+                        </div>
+
+                        <div class="admin-action-text">
+                            Consulter les demandes de stage
+                        </div>
+
+                    </div>
+
+
+                    <i class="bi bi-chevron-right ms-auto"></i>
+
+                </a>
+
+            </div>
 
         </div>
 
     </div>
 
-    <div class="wave-divider">
-        <svg viewBox="0 0 1440 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-            <path fill="#9bd9d6" d="M0,20 C240,40 480,0 720,15 C960,30 1200,5 1440,20 L1440,40 L0,40 Z"></path>
-        </svg>
-    </div>
+</div>
 
-    <div class="container">
 
-        <div class="welcome">
+<style>
 
-            <h2>Tableau de bord administrateur</h2>
 
-            <p>
-                Bienvenue dans l'espace d'administration de l'ABHOER.
-            </p>
+    /* =====================================================
+       STATISTIQUES
+    ====================================================== */
 
-        </div>
+    .admin-stat-card {
 
-        <div class="cards">
+        background: #ffffff;
 
-            <div class="card">
-                <h3>Total demandes</h3>
-                <div class="number">
-                    {{ $totalDemandes }}
-                </div>
-            </div>
+        border: 1px solid #e8edf3;
 
-            <div class="card pending">
-                <h3>Demandes en attente</h3>
-                <div class="number">
-                    {{ $demandesEnAttente }}
-                </div>
-            </div>
+        border-radius: 16px;
 
-            <div class="card accepted">
-                <h3>Demandes acceptées</h3>
-                <div class="number">
-                    {{ $demandesAcceptees }}
-                </div>
-            </div>
+        min-height: 155px;
 
-            <div class="card refused">
-                <h3>Demandes refusées</h3>
-                <div class="number">
-                    {{ $demandesRefusees }}
-                </div>
-            </div>
+        padding: 24px;
 
-        </div>
+        box-shadow:
+            0 5px 20px rgba(23, 32, 51, .045);
 
-        <div class="info-section">
+        transition:
+            transform .2s ease,
+            box-shadow .2s ease;
+    }
 
-            <div class="info-card">
-                <h3>Utilisateurs</h3>
 
-                <p>
-                    Total :
-                    <strong>{{ $totalUtilisateurs }}</strong>
-                </p>
-            </div>
+    .admin-stat-card:hover {
 
-            <div class="info-card">
-                <h3>Candidats</h3>
+        transform: translateY(-3px);
 
-                <p>
-                    Total :
-                    <strong>{{ $totalCandidats }}</strong>
-                </p>
-            </div>
+        box-shadow:
+            0 12px 30px rgba(23, 32, 51, .08);
+    }
 
-            <div class="info-card">
-                <h3>Services</h3>
 
-                <p>
-                    Total :
-                    <strong>{{ $totalServices }}</strong>
-                </p>
-            </div>
+    .admin-stat-content {
 
-        </div>
+        display: flex;
 
-    </div>
+        justify-content: space-between;
 
-</body>
+        align-items: flex-start;
 
-</html>
+        height: 100%;
+    }
+
+
+    .admin-stat-label {
+
+        color: #697386;
+
+        font-size: 13px;
+
+        font-weight: 600;
+
+        margin-bottom: 8px;
+    }
+
+
+    .admin-stat-number {
+
+        color: #176f78;
+
+        font-size: 34px;
+
+        line-height: 1;
+
+        font-weight: 800;
+    }
+
+
+    .admin-stat-description {
+
+        color: #9aa3b2;
+
+        font-size: 12px;
+
+        margin-top: 9px;
+    }
+
+
+    .admin-stat-icon {
+
+        width: 52px;
+        height: 52px;
+
+        border-radius: 14px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 22px;
+    }
+
+
+    .icon-primary {
+
+        color: #176f78;
+
+        background: #e7f6f7;
+    }
+
+
+    .icon-warning {
+
+        color: #d97706;
+
+        background: #fff5df;
+    }
+
+
+    .icon-success {
+
+        color: #16a34a;
+
+        background: #eaf8ef;
+    }
+
+
+    .icon-danger {
+
+        color: #dc2626;
+
+        background: #fff0f1;
+    }
+
+
+    /* =====================================================
+       INFO CARDS
+    ====================================================== */
+
+    .admin-info-card {
+
+        background: #ffffff;
+
+        border: 1px solid #e8edf3;
+
+        border-radius: 16px;
+
+        padding: 24px;
+
+        box-shadow:
+            0 5px 20px rgba(23, 32, 51, .045);
+
+        transition:
+            transform .2s ease,
+            box-shadow .2s ease;
+    }
+
+
+    .admin-info-card:hover {
+
+        transform: translateY(-2px);
+
+        box-shadow:
+            0 10px 26px rgba(23, 32, 51, .07);
+    }
+
+
+    .admin-info-header {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 14px;
+    }
+
+
+    .admin-info-icon {
+
+        width: 46px;
+        height: 46px;
+
+        border-radius: 12px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        background: #e7f6f7;
+
+        color: #176f78;
+
+        font-size: 20px;
+    }
+
+
+    .admin-info-title {
+
+        margin: 0;
+
+        font-size: 16px;
+
+        font-weight: 750;
+
+        color: #172033;
+    }
+
+
+    .admin-info-text {
+
+        margin: 3px 0 0;
+
+        font-size: 12px;
+
+        color: #8993a4;
+    }
+
+
+    .admin-info-value {
+
+        font-size: 35px;
+
+        font-weight: 800;
+
+        color: #176f78;
+
+        margin-top: 25px;
+    }
+
+
+    .admin-info-footer {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-top: 15px;
+
+        padding-top: 14px;
+
+        border-top: 1px solid #eef1f5;
+
+        font-size: 12px;
+
+        color: #8993a4;
+    }
+
+
+    .admin-link {
+
+        text-decoration: none;
+
+        color: #176f78;
+
+        font-weight: 700;
+    }
+
+
+    .admin-link:hover {
+
+        color: #0e535a;
+    }
+
+
+    /* =====================================================
+       SECTION
+    ====================================================== */
+
+    .admin-section-card {
+
+        background: #ffffff;
+
+        border: 1px solid #e8edf3;
+
+        border-radius: 16px;
+
+        padding: 24px;
+
+        box-shadow:
+            0 5px 20px rgba(23, 32, 51, .045);
+    }
+
+
+    .admin-section-header {
+
+        margin-bottom: 20px;
+    }
+
+
+    .admin-section-title {
+
+        margin: 0;
+
+        font-size: 17px;
+
+        font-weight: 750;
+    }
+
+
+    .admin-section-description {
+
+        color: #8993a4;
+
+        font-size: 13px;
+
+        margin: 5px 0 0;
+    }
+
+
+    /* =====================================================
+       ACTIONS
+    ====================================================== */
+
+    .admin-action {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 14px;
+
+        width: 100%;
+
+        padding: 16px;
+
+        background: #f8fafc;
+
+        border: 1px solid #edf1f5;
+
+        border-radius: 12px;
+
+        text-decoration: none;
+
+        color: #172033;
+
+        transition:
+            background .2s ease,
+            border-color .2s ease,
+            transform .2s ease;
+    }
+
+
+    .admin-action:hover {
+
+        background: #f0f8f9;
+
+        border-color: #c9e7e8;
+
+        color: #176f78;
+
+        transform: translateX(2px);
+    }
+
+
+    .admin-action-icon {
+
+        width: 42px;
+        height: 42px;
+
+        border-radius: 11px;
+
+        background: #e7f6f7;
+
+        color: #176f78;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 18px;
+
+        flex-shrink: 0;
+    }
+
+
+    .admin-action-title {
+
+        font-size: 13px;
+
+        font-weight: 750;
+    }
+
+
+    .admin-action-text {
+
+        font-size: 11px;
+
+        color: #8993a4;
+
+        margin-top: 2px;
+    }
+
+
+    .admin-action > .bi-chevron-right {
+
+        color: #a0a9b7;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ====================================================== */
+
+    @media (max-width: 768px) {
+
+        .admin-stat-card,
+        .admin-info-card,
+        .admin-section-card {
+
+            padding: 20px;
+        }
+
+    }
+
+</style>
+
+@endsection

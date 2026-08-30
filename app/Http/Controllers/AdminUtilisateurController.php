@@ -32,11 +32,35 @@ class AdminUtilisateurController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nom' => ['required', 'string', 'max:100'],
-            'prenom' => ['required', 'string', 'max:100'],
-            'login' => ['required', 'string', 'max:100', 'unique:utilisateur,login'],
-            'motDePasse' => ['required', 'string', 'min:6'],
-            'role' => ['required', 'in:ADMINISTRATEUR,AGENT,RESPONSABLE'],
+            'nom' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'prenom' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'login' => [
+                'required',
+                'string',
+                'max:100',
+                'unique:utilisateur,login',
+            ],
+
+            'motDePasse' => [
+                'required',
+                'string',
+                'min:6',
+            ],
+
+            'role' => [
+                'required',
+                'in:ADMINISTRATEUR,AGENT,RESPONSABLE',
+            ],
         ]);
 
         Utilisateur::create([
@@ -56,15 +80,16 @@ class AdminUtilisateurController extends Controller
     /**
      * Activer ou désactiver un utilisateur.
      */
-    public function toggle($id)
+    public function toggle(int $id)
     {
         $utilisateur = Utilisateur::findOrFail($id);
 
         $utilisateur->actif = !$utilisateur->actif;
+
         $utilisateur->save();
 
         return redirect()
             ->route('admin.utilisateurs.index')
-           ->with('success', "Statut de l'utilisateur modifié.");
+            ->with('success', "Statut de l'utilisateur modifié.");
     }
 }

@@ -9,6 +9,9 @@ use App\Models\Candidat;
 
 class AdminDashboardController extends Controller
 {
+    /**
+     * Afficher le tableau de bord administrateur.
+     */
     public function index()
     {
         $totalDemandes = DemandeStage::count();
@@ -30,9 +33,9 @@ class AdminDashboardController extends Controller
 
         $totalUtilisateurs = Utilisateur::count();
 
-        $totalServices = Service::count();
-
         $totalCandidats = Candidat::count();
+
+        $totalServices = Service::count();
 
         return view('admin.dashboard', compact(
             'totalDemandes',
@@ -40,8 +43,8 @@ class AdminDashboardController extends Controller
             'demandesAcceptees',
             'demandesRefusees',
             'totalUtilisateurs',
-            'totalServices',
-            'totalCandidats'
+            'totalCandidats',
+            'totalServices'
         ));
     }
 }
