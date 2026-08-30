@@ -3,6 +3,13 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\InscriptionController;
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN
+|--------------------------------------------------------------------------
+*/
 
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminUtilisateurController;
@@ -11,10 +18,26 @@ use App\Http\Controllers\AdminDepartementController;
 use App\Http\Controllers\AdminDemandeController;
 use App\Http\Controllers\AdminStageController;
 
+/*
+|--------------------------------------------------------------------------
+| RESPONSABLE / AGENT
+|--------------------------------------------------------------------------
+*/
+
 use App\Http\Controllers\Responsable\ResponsableDashboardController;
 use App\Http\Controllers\Responsable\ResponsableDemandeController;
 use App\Http\Controllers\Responsable\ResponsableHistoriqueController;
 use App\Http\Controllers\Responsable\ResponsableStageController;
+
+/*
+|--------------------------------------------------------------------------
+| ETUDIANT
+|--------------------------------------------------------------------------
+*/
+
+use App\Http\Controllers\EtudiantDashboardController;
+use App\Http\Controllers\EtudiantDemandeStageController;
+use App\Http\Controllers\EtudiantProfilController;
 
 
 /*
@@ -36,7 +59,7 @@ Route::get('/', function () {
 
 Route::get('/login', [
     LoginController::class,
-    'showLogin'
+    'showLoginForm'
 ])->name('login');
 
 Route::post('/login', [
@@ -52,6 +75,235 @@ Route::post('/logout', [
 
 /*
 |--------------------------------------------------------------------------
+| INSCRIPTION
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/inscription', [
+    InscriptionController::class,
+    'showRegistrationForm'
+])->name('inscription');
+
+Route::post('/inscription', [
+    InscriptionController::class,
+    'register'
+])->name('inscription.store');
+
+
+/*
+|--------------------------------------------------------------------------
+| ESPACE ETUDIANT
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('etudiant')
+    ->name('etudiant.')
+    ->middleware(['auth', 'role:ETUDIANT'])
+    ->group(function () {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tableau de bord
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/dashboard', [
+            EtudiantDashboardController::class,
+            'index'
+        ])->name('dashboard');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Demandes de stage
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/demandes', [
+            EtudiantDemandeStageController::class,
+            'index'
+        ])->name('demandes.index');
+
+        Route::get('/demandes/nouvelle', [
+            EtudiantDemandeStageController::class,
+            'create'
+        ])->name('demandes.create');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Etape 1 : informations
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/demandes/informations', [
+            EtudiantDemandeStageController::class,
+            'informations'
+        ])->name('demandes.informations');
+
+        Route::post('/demandes/informations', [
+            EtudiantDemandeStageController::class,
+            'storeInformations'
+        ])->name('demandes.informations.store');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Demande spécifique
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/demandes/{idDemande}', [
+            EtudiantDemandeStageController::class,
+            'show'
+        ])->name('demandes.show');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Documents d'une demande
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/demandes/{idDemande}/documents', [
+            EtudiantDemandeStageController::class,
+            'documents'
+        ])->name('demandes.documents');
+
+        Route::post('/demandes/{idDemande}/documents', [
+            EtudiantDemandeStageController::class,
+            'storeDocuments'
+        ])->name('demandes.documents.store');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Voir un document
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/demandes/{idDemande}/documents/{idDocument}/voir',
+            [
+                EtudiantDemandeStageController::class,
+                'voirDocument'
+            ]
+        )->name('documents.voir');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Télécharger un document
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/demandes/{idDemande}/documents/{idDocument}/telecharger',
+            [
+                EtudiantDemandeStageController::class,
+                'telechargerDocument'
+            ]
+        )->name('documents.telecharger');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Supprimer un document
+        |--------------------------------------------------------------------------
+        */
+
+        Route::delete(
+            '/demandes/{idDemande}/documents/{idDocument}',
+            [
+                EtudiantDemandeStageController::class,
+                'destroyDocument'
+            ]
+        )->name('documents.destroy');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Etape 3 : confirmation
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/demandes/{idDemande}/confirmation',
+            [
+                EtudiantDemandeStageController::class,
+                'confirmation'
+            ]
+        )->name('demandes.confirmation');
+
+        Route::post(
+            '/demandes/{idDemande}/confirmer',
+            [
+                EtudiantDemandeStageController::class,
+                'confirmer'
+            ]
+        )->name('demandes.confirmer');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Supprimer une demande
+        |--------------------------------------------------------------------------
+        */
+
+        Route::delete('/demandes/{idDemande}', [
+            EtudiantDemandeStageController::class,
+            'destroy'
+        ])->name('demandes.destroy');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Mes documents
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/documents', [
+            EtudiantDemandeStageController::class,
+            'documentsIndex'
+        ])->name('documents.index');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Notifications
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/notifications', function () {
+            return view('etudiant.notifications');
+        })->name('notifications');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Profil
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/profil', [
+            EtudiantProfilController::class,
+            'index'
+        ])->name('profil');
+
+        Route::get('/profil/modifier', [
+            EtudiantProfilController::class,
+            'edit'
+        ])->name('profil.edit');
+
+        Route::put('/profil', [
+            EtudiantProfilController::class,
+            'update'
+        ])->name('profil.update');
+    });
+
+
+/*
+|--------------------------------------------------------------------------
 | ESPACE ADMINISTRATEUR
 |--------------------------------------------------------------------------
 */
@@ -60,7 +312,6 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(['auth', 'role:ADMINISTRATEUR'])
     ->group(function () {
-
 
         /*
         |--------------------------------------------------------------------------
@@ -95,10 +346,25 @@ Route::prefix('admin')
             'store'
         ])->name('utilisateurs.store');
 
-        Route::put('/utilisateurs/{id}/toggle', [
+        Route::get('/utilisateurs/{idUtilisateur}/edit', [
+            AdminUtilisateurController::class,
+            'edit'
+        ])->name('utilisateurs.edit');
+
+        Route::put('/utilisateurs/{idUtilisateur}', [
+            AdminUtilisateurController::class,
+            'update'
+        ])->name('utilisateurs.update');
+
+        Route::patch('/utilisateurs/{idUtilisateur}/toggle', [
             AdminUtilisateurController::class,
             'toggle'
         ])->name('utilisateurs.toggle');
+
+        Route::delete('/utilisateurs/{idUtilisateur}', [
+            AdminUtilisateurController::class,
+            'destroy'
+        ])->name('utilisateurs.destroy');
 
 
         /*
@@ -207,7 +473,6 @@ Route::prefix('admin')
             AdminStageController::class,
             'show'
         ])->name('stages.show');
-
     });
 
 
@@ -221,7 +486,6 @@ Route::prefix('responsable')
     ->name('responsable.')
     ->middleware(['auth', 'role:RESPONSABLE,AGENT'])
     ->group(function () {
-
 
         /*
         |--------------------------------------------------------------------------
@@ -309,5 +573,4 @@ Route::prefix('responsable')
             ResponsableHistoriqueController::class,
             'index'
         ])->name('historique.index');
-
     });

@@ -15,14 +15,10 @@ class Document extends Model
 
     protected $fillable = [
         'idDemande',
-        'nomFichier',
         'typeDocument',
+        'nomFichier',
         'cheminFichier',
         'dateAjout',
-    ];
-
-    protected $casts = [
-        'dateAjout' => 'datetime',
     ];
 
     public function demande(): BelongsTo

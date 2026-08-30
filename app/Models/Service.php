@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Service extends Model
 {
@@ -15,20 +14,10 @@ class Service extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'idDepartement',
         'nomService',
-        'capaciteAccueil',
         'description',
+        'idDepartement',
     ];
-
-    public function departement(): BelongsTo
-    {
-        return $this->belongsTo(
-            Departement::class,
-            'idDepartement',
-            'idDepartement'
-        );
-    }
 
     public function demandes(): HasMany
     {
@@ -38,12 +27,4 @@ class Service extends Model
             'idService'
         );
     }
-    public function affectations(): HasMany
-{
-    return $this->hasMany(
-        Affectation::class,
-        'idService',
-        'idService'
-    );
-}
 }

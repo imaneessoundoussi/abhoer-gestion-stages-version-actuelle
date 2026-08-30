@@ -2,18 +2,32 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Utilisateur extends Authenticatable
 {
+    use Notifiable;
+
+    /**
+     * Nom de la table.
+     */
     protected $table = 'utilisateur';
 
+    /**
+     * Clé primaire.
+     */
     protected $primaryKey = 'idUtilisateur';
 
+    /**
+     * La table n'utilise pas created_at / updated_at.
+     */
     public $timestamps = false;
 
+    /**
+     * Champs autorisés.
+     */
     protected $fillable = [
         'nom',
         'prenom',
@@ -21,27 +35,33 @@ class Utilisateur extends Authenticatable
         'motDePasse',
         'role',
         'actif',
+        'idCandidat',
     ];
 
+    /**
+     * Champs cachés.
+     */
     protected $hidden = [
         'motDePasse',
     ];
 
-    protected $casts = [
-        'actif' => 'boolean',
-    ];
-
+    /**
+     * Mot de passe utilisé par Laravel pour l'authentification.
+     */
     public function getAuthPassword()
     {
         return $this->motDePasse;
     }
 
-    public function historiques(): HasMany
+    /**
+     * Candidat associé à l'utilisateur.
+     */
+    public function candidat(): BelongsTo
     {
-        return $this->hasMany(
-            Historique::class,
-            'idUtilisateur',
-            'idUtilisateur'
+        return $this->belongsTo(
+            Candidat::class,
+            'idCandidat',
+            'idCandidat'
         );
     }
 }

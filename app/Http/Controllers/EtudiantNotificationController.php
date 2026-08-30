@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Notification;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+
+class EtudiantNotificationController extends Controller
+{
+    /**
+     * Afficher les notifications de l'étudiant connecté.
+     */
+    public function index(): View
+    {
+        $notifications = Notification::where(
+                'idUtilisateur',
+                Auth::user()->idUtilisateur
+            )
+            ->orderByDesc('dateNotification')
+            ->get();
+
+        $notificationsNonLues = $notifications
+            ->where('lu', false)
+            ->count();
+
+        return view(
+            'etudiant.notifications',
+            compact(
+                'notifications',
+                'notificationsNonLues'
+            )
+        );
+    }
+
+    /**
+     * Marquer une notification comme lue.
+     */
+    public function lire(int $idNotification): RedirectResponse
+    {
+        $notification = Notification::where(
+                'idNotification',
+                $idNotification
+            )
+            ->where(
+                'idUtilisateur',
+                Auth::user()->idUtilisateur
+            )
+            ->firstOrFail();
+
+        $notification->lu = true;
+        $notification->save();
+
+        return redirect()->back();
+    }
+
+    /**
+     * Marquer toutes les notifications comme lues.
+     */
+    public function lireToutes(): RedirectResponse
+    {
+        Notification::where(
+                'idUtilisateur',
+                Auth::user()->idUtilisateur
+            )
+            ->where('lu', false)
+            ->update([
+                'lu' => true
+            ]);
+
+        return redirect()->back()->with(
+            'success',
+            'Toutes les notifications ont été marquées comme lues.'
+        );
+    }
+}

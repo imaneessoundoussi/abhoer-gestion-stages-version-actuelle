@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
     /**
-     * Afficher la page de connexion.
+     * Afficher le formulaire de connexion.
      */
-    public function showLogin()
+    public function showLoginForm()
     {
         return view('auth.login');
     }
@@ -20,37 +22,151 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'login' => ['required', 'string'],
-            'motDePasse' => ['required', 'string'],
+        /*
+        |--------------------------------------------------------------------------
+        | Validation
+        |--------------------------------------------------------------------------
+        */
+
+        $validated = $request->validate([
+            'login' => [
+                'required',
+                'string',
+            ],
+
+            'motDePasse' => [
+                'required',
+                'string',
+            ],
         ], [
-            'login.required' => 'Le login est obligatoire.',
-            'motDePasse.required' => 'Le mot de passe est obligatoire.',
+            'login.required' => 'Veuillez saisir votre login.',
+            'motDePasse.required' => 'Veuillez saisir votre mot de passe.',
         ]);
 
-        if (Auth::attempt([
-            'login' => $credentials['login'],
-            'password' => $credentials['motDePasse'],
-            'actif' => true,
-        ])) {
-            $request->session()->regenerate();
+        /*
+        |--------------------------------------------------------------------------
+        | Recherche de l'utilisateur
+        |--------------------------------------------------------------------------
+        */
 
-            $user = Auth::user();
+        $utilisateur = Utilisateur::where(
+            'login',
+            $validated['login']
+        )->first();
 
-            // NB : l'espace Agent est fusionné dans l'espace Responsable,
-            // un compte AGENT est donc redirigé vers le même espace.
-            return match ($user->role) {
-                'ADMINISTRATEUR' => redirect('/admin/dashboard'),
-                'AGENT', 'RESPONSABLE' => redirect('/responsable/dashboard'),
-                default => redirect('/'),
-            };
+        /*
+        |--------------------------------------------------------------------------
+        | Vérification du compte
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$utilisateur) {
+            return back()
+                ->withInput($request->only('login'))
+                ->withErrors([
+                    'login' => 'Login ou mot de passe incorrect.',
+                ]);
         }
 
-        return back()
+        /*
+        |--------------------------------------------------------------------------
+        | Vérification du mot de passe
+        |--------------------------------------------------------------------------
+        */
+
+        if (!Hash::check(
+            $validated['motDePasse'],
+            $utilisateur->motDePasse
+        )) {
+            return back()
+                ->withInput($request->only('login'))
+                ->withErrors([
+                    'login' => 'Login ou mot de passe incorrect.',
+                ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Vérification du compte actif
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$utilisateur->actif) {
+            return back()
+                ->withInput($request->only('login'))
+                ->withErrors([
+                    'login' => 'Votre compte est désactivé. Veuillez contacter l’administrateur.',
+                ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Connexion
+        |--------------------------------------------------------------------------
+        */
+
+        Auth::login($utilisateur);
+
+        $request->session()->regenerate();
+
+        /*
+        |--------------------------------------------------------------------------
+        | REDIRECTION SELON LE RÔLE
+        |--------------------------------------------------------------------------
+        */
+
+        if ($utilisateur->role === 'ETUDIANT') {
+            return redirect()
+                ->route('etudiant.dashboard')
+                ->with(
+                    'success',
+                    'Bienvenue dans votre espace étudiant.'
+                );
+        }
+
+        if ($utilisateur->role === 'ADMINISTRATEUR') {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with(
+                    'success',
+                    'Bienvenue dans votre espace administrateur.'
+                );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | RESPONSABLE / AGENT
+        |--------------------------------------------------------------------------
+        |
+        | L'espace Agent est fusionné avec l'espace Responsable.
+        |
+        */
+
+        if (
+            $utilisateur->role === 'RESPONSABLE' ||
+            $utilisateur->role === 'AGENT'
+        ) {
+            return redirect()
+                ->route('responsable.dashboard')
+                ->with(
+                    'success',
+                    'Bienvenue dans votre espace responsable.'
+                );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Rôle inconnu
+        |--------------------------------------------------------------------------
+        */
+
+        Auth::logout();
+
+        return redirect()
+            ->route('login')
             ->withErrors([
-                'login' => 'Login ou mot de passe incorrect.',
-            ])
-            ->withInput($request->only('login'));
+                'login' => 'Le rôle de votre compte n’est pas reconnu.',
+            ]);
     }
 
     /**
@@ -63,6 +179,11 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()
+            ->route('login')
+            ->with(
+                'success',
+                'Vous êtes déconnecté avec succès.'
+            );
     }
 }
