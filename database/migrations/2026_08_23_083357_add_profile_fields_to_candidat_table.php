@@ -6,10 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Ajouter les champs supplémentaires du profil candidat.
+     */
     public function up(): void
     {
         Schema::table('candidat', function (Blueprint $table) {
-
             $table->date('dateNaissance')
                 ->nullable()
                 ->after('cin');
@@ -22,7 +24,7 @@ return new class extends Migration
                 ->nullable()
                 ->after('niveauEtude');
 
-            $table->string('diplome', 150)
+            $table->string('diplome', 200)
                 ->nullable()
                 ->after('anneeUniversitaire');
 
@@ -32,10 +34,12 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Annuler les modifications.
+     */
     public function down(): void
     {
         Schema::table('candidat', function (Blueprint $table) {
-
             $table->dropColumn([
                 'dateNaissance',
                 'adresse',

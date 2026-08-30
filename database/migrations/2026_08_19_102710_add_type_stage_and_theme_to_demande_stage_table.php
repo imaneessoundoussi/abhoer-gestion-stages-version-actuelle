@@ -6,18 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Ajouter le type de stage à la demande.
+     */
     public function up(): void
     {
         Schema::table('demande_stage', function (Blueprint $table) {
-            $table->string('typeStage', 100)->nullable()->after('typeDepot');
-            $table->string('theme', 255)->nullable()->after('typeStage');
+            $table->string('typeStage', 100)
+                ->nullable()
+                ->after('typeDepot');
         });
     }
 
+    /**
+     * Annuler les modifications.
+     */
     public function down(): void
     {
         Schema::table('demande_stage', function (Blueprint $table) {
-            $table->dropColumn(['typeStage', 'theme']);
+            $table->dropColumn('typeStage');
         });
     }
 };

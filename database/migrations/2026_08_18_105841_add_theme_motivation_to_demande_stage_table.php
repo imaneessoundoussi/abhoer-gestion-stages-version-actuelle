@@ -7,13 +7,11 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Ajouter les informations supplémentaires
-     * à la demande de stage.
+     * Ajouter le thème et la motivation à la demande de stage.
      */
     public function up(): void
     {
         Schema::table('demande_stage', function (Blueprint $table) {
-
             $table->string('theme', 255)
                 ->nullable()
                 ->after('dateFin');
@@ -30,12 +28,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('demande_stage', function (Blueprint $table) {
-
             $table->dropColumn([
                 'theme',
-                'motivation'
+                'motivation',
             ]);
-
         });
     }
 };
