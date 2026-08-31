@@ -36,9 +36,9 @@ class AdminUtilisateurController extends Controller
             'candidat',
             'service',
         ])
-        ->orderBy('nom')
-        ->orderBy('prenom')
-        ->get();
+            ->orderBy('nom')
+            ->orderBy('prenom')
+            ->get();
 
         return view(
             'admin.utilisateurs.index',
@@ -54,7 +54,9 @@ class AdminUtilisateurController extends Controller
     {
         $this->verifierAdmin();
 
-        return view('admin.utilisateurs.create');
+        return view(
+            'admin.utilisateurs.create'
+        );
     }
 
 
@@ -101,12 +103,17 @@ class AdminUtilisateurController extends Controller
 
         Utilisateur::create([
             'nom' => $validated['nom'],
+
             'prenom' => $validated['prenom'],
+
             'login' => $validated['login'],
+
             'motDePasse' => Hash::make(
                 $validated['motDePasse']
             ),
+
             'role' => $validated['role'],
+
             'actif' => true,
         ]);
 
@@ -188,9 +195,13 @@ class AdminUtilisateurController extends Controller
 
         $utilisateur->update([
             'nom' => $validated['nom'],
+
             'prenom' => $validated['prenom'],
+
             'login' => $validated['login'],
+
             'role' => $validated['role'],
+
             'actif' => $request->boolean('actif'),
         ]);
 
@@ -210,6 +221,7 @@ class AdminUtilisateurController extends Controller
                     'confirmed',
                 ],
             ]);
+
 
             $utilisateur->update([
                 'motDePasse' => Hash::make(
@@ -235,9 +247,11 @@ class AdminUtilisateurController extends Controller
     {
         $this->verifierAdmin();
 
+
         $utilisateur = Utilisateur::findOrFail(
             $idUtilisateur
         );
+
 
         $userConnecte = Auth::user();
 
@@ -260,10 +274,22 @@ class AdminUtilisateurController extends Controller
         }
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | Inverser l'état du compte
+        |--------------------------------------------------------------------------
+        */
+
         $utilisateur->actif = !$utilisateur->actif;
 
         $utilisateur->save();
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Message
+        |--------------------------------------------------------------------------
+        */
 
         $message = $utilisateur->actif
             ? 'Utilisateur activé avec succès.'
@@ -284,9 +310,11 @@ class AdminUtilisateurController extends Controller
     {
         $this->verifierAdmin();
 
+
         $utilisateur = Utilisateur::findOrFail(
             $idUtilisateur
         );
+
 
         $userConnecte = Auth::user();
 

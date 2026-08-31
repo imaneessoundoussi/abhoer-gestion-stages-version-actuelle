@@ -18,43 +18,57 @@ class Candidat extends Model
     protected $primaryKey = 'idCandidat';
 
     /**
-     * La table n'utilise pas created_at / updated_at.
+     * Pas de timestamps.
      */
     public $timestamps = false;
 
     /**
-     * Champs autorisés pour l'affectation de masse.
+     * Champs autorisés.
      */
     protected $fillable = [
         'nom',
         'prenom',
         'cin',
         'cne',
-        'email',
+        'dateNaissance',
         'telephone',
         'adresse',
-        'dateNaissance',
+        'email',
         'etablissement',
         'formation',
         'niveauEtude',
         'anneeUniversitaire',
-        'niveau',
+        'diplome',
+        'anneeObtentionDiplome',
     ];
 
     /**
-     * Conversion des attributs.
+     * Conversion.
      */
     protected $casts = [
         'dateNaissance' => 'date',
+        'anneeObtentionDiplome' => 'integer',
     ];
 
     /**
-     * Un candidat peut avoir plusieurs demandes de stage.
+     * Un candidat peut avoir plusieurs demandes.
      */
     public function demandes(): HasMany
     {
         return $this->hasMany(
             DemandeStage::class,
+            'idCandidat',
+            'idCandidat'
+        );
+    }
+
+    /**
+     * Un candidat peut avoir plusieurs utilisateurs associés.
+     */
+    public function utilisateurs(): HasMany
+    {
+        return $this->hasMany(
+            Utilisateur::class,
             'idCandidat',
             'idCandidat'
         );

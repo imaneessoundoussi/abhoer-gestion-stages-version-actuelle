@@ -14,12 +14,14 @@ class EtudiantNotificationController extends Controller
      */
     public function index(): View
     {
+        $idUtilisateur = Auth::user()->idUtilisateur;
+
         $notifications = Notification::where(
-                'idUtilisateur',
-                Auth::user()->idUtilisateur
-            )
-            ->orderByDesc('dateNotification')
-            ->get();
+            'idUtilisateur',
+            $idUtilisateur
+        )
+        ->orderByDesc('created_at')
+        ->get();
 
         $notificationsNonLues = $notifications
             ->where('lu', false)
@@ -40,14 +42,14 @@ class EtudiantNotificationController extends Controller
     public function lire(int $idNotification): RedirectResponse
     {
         $notification = Notification::where(
-                'idNotification',
-                $idNotification
-            )
-            ->where(
-                'idUtilisateur',
-                Auth::user()->idUtilisateur
-            )
-            ->firstOrFail();
+            'idNotification',
+            $idNotification
+        )
+        ->where(
+            'idUtilisateur',
+            Auth::user()->idUtilisateur
+        )
+        ->firstOrFail();
 
         $notification->lu = true;
         $notification->save();
@@ -61,17 +63,19 @@ class EtudiantNotificationController extends Controller
     public function lireToutes(): RedirectResponse
     {
         Notification::where(
-                'idUtilisateur',
-                Auth::user()->idUtilisateur
-            )
-            ->where('lu', false)
-            ->update([
-                'lu' => true
-            ]);
+            'idUtilisateur',
+            Auth::user()->idUtilisateur
+        )
+        ->where('lu', false)
+        ->update([
+            'lu' => true,
+        ]);
 
-        return redirect()->back()->with(
-            'success',
-            'Toutes les notifications ont été marquées comme lues.'
-        );
+        return redirect()
+            ->back()
+            ->with(
+                'success',
+                'Toutes les notifications ont été marquées comme lues.'
+            );
     }
 }

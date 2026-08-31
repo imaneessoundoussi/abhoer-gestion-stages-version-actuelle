@@ -22,151 +22,167 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Validation
-        |--------------------------------------------------------------------------
-        */
+        /**
+         * Validation.
+         */
+        $validated = $request->validate(
+            [
+                'login' => [
+                    'required',
+                    'string',
+                ],
 
-        $validated = $request->validate([
-            'login' => [
-                'required',
-                'string',
+                'motDePasse' => [
+                    'required',
+                    'string',
+                ],
             ],
+            [
+                'login.required' => 'Veuillez saisir votre login.',
+                'motDePasse.required' => 'Veuillez saisir votre mot de passe.',
+            ]
+        );
 
-            'motDePasse' => [
-                'required',
-                'string',
-            ],
-        ], [
-            'login.required' => 'Veuillez saisir votre login.',
-            'motDePasse.required' => 'Veuillez saisir votre mot de passe.',
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Recherche de l'utilisateur
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Rechercher l'utilisateur par login.
+         */
         $utilisateur = Utilisateur::where(
             'login',
             $validated['login']
         )->first();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Vérification du compte
-        |--------------------------------------------------------------------------
-        */
-
-        if (!$utilisateur) {
+        /**
+         * Vérifier que l'utilisateur existe.
+         */
+        if ($utilisateur === null) {
             return back()
-                ->withInput($request->only('login'))
+                ->withInput(
+                    $request->only('login')
+                )
                 ->withErrors([
                     'login' => 'Login ou mot de passe incorrect.',
                 ]);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Vérification du mot de passe
-        |--------------------------------------------------------------------------
-        */
-
-        if (!Hash::check(
-            $validated['motDePasse'],
-            $utilisateur->motDePasse
-        )) {
+        /**
+         * Vérifier le mot de passe.
+         */
+        if (
+            !Hash::check(
+                $validated['motDePasse'],
+                $utilisateur->motDePasse
+            )
+        ) {
             return back()
-                ->withInput($request->only('login'))
+                ->withInput(
+                    $request->only('login')
+                )
                 ->withErrors([
                     'login' => 'Login ou mot de passe incorrect.',
                 ]);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Vérification du compte actif
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Vérifier si le compte est actif.
+         */
         if (!$utilisateur->actif) {
             return back()
-                ->withInput($request->only('login'))
+                ->withInput(
+                    $request->only('login')
+                )
                 ->withErrors([
                     'login' => 'Votre compte est désactivé. Veuillez contacter l’administrateur.',
                 ]);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Connexion
-        |--------------------------------------------------------------------------
-        */
+        /**
+         * Vérifier que le rôle est valide.
+         *
+         * Les seuls rôles autorisés sont :
+         * - ETUDIANT
+         * - RESPONSABLE
+         * - ADMINISTRATEUR
+         */
+        $rolesAutorises = [
+            'ETUDIANT',
+            'RESPONSABLE',
+            'ADMINISTRATEUR',
+        ];
 
+        if (!in_array($utilisateur->role, $rolesAutorises, true)) {
+            return back()
+                ->withInput(
+                    $request->only('login')
+                )
+                ->withErrors([
+                    'login' => 'Le rôle de votre compte n’est pas reconnu.',
+                ]);
+        }
+
+        /**
+         * Connexion.
+         */
         Auth::login($utilisateur);
 
+        /**
+         * Régénérer la session pour la sécurité.
+         */
         $request->session()->regenerate();
 
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECTION SELON LE RÔLE
-        |--------------------------------------------------------------------------
-        */
+        /**
+         * Redirection selon le rôle.
+         */
+        switch ($utilisateur->role) {
 
-        if ($utilisateur->role === 'ETUDIANT') {
-            return redirect()
-                ->route('etudiant.dashboard')
-                ->with(
-                    'success',
-                    'Bienvenue dans votre espace étudiant.'
-                );
+            /**
+             * Étudiant.
+             */
+            case 'ETUDIANT':
+
+                return redirect()
+                    ->route('etudiant.dashboard')
+                    ->with(
+                        'success',
+                        'Bienvenue dans votre espace étudiant.'
+                    );
+
+            /**
+             * Responsable.
+             */
+            case 'RESPONSABLE':
+
+                return redirect()
+                    ->route('responsable.dashboard')
+                    ->with(
+                        'success',
+                        'Bienvenue dans votre espace responsable.'
+                    );
+
+            /**
+             * Administrateur.
+             */
+            case 'ADMINISTRATEUR':
+
+                return redirect()
+                    ->route('admin.dashboard')
+                    ->with(
+                        'success',
+                        'Bienvenue dans votre espace administrateur.'
+                    );
+
+            /**
+             * Sécurité supplémentaire.
+             */
+            default:
+
+                Auth::logout();
+
+                return redirect()
+                    ->route('login')
+                    ->withErrors([
+                        'login' => 'Le rôle de votre compte n’est pas reconnu.',
+                    ]);
         }
-
-        if ($utilisateur->role === 'ADMINISTRATEUR') {
-            return redirect()
-                ->route('admin.dashboard')
-                ->with(
-                    'success',
-                    'Bienvenue dans votre espace administrateur.'
-                );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | RESPONSABLE / AGENT
-        |--------------------------------------------------------------------------
-        |
-        | L'espace Agent est fusionné avec l'espace Responsable.
-        |
-        */
-
-        if (
-            $utilisateur->role === 'RESPONSABLE' ||
-            $utilisateur->role === 'AGENT'
-        ) {
-            return redirect()
-                ->route('responsable.dashboard')
-                ->with(
-                    'success',
-                    'Bienvenue dans votre espace responsable.'
-                );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Rôle inconnu
-        |--------------------------------------------------------------------------
-        */
-
-        Auth::logout();
-
-        return redirect()
-            ->route('login')
-            ->withErrors([
-                'login' => 'Le rôle de votre compte n’est pas reconnu.',
-            ]);
     }
 
     /**
@@ -177,6 +193,7 @@ class LoginController extends Controller
         Auth::logout();
 
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
         return redirect()

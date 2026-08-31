@@ -18,6 +18,9 @@ class Departement extends Model
         'description',
     ];
 
+    /**
+     * Services appartenant à ce département.
+     */
     public function services(): HasMany
     {
         return $this->hasMany(

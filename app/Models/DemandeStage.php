@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class DemandeStage extends Model
 {
@@ -19,12 +20,12 @@ class DemandeStage extends Model
     protected $primaryKey = 'idDemande';
 
     /**
-     * La table n'utilise pas created_at / updated_at.
+     * Pas de created_at / updated_at.
      */
     public $timestamps = false;
 
     /**
-     * Champs autorisés pour l'affectation de masse.
+     * Champs autorisés.
      */
     protected $fillable = [
         'idCandidat',
@@ -38,7 +39,6 @@ class DemandeStage extends Model
         'statut',
         'typeDepot',
         'typeStage',
-        'theme',
         'observation',
     ];
 
@@ -46,7 +46,7 @@ class DemandeStage extends Model
      * Conversion des dates.
      */
     protected $casts = [
-        'dateDepot' => 'date',
+        'dateDepot' => 'datetime',
         'dateDebut' => 'date',
         'dateFin' => 'date',
     ];
@@ -82,6 +82,30 @@ class DemandeStage extends Model
     {
         return $this->hasMany(
             Document::class,
+            'idDemande',
+            'idDemande'
+        );
+    }
+
+    /**
+     * Une demande possède une affectation.
+     */
+    public function affectation(): HasOne
+    {
+        return $this->hasOne(
+            Affectation::class,
+            'idDemande',
+            'idDemande'
+        );
+    }
+
+    /**
+     * Une demande possède plusieurs historiques.
+     */
+    public function historiques(): HasMany
+    {
+        return $this->hasMany(
+            Historique::class,
             'idDemande',
             'idDemande'
         );

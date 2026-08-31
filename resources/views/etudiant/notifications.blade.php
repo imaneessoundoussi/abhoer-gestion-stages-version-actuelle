@@ -38,18 +38,70 @@
     </div>
 
 
+    {{-- Message de succès --}}
+    @if(session('success'))
+
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+
+            <i class="bi bi-check-circle me-2"></i>
+
+            {{ session('success') }}
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+            ></button>
+
+        </div>
+
+    @endif
+
+
     {{-- Carte principale --}}
     <div class="card border-0 shadow-sm">
 
         <div class="card-header bg-white border-0 p-4">
 
-            <h5 class="fw-bold mb-1">
-                Mes notifications
-            </h5>
+            <div class="d-flex justify-content-between align-items-center">
 
-            <p class="text-secondary small mb-0">
-                Suivez les mises à jour relatives à vos demandes de stage.
-            </p>
+                <div>
+
+                    <h5 class="fw-bold mb-1">
+                        Mes notifications
+                    </h5>
+
+                    <p class="text-secondary small mb-0">
+                        Suivez les mises à jour relatives à vos demandes de stage.
+                    </p>
+
+                </div>
+
+                @if(($notificationsNonLues ?? 0) > 0)
+
+                    <form
+                        method="POST"
+                        action="{{ route('etudiant.notifications.lire-toutes') }}"
+                    >
+
+                        @csrf
+
+                        <button
+                            type="submit"
+                            class="btn btn-outline-primary btn-sm"
+                        >
+
+                            <i class="bi bi-check2-all me-1"></i>
+
+                            Tout marquer comme lu
+
+                        </button>
+
+                    </form>
+
+                @endif
+
+            </div>
 
         </div>
 
@@ -65,7 +117,10 @@
 
                 @foreach($notifications as $notification)
 
-                    <div class="border-bottom py-3">
+                    <div
+                        class="border-bottom py-3
+                        {{ !$notification->lu ? 'bg-light rounded px-3' : '' }}"
+                    >
 
                         <div class="d-flex align-items-start">
 
@@ -73,10 +128,30 @@
                             <div class="me-3">
 
                                 <div
-                                    class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center"
+                                    class="rounded-circle
+                                    {{ $notification->lu ? 'bg-secondary-subtle text-secondary' : 'bg-primary-subtle text-primary' }}
+                                    d-flex align-items-center justify-content-center"
                                     style="width:45px;height:45px;"
                                 >
-                                    <i class="bi bi-bell"></i>
+
+                                    @if($notification->type === 'SUCCESS')
+
+                                        <i class="bi bi-check-circle"></i>
+
+                                    @elseif($notification->type === 'WARNING')
+
+                                        <i class="bi bi-exclamation-triangle"></i>
+
+                                    @elseif($notification->type === 'DANGER')
+
+                                        <i class="bi bi-x-circle"></i>
+
+                                    @else
+
+                                        <i class="bi bi-bell"></i>
+
+                                    @endif
+
                                 </div>
 
                             </div>
@@ -85,11 +160,49 @@
                             {{-- Contenu --}}
                             <div class="flex-grow-1">
 
-                                <h6 class="fw-bold mb-1">
+                                <div class="d-flex justify-content-between align-items-start">
 
-                                    {{ $notification->titre ?? 'Notification' }}
+                                    <h6 class="fw-bold mb-1">
 
-                                </h6>
+                                        {{ $notification->titre ?? 'Notification' }}
+
+                                        @if(!$notification->lu)
+
+                                            <span class="badge bg-primary ms-2">
+                                                Nouvelle
+                                            </span>
+
+                                        @endif
+
+                                    </h6>
+
+                                    @if(!$notification->lu)
+
+                                        <form
+                                            method="POST"
+                                            action="{{ route(
+                                                'etudiant.notifications.lire',
+                                                $notification->idNotification
+                                            ) }}"
+                                        >
+
+                                            @csrf
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-sm btn-outline-secondary"
+                                                title="Marquer comme lue"
+                                            >
+
+                                                <i class="bi bi-check2"></i>
+
+                                            </button>
+
+                                        </form>
+
+                                    @endif
+
+                                </div>
 
 
                                 <p class="text-secondary mb-1">
@@ -99,13 +212,38 @@
                                 </p>
 
 
-                                @if(!empty($notification->created_at))
+                                @if($notification->created_at)
 
                                     <small class="text-muted">
 
-                                        {{ $notification->created_at }}
+                                        <i class="bi bi-clock me-1"></i>
+
+                                        {{ $notification->created_at->format('d/m/Y à H:i') }}
 
                                     </small>
+
+                                @endif
+
+
+                                @if($notification->idDemande)
+
+                                    <div class="mt-2">
+
+                                        <a
+                                            href="{{ route(
+                                                'etudiant.demandes.show',
+                                                $notification->idDemande
+                                            ) }}"
+                                            class="btn btn-sm btn-outline-primary"
+                                        >
+
+                                            <i class="bi bi-eye me-1"></i>
+
+                                            Voir la demande
+
+                                        </a>
+
+                                    </div>
 
                                 @endif
 
@@ -142,7 +280,7 @@
 
 
                     <p class="text-secondary mb-4">
-                        Vous n'avez aucune nouvelle notification pour le moment.
+                        Vous n'avez aucune notification pour le moment.
                     </p>
 
 

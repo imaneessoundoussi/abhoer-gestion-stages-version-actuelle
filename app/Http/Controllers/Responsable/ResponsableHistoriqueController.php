@@ -10,46 +10,123 @@ use Illuminate\Http\Request;
 class ResponsableHistoriqueController extends Controller
 {
     /**
-     * Historique complet des actions, toutes demandes confondues.
+     * Afficher l'historique des actions.
      */
     public function index(Request $request)
     {
-        $query = Historique::with(['utilisateur', 'demande.candidat']);
+        $query = Historique::with([
+            'utilisateur',
+            'demande.candidat',
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Filtre par action
+        |--------------------------------------------------------------------------
+        */
 
         if ($request->filled('action')) {
-            $query->where('action', $request->action);
+            $query->where(
+                'action',
+                $request->action
+            );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Filtre par utilisateur
+        |--------------------------------------------------------------------------
+        */
 
         if ($request->filled('idUtilisateur')) {
-            $query->where('idUtilisateur', $request->idUtilisateur);
+            $query->where(
+                'idUtilisateur',
+                $request->idUtilisateur
+            );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Filtre date début
+        |--------------------------------------------------------------------------
+        */
 
         if ($request->filled('dateDebut')) {
-            $query->whereDate('dateAction', '>=', $request->dateDebut);
+            $query->whereDate(
+                'dateAction',
+                '>=',
+                $request->dateDebut
+            );
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Filtre date fin
+        |--------------------------------------------------------------------------
+        */
+
         if ($request->filled('dateFin')) {
-            $query->whereDate('dateAction', '<=', $request->dateFin);
+            $query->whereDate(
+                'dateAction',
+                '<=',
+                $request->dateFin
+            );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Recherche par numéro de demande
+        |--------------------------------------------------------------------------
+        */
 
         if ($request->filled('recherche')) {
             $recherche = $request->recherche;
 
-            $query->whereHas('demande', function ($q) use ($recherche) {
-                $q->where('numeroDemande', 'like', "%{$recherche}%");
-            });
+            $query->whereHas(
+                'demande',
+                function ($q) use ($recherche) {
+                    $q->where(
+                        'numeroDemande',
+                        'like',
+                        "%{$recherche}%"
+                    );
+                }
+            );
         }
 
-        $historiques = $query->orderBy('dateAction', 'desc')->paginate(20)->withQueryString();
+        /*
+        |--------------------------------------------------------------------------
+        | Résultats
+        |--------------------------------------------------------------------------
+        */
 
-        $actionsDisponibles = Historique::select('action')->distinct()->pluck('action');
+        $historiques = $query
+            ->orderBy('dateAction', 'desc')
+            ->paginate(20)
+            ->withQueryString();
 
-        $utilisateurs = Utilisateur::orderBy('nom')->get();
+        /*
+        |--------------------------------------------------------------------------
+        | Filtres disponibles
+        |--------------------------------------------------------------------------
+        */
 
-        return view('responsable.historique.index', compact(
-            'historiques',
-            'actionsDisponibles',
-            'utilisateurs'
-        ));
+        $actionsDisponibles = Historique::select('action')
+            ->distinct()
+            ->orderBy('action')
+            ->pluck('action');
+
+        $utilisateurs = Utilisateur::orderBy('nom')
+            ->orderBy('prenom')
+            ->get();
+
+        return view(
+            'responsable.historique.index',
+            compact(
+                'historiques',
+                'actionsDisponibles',
+                'utilisateurs'
+            )
+        );
     }
 }

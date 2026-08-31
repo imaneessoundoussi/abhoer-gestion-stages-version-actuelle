@@ -20,7 +20,7 @@ use App\Http\Controllers\AdminStageController;
 
 /*
 |--------------------------------------------------------------------------
-| RESPONSABLE / AGENT
+| RESPONSABLE
 |--------------------------------------------------------------------------
 */
 
@@ -38,11 +38,14 @@ use App\Http\Controllers\Responsable\ResponsableStageController;
 use App\Http\Controllers\EtudiantDashboardController;
 use App\Http\Controllers\EtudiantDemandeStageController;
 use App\Http\Controllers\EtudiantProfilController;
+use App\Http\Controllers\EtudiantNotificationController;
 
 
 /*
 |--------------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | ACCUEIL
+|--------------------------------------------------------------------------
 |--------------------------------------------------------------------------
 */
 
@@ -53,7 +56,9 @@ Route::get('/', function () {
 
 /*
 |--------------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | AUTHENTIFICATION
+|--------------------------------------------------------------------------
 |--------------------------------------------------------------------------
 */
 
@@ -75,7 +80,9 @@ Route::post('/logout', [
 
 /*
 |--------------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | INSCRIPTION
+|--------------------------------------------------------------------------
 |--------------------------------------------------------------------------
 */
 
@@ -92,7 +99,9 @@ Route::post('/inscription', [
 
 /*
 |--------------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | ESPACE ETUDIANT
+|--------------------------------------------------------------------------
 |--------------------------------------------------------------------------
 */
 
@@ -103,7 +112,7 @@ Route::prefix('etudiant')
 
         /*
         |--------------------------------------------------------------------------
-        | Tableau de bord
+        | TABLEAU DE BORD
         |--------------------------------------------------------------------------
         */
 
@@ -115,7 +124,7 @@ Route::prefix('etudiant')
 
         /*
         |--------------------------------------------------------------------------
-        | Demandes de stage
+        | DEMANDES
         |--------------------------------------------------------------------------
         */
 
@@ -123,6 +132,13 @@ Route::prefix('etudiant')
             EtudiantDemandeStageController::class,
             'index'
         ])->name('demandes.index');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | NOUVELLE DEMANDE
+        |--------------------------------------------------------------------------
+        */
 
         Route::get('/demandes/nouvelle', [
             EtudiantDemandeStageController::class,
@@ -132,7 +148,7 @@ Route::prefix('etudiant')
 
         /*
         |--------------------------------------------------------------------------
-        | Etape 1 : informations
+        | ETAPE 1 : INFORMATIONS
         |--------------------------------------------------------------------------
         */
 
@@ -149,7 +165,7 @@ Route::prefix('etudiant')
 
         /*
         |--------------------------------------------------------------------------
-        | Demande spécifique
+        | DEMANDE SPECIFIQUE
         |--------------------------------------------------------------------------
         */
 
@@ -161,25 +177,48 @@ Route::prefix('etudiant')
 
         /*
         |--------------------------------------------------------------------------
-        | Documents d'une demande
+        | DOCUMENTS D'UNE DEMANDE
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/demandes/{idDemande}/documents', [
-            EtudiantDemandeStageController::class,
-            'documents'
-        ])->name('demandes.documents');
-
-        Route::post('/demandes/{idDemande}/documents', [
-            EtudiantDemandeStageController::class,
-            'storeDocuments'
-        ])->name('demandes.documents.store');
+        Route::get(
+            '/demandes/{idDemande}/documents',
+            [
+                EtudiantDemandeStageController::class,
+                'documents'
+            ]
+        )->name('demandes.documents');
 
 
         /*
         |--------------------------------------------------------------------------
-        | Voir un document
+        | ENREGISTRER LES DOCUMENTS
         |--------------------------------------------------------------------------
+        */
+
+        Route::post(
+            '/demandes/{idDemande}/documents',
+            [
+                EtudiantDemandeStageController::class,
+                'storeDocuments'
+            ]
+        )->name('demandes.documents.store');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | VOIR UN DOCUMENT
+        |--------------------------------------------------------------------------
+        |
+        | IMPORTANT :
+        | Cette route est nommée :
+        |
+        | etudiant.documents.voir
+        |
+        | Elle correspond exactement au Blade :
+        |
+        | route('etudiant.documents.voir', ...)
+        |
         */
 
         Route::get(
@@ -193,8 +232,13 @@ Route::prefix('etudiant')
 
         /*
         |--------------------------------------------------------------------------
-        | Télécharger un document
+        | TELECHARGER UN DOCUMENT
         |--------------------------------------------------------------------------
+        |
+        | Nom :
+        |
+        | etudiant.documents.telecharger
+        |
         */
 
         Route::get(
@@ -208,8 +252,13 @@ Route::prefix('etudiant')
 
         /*
         |--------------------------------------------------------------------------
-        | Supprimer un document
+        | SUPPRIMER UN DOCUMENT
         |--------------------------------------------------------------------------
+        |
+        | Nom :
+        |
+        | etudiant.documents.destroy
+        |
         */
 
         Route::delete(
@@ -223,7 +272,7 @@ Route::prefix('etudiant')
 
         /*
         |--------------------------------------------------------------------------
-        | Etape 3 : confirmation
+        | ETAPE 3 : CONFIRMATION
         |--------------------------------------------------------------------------
         */
 
@@ -234,6 +283,13 @@ Route::prefix('etudiant')
                 'confirmation'
             ]
         )->name('demandes.confirmation');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CONFIRMATION DEFINITIVE
+        |--------------------------------------------------------------------------
+        */
 
         Route::post(
             '/demandes/{idDemande}/confirmer',
@@ -246,7 +302,7 @@ Route::prefix('etudiant')
 
         /*
         |--------------------------------------------------------------------------
-        | Supprimer une demande
+        | SUPPRIMER UNE DEMANDE
         |--------------------------------------------------------------------------
         */
 
@@ -258,8 +314,15 @@ Route::prefix('etudiant')
 
         /*
         |--------------------------------------------------------------------------
-        | Mes documents
+        | MES DOCUMENTS
         |--------------------------------------------------------------------------
+        |
+        | URL :
+        | /etudiant/documents
+        |
+        | Nom :
+        | etudiant.documents.index
+        |
         */
 
         Route::get('/documents', [
@@ -270,18 +333,35 @@ Route::prefix('etudiant')
 
         /*
         |--------------------------------------------------------------------------
-        | Notifications
+        | NOTIFICATIONS
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/notifications', function () {
-            return view('etudiant.notifications');
-        })->name('notifications');
+        Route::get('/notifications', [
+            EtudiantNotificationController::class,
+            'index'
+        ])->name('notifications');
+
+        Route::post(
+            '/notifications/{idNotification}/lire',
+            [
+                EtudiantNotificationController::class,
+                'lire'
+            ]
+        )->name('notifications.lire');
+
+        Route::post(
+            '/notifications/lire-toutes',
+            [
+                EtudiantNotificationController::class,
+                'lireToutes'
+            ]
+        )->name('notifications.lire-toutes');
 
 
         /*
         |--------------------------------------------------------------------------
-        | Profil
+        | PROFIL
         |--------------------------------------------------------------------------
         */
 
@@ -299,12 +379,15 @@ Route::prefix('etudiant')
             EtudiantProfilController::class,
             'update'
         ])->name('profil.update');
+
     });
 
 
 /*
 |--------------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | ESPACE ADMINISTRATEUR
+|--------------------------------------------------------------------------
 |--------------------------------------------------------------------------
 */
 
@@ -315,7 +398,7 @@ Route::prefix('admin')
 
         /*
         |--------------------------------------------------------------------------
-        | Tableau de bord
+        | TABLEAU DE BORD
         |--------------------------------------------------------------------------
         */
 
@@ -327,7 +410,7 @@ Route::prefix('admin')
 
         /*
         |--------------------------------------------------------------------------
-        | Utilisateurs
+        | UTILISATEURS
         |--------------------------------------------------------------------------
         */
 
@@ -346,30 +429,42 @@ Route::prefix('admin')
             'store'
         ])->name('utilisateurs.store');
 
-        Route::get('/utilisateurs/{idUtilisateur}/edit', [
-            AdminUtilisateurController::class,
-            'edit'
-        ])->name('utilisateurs.edit');
+        Route::get(
+            '/utilisateurs/{idUtilisateur}/edit',
+            [
+                AdminUtilisateurController::class,
+                'edit'
+            ]
+        )->name('utilisateurs.edit');
 
-        Route::put('/utilisateurs/{idUtilisateur}', [
-            AdminUtilisateurController::class,
-            'update'
-        ])->name('utilisateurs.update');
+        Route::put(
+            '/utilisateurs/{idUtilisateur}',
+            [
+                AdminUtilisateurController::class,
+                'update'
+            ]
+        )->name('utilisateurs.update');
 
-        Route::patch('/utilisateurs/{idUtilisateur}/toggle', [
-            AdminUtilisateurController::class,
-            'toggle'
-        ])->name('utilisateurs.toggle');
+        Route::patch(
+            '/utilisateurs/{idUtilisateur}/toggle',
+            [
+                AdminUtilisateurController::class,
+                'toggle'
+            ]
+        )->name('utilisateurs.toggle');
 
-        Route::delete('/utilisateurs/{idUtilisateur}', [
-            AdminUtilisateurController::class,
-            'destroy'
-        ])->name('utilisateurs.destroy');
+        Route::delete(
+            '/utilisateurs/{idUtilisateur}',
+            [
+                AdminUtilisateurController::class,
+                'destroy'
+            ]
+        )->name('utilisateurs.destroy');
 
 
         /*
         |--------------------------------------------------------------------------
-        | Départements
+        | DEPARTEMENTS
         |--------------------------------------------------------------------------
         */
 
@@ -388,25 +483,34 @@ Route::prefix('admin')
             'store'
         ])->name('departements.store');
 
-        Route::get('/departements/{id}/edit', [
-            AdminDepartementController::class,
-            'edit'
-        ])->name('departements.edit');
+        Route::get(
+            '/departements/{id}/edit',
+            [
+                AdminDepartementController::class,
+                'edit'
+            ]
+        )->name('departements.edit');
 
-        Route::put('/departements/{id}', [
-            AdminDepartementController::class,
-            'update'
-        ])->name('departements.update');
+        Route::put(
+            '/departements/{id}',
+            [
+                AdminDepartementController::class,
+                'update'
+            ]
+        )->name('departements.update');
 
-        Route::delete('/departements/{id}', [
-            AdminDepartementController::class,
-            'destroy'
-        ])->name('departements.destroy');
+        Route::delete(
+            '/departements/{id}',
+            [
+                AdminDepartementController::class,
+                'destroy'
+            ]
+        )->name('departements.destroy');
 
 
         /*
         |--------------------------------------------------------------------------
-        | Services
+        | SERVICES
         |--------------------------------------------------------------------------
         */
 
@@ -425,25 +529,34 @@ Route::prefix('admin')
             'store'
         ])->name('services.store');
 
-        Route::get('/services/{id}/edit', [
-            AdminServiceController::class,
-            'edit'
-        ])->name('services.edit');
+        Route::get(
+            '/services/{id}/edit',
+            [
+                AdminServiceController::class,
+                'edit'
+            ]
+        )->name('services.edit');
 
-        Route::put('/services/{id}', [
-            AdminServiceController::class,
-            'update'
-        ])->name('services.update');
+        Route::put(
+            '/services/{id}',
+            [
+                AdminServiceController::class,
+                'update'
+            ]
+        )->name('services.update');
 
-        Route::delete('/services/{id}', [
-            AdminServiceController::class,
-            'destroy'
-        ])->name('services.destroy');
+        Route::delete(
+            '/services/{id}',
+            [
+                AdminServiceController::class,
+                'destroy'
+            ]
+        )->name('services.destroy');
 
 
         /*
         |--------------------------------------------------------------------------
-        | Demandes de stage
+        | DEMANDES DE STAGE
         |--------------------------------------------------------------------------
         */
 
@@ -460,7 +573,7 @@ Route::prefix('admin')
 
         /*
         |--------------------------------------------------------------------------
-        | Stages
+        | STAGES
         |--------------------------------------------------------------------------
         */
 
@@ -473,23 +586,26 @@ Route::prefix('admin')
             AdminStageController::class,
             'show'
         ])->name('stages.show');
+
     });
 
 
 /*
 |--------------------------------------------------------------------------
-| ESPACE RESPONSABLE / AGENT
+|--------------------------------------------------------------------------
+| ESPACE RESPONSABLE
+|--------------------------------------------------------------------------
 |--------------------------------------------------------------------------
 */
 
 Route::prefix('responsable')
     ->name('responsable.')
-    ->middleware(['auth', 'role:RESPONSABLE,AGENT'])
+    ->middleware(['auth', 'role:RESPONSABLE'])
     ->group(function () {
 
         /*
         |--------------------------------------------------------------------------
-        | Tableau de bord
+        | TABLEAU DE BORD
         |--------------------------------------------------------------------------
         */
 
@@ -501,7 +617,7 @@ Route::prefix('responsable')
 
         /*
         |--------------------------------------------------------------------------
-        | Demandes
+        | DEMANDES
         |--------------------------------------------------------------------------
         */
 
@@ -525,35 +641,50 @@ Route::prefix('responsable')
             'show'
         ])->name('demandes.show');
 
-        Route::post('/demandes/{id}/accepter', [
-            ResponsableDemandeController::class,
-            'accepter'
-        ])->name('demandes.accepter');
+        Route::post(
+            '/demandes/{id}/accepter',
+            [
+                ResponsableDemandeController::class,
+                'accepter'
+            ]
+        )->name('demandes.accepter');
 
-        Route::post('/demandes/{id}/refuser', [
-            ResponsableDemandeController::class,
-            'refuser'
-        ])->name('demandes.refuser');
+        Route::post(
+            '/demandes/{id}/refuser',
+            [
+                ResponsableDemandeController::class,
+                'refuser'
+            ]
+        )->name('demandes.refuser');
 
-        Route::post('/demandes/{id}/demander-infos', [
-            ResponsableDemandeController::class,
-            'demanderInfos'
-        ])->name('demandes.demander-infos');
+        Route::post(
+            '/demandes/{id}/demander-infos',
+            [
+                ResponsableDemandeController::class,
+                'demanderInfos'
+            ]
+        )->name('demandes.demander-infos');
 
-        Route::post('/demandes/{id}/affecter', [
-            ResponsableDemandeController::class,
-            'affecter'
-        ])->name('demandes.affecter');
+        Route::post(
+            '/demandes/{id}/affecter',
+            [
+                ResponsableDemandeController::class,
+                'affecter'
+            ]
+        )->name('demandes.affecter');
 
-        Route::post('/demandes/{id}/documents', [
-            ResponsableDemandeController::class,
-            'storeDocument'
-        ])->name('demandes.documents.store');
+        Route::post(
+            '/demandes/{id}/documents',
+            [
+                ResponsableDemandeController::class,
+                'storeDocument'
+            ]
+        )->name('demandes.documents.store');
 
 
         /*
         |--------------------------------------------------------------------------
-        | Stages
+        | STAGES
         |--------------------------------------------------------------------------
         */
 
@@ -565,7 +696,7 @@ Route::prefix('responsable')
 
         /*
         |--------------------------------------------------------------------------
-        | Historique
+        | HISTORIQUE
         |--------------------------------------------------------------------------
         */
 
@@ -573,4 +704,5 @@ Route::prefix('responsable')
             ResponsableHistoriqueController::class,
             'index'
         ])->name('historique.index');
+
     });

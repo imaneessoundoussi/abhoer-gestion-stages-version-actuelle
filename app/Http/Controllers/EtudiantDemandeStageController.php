@@ -6,7 +6,6 @@ use App\Models\Candidat;
 use App\Models\DemandeStage;
 use App\Models\Document;
 use App\Models\Service;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -14,12 +13,11 @@ use Illuminate\Support\Str;
 
 class EtudiantDemandeStageController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Liste des demandes
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Liste des demandes
+     * --------------------------------------------------------------------------
+     */
     public function index()
     {
         $user = Auth::user();
@@ -51,27 +49,21 @@ class EtudiantDemandeStageController extends Controller
         ]);
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Nouvelle demande
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Nouvelle demande
+     * --------------------------------------------------------------------------
+     */
     public function create()
     {
-        return redirect()->route(
-            'etudiant.demandes.informations'
-        );
+        return redirect()->route('etudiant.demandes.informations');
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Étape 1 : informations
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Étape 1 : Informations
+     * --------------------------------------------------------------------------
+     */
     public function informations()
     {
         $user = Auth::user();
@@ -91,10 +83,7 @@ class EtudiantDemandeStageController extends Controller
                 );
         }
 
-        $services = Service::orderBy(
-            'nomService',
-            'asc'
-        )->get();
+        $services = Service::orderBy('nomService', 'asc')->get();
 
         return view('etudiant.demandes.informations', [
             'services' => $services,
@@ -103,13 +92,11 @@ class EtudiantDemandeStageController extends Controller
         ]);
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Enregistrer l'étape 1
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Enregistrer l'étape 1
+     * --------------------------------------------------------------------------
+     */
     public function storeInformations(Request $request)
     {
         $validated = $request->validate(
@@ -153,6 +140,9 @@ class EtudiantDemandeStageController extends Controller
                 'idService.required' =>
                     'Veuillez sélectionner un service.',
 
+                'idService.integer' =>
+                    'Le service sélectionné est invalide.',
+
                 'idService.exists' =>
                     'Le service sélectionné est invalide.',
 
@@ -162,14 +152,23 @@ class EtudiantDemandeStageController extends Controller
                 'dateDebut.required' =>
                     'Veuillez indiquer la date de début.',
 
+                'dateDebut.date' =>
+                    'La date de début est invalide.',
+
                 'dateFin.required' =>
                     'Veuillez indiquer la date de fin.',
+
+                'dateFin.date' =>
+                    'La date de fin est invalide.',
 
                 'dateFin.after_or_equal' =>
                     'La date de fin doit être après ou égale à la date de début.',
 
                 'theme.required' =>
                     'Veuillez indiquer le thème du stage.',
+
+                'theme.max' =>
+                    'Le thème ne doit pas dépasser 255 caractères.',
 
                 'motivation.required' =>
                     'Veuillez indiquer votre motivation.',
@@ -196,20 +195,15 @@ class EtudiantDemandeStageController extends Controller
                 );
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Génération du numéro unique
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Génération d'un numéro unique pour la demande.
+         */
         do {
             $numeroDemande =
                 'DEM-' .
                 date('Y') .
                 '-' .
                 strtoupper(Str::random(6));
-
         } while (
             DemandeStage::where(
                 'numeroDemande',
@@ -217,13 +211,9 @@ class EtudiantDemandeStageController extends Controller
             )->exists()
         );
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Création de la demande
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Création de la demande.
+         */
         $demande = DemandeStage::create([
             'idCandidat' => $candidat->idCandidat,
             'idService' => $validated['idService'],
@@ -251,25 +241,21 @@ class EtudiantDemandeStageController extends Controller
             );
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Compatibilité avec store()
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Compatibilité avec store()
+     * --------------------------------------------------------------------------
+     */
     public function store(Request $request)
     {
         return $this->storeInformations($request);
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Afficher les documents d'une demande
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Afficher les documents d'une demande
+     * --------------------------------------------------------------------------
+     */
     public function documents(int $idDemande)
     {
         $demande = $this->getDemandeEtudiant($idDemande);
@@ -288,13 +274,11 @@ class EtudiantDemandeStageController extends Controller
         ]);
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Enregistrer les documents
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Enregistrer les documents
+     * --------------------------------------------------------------------------
+     */
     public function storeDocuments(
         Request $request,
         int $idDemande
@@ -305,12 +289,16 @@ class EtudiantDemandeStageController extends Controller
             (string) $demande->statut
         );
 
-        /*
-        |--------------------------------------------------------------------------
-        | Une demande traitée ne peut plus être modifiée
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Une demande déjà traitée ne peut plus être modifiée.
+         *
+         * IMPORTANT :
+         * Cette règle concerne uniquement l'AJOUT / REMPLACEMENT
+         * des documents.
+         *
+         * La suppression d'un document est traitée séparément
+         * dans destroyDocument().
+         */
         if (!in_array(
             $statut,
             [
@@ -332,13 +320,9 @@ class EtudiantDemandeStageController extends Controller
                 );
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Validation
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Validation.
+         */
         $request->validate(
             [
                 'documents' => [
@@ -364,6 +348,9 @@ class EtudiantDemandeStageController extends Controller
                 'documents.required' =>
                     'Veuillez ajouter les documents demandés.',
 
+                'documents.array' =>
+                    'Le format des documents est invalide.',
+
                 'documents.size' =>
                     'Les quatre documents sont obligatoires.',
 
@@ -384,13 +371,9 @@ class EtudiantDemandeStageController extends Controller
             ]
         );
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Types autorisés
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Types de documents autorisés.
+         */
         $typesAutorises = [
             'CIN',
             'Demande de stage',
@@ -398,16 +381,11 @@ class EtudiantDemandeStageController extends Controller
             'CV',
         ];
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Enregistrement des documents
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Enregistrement des documents.
+         */
         foreach (
-            $request->input('documents', [])
-            as $index => $documentData
+            $request->input('documents', []) as $index => $documentData
         ) {
             if (!is_array($documentData)) {
                 continue;
@@ -435,13 +413,9 @@ class EtudiantDemandeStageController extends Controller
                 continue;
             }
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | Chercher un ancien document du même type
-            |--------------------------------------------------------------------------
-            */
-
+            /**
+             * Chercher un ancien document du même type.
+             */
             $ancienDocument = Document::where(
                 'idDemande',
                 $demande->idDemande
@@ -452,15 +426,10 @@ class EtudiantDemandeStageController extends Controller
                 )
                 ->first();
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | Supprimer ancien fichier
-            |--------------------------------------------------------------------------
-            */
-
+            /**
+             * Supprimer l'ancien fichier.
+             */
             if ($ancienDocument) {
-
                 if (
                     $ancienDocument->cheminFichier &&
                     Storage::disk('public')->exists(
@@ -475,53 +444,36 @@ class EtudiantDemandeStageController extends Controller
                 $ancienDocument->delete();
             }
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | Stocker le nouveau fichier
-            |--------------------------------------------------------------------------
-            */
-
+            /**
+             * Stocker le nouveau fichier.
+             */
             $chemin = $fichier->store(
                 'documents',
                 'public'
             );
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | Enregistrer dans la base de données
-            |--------------------------------------------------------------------------
-            */
-
+            /**
+             * Enregistrer dans la base de données.
+             */
             Document::create([
                 'idDemande' => $demande->idDemande,
-
                 'typeDocument' => $type,
-
                 'nomFichier' =>
                     $fichier->getClientOriginalName(),
-
                 'cheminFichier' => $chemin,
-
                 'dateAjout' => now(),
             ]);
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Vérifier les 4 documents
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Vérifier que les 4 documents sont présents.
+         */
         $nombreDocuments = Document::where(
             'idDemande',
             $demande->idDemande
         )->count();
 
         if ($nombreDocuments < 4) {
-
             return redirect()
                 ->route(
                     'etudiant.demandes.documents',
@@ -535,7 +487,6 @@ class EtudiantDemandeStageController extends Controller
                     'Les quatre documents obligatoires doivent être ajoutés.'
                 );
         }
-
 
         return redirect()
             ->route(
@@ -551,13 +502,11 @@ class EtudiantDemandeStageController extends Controller
             );
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Confirmation
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Confirmation
+     * --------------------------------------------------------------------------
+     */
     public function confirmation(int $idDemande)
     {
         $demande = $this->getDemandeEtudiant($idDemande);
@@ -577,13 +526,11 @@ class EtudiantDemandeStageController extends Controller
         );
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Confirmation définitive
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Confirmation définitive
+     * --------------------------------------------------------------------------
+     */
     public function confirmer(int $idDemande)
     {
         $demande = $this->getDemandeEtudiant($idDemande);
@@ -592,7 +539,6 @@ class EtudiantDemandeStageController extends Controller
             $demande->documents()->count();
 
         if ($nombreDocuments < 4) {
-
             return redirect()
                 ->route(
                     'etudiant.demandes.documents',
@@ -607,11 +553,8 @@ class EtudiantDemandeStageController extends Controller
                 );
         }
 
-
         $demande->statut = 'EN_ATTENTE';
-
         $demande->save();
-
 
         return redirect()
             ->route(
@@ -623,13 +566,11 @@ class EtudiantDemandeStageController extends Controller
             );
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Voir une demande
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Voir une demande
+     * --------------------------------------------------------------------------
+     */
     public function show(int $idDemande)
     {
         $demande = $this->getDemandeEtudiant($idDemande);
@@ -649,13 +590,11 @@ class EtudiantDemandeStageController extends Controller
         );
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Mes documents
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Mes documents
+     * --------------------------------------------------------------------------
+     */
     public function documentsIndex()
     {
         $user = Auth::user();
@@ -698,19 +637,15 @@ class EtudiantDemandeStageController extends Controller
         );
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | SUPPRIMER UNE DEMANDE
-    |--------------------------------------------------------------------------
-    |
-    | Supprime :
-    | - les documents de la base
-    | - les fichiers physiques
-    | - la demande
-    |
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Supprimer une demande
+     * --------------------------------------------------------------------------
+     *
+     * ATTENTION :
+     * La suppression d'une demande entière reste interdite
+     * lorsque son statut est STAGE_EN_COURS, ACCEPTEE, etc.
+     */
     public function destroy(int $idDemande)
     {
         $demande = $this->getDemandeEtudiant($idDemande);
@@ -718,13 +653,6 @@ class EtudiantDemandeStageController extends Controller
         $statut = strtoupper(
             (string) $demande->statut
         );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Vérifier le statut
-        |--------------------------------------------------------------------------
-        */
 
         if (!in_array(
             $statut,
@@ -734,7 +662,6 @@ class EtudiantDemandeStageController extends Controller
             ],
             true
         )) {
-
             return redirect()
                 ->route(
                     'etudiant.demandes.index'
@@ -745,20 +672,15 @@ class EtudiantDemandeStageController extends Controller
                 );
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Supprimer les documents et fichiers
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Supprimer les documents et fichiers.
+         */
         $documents = Document::where(
             'idDemande',
             $demande->idDemande
         )->get();
 
         foreach ($documents as $document) {
-
             if (
                 $document->cheminFichier &&
                 Storage::disk('public')->exists(
@@ -773,15 +695,10 @@ class EtudiantDemandeStageController extends Controller
             $document->delete();
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Supprimer la demande
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Supprimer la demande.
+         */
         $demande->delete();
-
 
         return redirect()
             ->route(
@@ -793,13 +710,11 @@ class EtudiantDemandeStageController extends Controller
             );
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | VOIR UN DOCUMENT
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Voir un document
+     * --------------------------------------------------------------------------
+     */
     public function voirDocument(
         int $idDemande,
         int $idDocument
@@ -818,13 +733,9 @@ class EtudiantDemandeStageController extends Controller
             )
             ->firstOrFail();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Vérifier le fichier
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Vérifier le fichier.
+         */
         if (
             !$document->cheminFichier ||
             !Storage::disk('public')->exists(
@@ -837,45 +748,30 @@ class EtudiantDemandeStageController extends Controller
             );
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Chemin physique
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Chemin physique.
+         */
         $path = Storage::disk('public')->path(
             $document->cheminFichier
         );
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Type MIME
-        |--------------------------------------------------------------------------
-        */
-
-        $mimeType = mime_content_type(
-            $path
-        );
+        /**
+         * Type MIME.
+         */
+        $mimeType = mime_content_type($path);
 
         if (!$mimeType) {
             $mimeType =
                 'application/octet-stream';
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Afficher le document dans le navigateur
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Afficher le document dans le navigateur.
+         */
         return response()->file(
             $path,
             [
                 'Content-Type' => $mimeType,
-
                 'Content-Disposition' =>
                     'inline; filename="' .
                     addslashes(
@@ -886,13 +782,11 @@ class EtudiantDemandeStageController extends Controller
         );
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | TÉLÉCHARGER UN DOCUMENT
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Télécharger un document
+     * --------------------------------------------------------------------------
+     */
     public function telechargerDocument(
         int $idDemande,
         int $idDocument
@@ -911,7 +805,9 @@ class EtudiantDemandeStageController extends Controller
             )
             ->firstOrFail();
 
-
+        /**
+         * Vérifier le fichier.
+         */
         if (
             !$document->cheminFichier ||
             !Storage::disk('public')->exists(
@@ -924,11 +820,9 @@ class EtudiantDemandeStageController extends Controller
             );
         }
 
-
         $path = Storage::disk('public')->path(
             $document->cheminFichier
         );
-
 
         return response()->download(
             $path,
@@ -936,62 +830,50 @@ class EtudiantDemandeStageController extends Controller
         );
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | SUPPRIMER UN DOCUMENT
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Supprimer un document
+     * --------------------------------------------------------------------------
+     *
+     * IMPORTANT :
+     * Un étudiant peut supprimer un document quel que soit
+     * le statut de sa demande.
+     *
+     * Exemple :
+     * - EN_ATTENTE       -> autorisé
+     * - BROUILLON        -> autorisé
+     * - EN_COURS_ETUDE   -> autorisé
+     * - ACCEPTEE         -> autorisé
+     * - STAGE_EN_COURS   -> autorisé
+     * - TERMINEE         -> autorisé
+     * - REFUSEE          -> autorisé
+     */
     public function destroyDocument(
         int $idDemande,
         int $idDocument
     ) {
+        /**
+         * Vérifier que la demande appartient
+         * bien à l'étudiant connecté.
+         */
         $demande = $this->getDemandeEtudiant(
             $idDemande
         );
 
+        /**
+         * IMPORTANT :
+         * Il n'y a PLUS de vérification du statut ici.
+         *
+         * La suppression d'un document est donc autorisée
+         * même lorsque la demande est STAGE_EN_COURS.
+         */
 
-        /*
-        |--------------------------------------------------------------------------
-        | Vérifier le statut
-        |--------------------------------------------------------------------------
-        */
-
-        $statut = strtoupper(
-            (string) $demande->statut
-        );
-
-        if (!in_array(
-            $statut,
-            [
-                'EN_ATTENTE',
-                'BROUILLON',
-            ],
-            true
-        )) {
-
-            return redirect()
-                ->route(
-                    'etudiant.demandes.documents',
-                    [
-                        'idDemande' =>
-                            $demande->idDemande,
-                    ]
-                )
-                ->with(
-                    'error',
-                    'Ce document ne peut plus être supprimé car la demande est déjà en cours de traitement.'
-                );
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Trouver le document
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Trouver le document.
+         *
+         * On vérifie également que le document appartient
+         * à la demande de l'étudiant connecté.
+         */
         $document = Document::where(
             'idDocument',
             $idDocument
@@ -1002,13 +884,9 @@ class EtudiantDemandeStageController extends Controller
             )
             ->firstOrFail();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Supprimer le fichier physique
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Supprimer le fichier physique.
+         */
         if (
             $document->cheminFichier &&
             Storage::disk('public')->exists(
@@ -1020,23 +898,18 @@ class EtudiantDemandeStageController extends Controller
             );
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Supprimer de la base
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Supprimer l'enregistrement
+         * dans la base de données.
+         */
         $document->delete();
 
-
+        /**
+         * Retourner vers la page des documents.
+         */
         return redirect()
             ->route(
-                'etudiant.demandes.documents',
-                [
-                    'idDemande' =>
-                        $demande->idDemande,
-                ]
+                'etudiant.documents.index'
             )
             ->with(
                 'success',
@@ -1044,17 +917,14 @@ class EtudiantDemandeStageController extends Controller
             );
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Vérifier que la demande appartient à l'étudiant
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Vérifier que la demande appartient à l'étudiant connecté
+     * --------------------------------------------------------------------------
+     */
     private function getDemandeEtudiant(
         int $idDemande
     ): DemandeStage {
-
         $user = Auth::user();
 
         if (!$user) {
@@ -1071,7 +941,6 @@ class EtudiantDemandeStageController extends Controller
         $candidat = Candidat::findOrFail(
             $user->idCandidat
         );
-
 
         return DemandeStage::with([
             'service',

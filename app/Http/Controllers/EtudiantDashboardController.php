@@ -46,7 +46,6 @@ class EtudiantDashboardController extends Controller
         $demandes = collect();
 
         if ($candidat) {
-
             $demandes = DemandeStage::with([
                 'service',
                 'documents'
@@ -65,7 +64,14 @@ class EtudiantDashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
+        // Nombre total de demandes
         $totalDemandes = $demandes->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | DEMANDES EN ATTENTE
+        |--------------------------------------------------------------------------
+        */
 
         $demandesEnAttente = $demandes
             ->filter(function ($demande) {
@@ -78,9 +84,23 @@ class EtudiantDashboardController extends Controller
                     )
                 );
 
-                return $statut === 'EN_ATTENTE';
+                return in_array($statut, [
+                    'EN_ATTENTE',
+                    'EN_COURS_ETUDE',
+                    'EN_ETUDE'
+                ], true);
             })
             ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | DEMANDES ACCEPTÉES
+        |--------------------------------------------------------------------------
+        |
+        | Une demande qui est passée à STAGE_EN_COURS a déjà été acceptée.
+        | Elle doit donc continuer à être comptée dans "Acceptées".
+        |
+        */
 
         $demandesAcceptees = $demandes
             ->filter(function ($demande) {
@@ -95,10 +115,18 @@ class EtudiantDashboardController extends Controller
 
                 return in_array($statut, [
                     'ACCEPTEE',
-                    'ACCEPTE'
+                    'ACCEPTE',
+                    'STAGE_EN_COURS',
+                    'EN_COURS'
                 ], true);
             })
             ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | DEMANDES REFUSÉES
+        |--------------------------------------------------------------------------
+        */
 
         $demandesRefusees = $demandes
             ->filter(function ($demande) {
@@ -172,18 +200,21 @@ class EtudiantDashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        return view('etudiant.dashboard', compact(
-            'user',
-            'candidat',
-            'demandes',
-            'dernieresDemandes',
-            'derniereDemande',
-            'totalDemandes',
-            'demandesEnAttente',
-            'demandesAcceptees',
-            'demandesRefusees',
-            'stagesEnCours',
-            'totalUtilisateurs'
-        ));
+        return view(
+            'etudiant.dashboard',
+            compact(
+                'user',
+                'candidat',
+                'demandes',
+                'dernieresDemandes',
+                'derniereDemande',
+                'totalDemandes',
+                'demandesEnAttente',
+                'demandesAcceptees',
+                'demandesRefusees',
+                'stagesEnCours',
+                'totalUtilisateurs'
+            )
+        );
     }
 }

@@ -1,3 +1,4 @@
+``
 @extends('layouts.etudiant')
 
 @section('page-title', 'Mes documents')
@@ -6,184 +7,235 @@
 
 <div class="container-fluid py-4">
 
-{{-- =========================================================
-     EN-TÊTE
-========================================================== --}}
+    {{-- =========================================================
+         EN-TÊTE
+    ========================================================== --}}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <div>
-        <h2 class="fw-bold mb-1">
-            <i class="bi bi-folder2-open me-2"></i>
-            Mes documents
-        </h2>
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-folder2-open me-2"></i>
+                Mes documents
+            </h2>
 
-        <p class="text-muted mb-0">
-            Retrouvez les documents associés à vos demandes de stage.
-        </p>
-    </div>
-
-</div>
-
-
-{{-- =========================================================
-     MESSAGES
-========================================================== --}}
-
-@if(session('success'))
-
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-
-        <i class="bi bi-check-circle-fill me-2"></i>
-
-        {{ session('success') }}
-
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Fermer">
-        </button>
-
-    </div>
-
-@endif
-
-
-@if(session('error'))
-
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-
-        {{ session('error') }}
-
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Fermer">
-        </button>
-
-    </div>
-
-@endif
-
-
-{{-- =========================================================
-     AUCUNE DEMANDE
-========================================================== --}}
-
-@if($demandes->isEmpty())
-
-    <div class="card border-0 shadow-sm">
-
-        <div class="card-body text-center py-5">
-
-            <div class="mb-3">
-
-                <i
-                    class="bi bi-folder-x"
-                    style="font-size: 4rem; color: #adb5bd;">
-                </i>
-
-            </div>
-
-            <h5 class="fw-bold">
-                Aucun document
-            </h5>
-
-            <p class="text-muted mb-4">
-                Vous n'avez encore aucun document associé à une demande de stage.
+            <p class="text-muted mb-0">
+                Retrouvez les documents associés à vos demandes de stage.
             </p>
-
-            <a
-                href="{{ route('etudiant.demandes.create') }}"
-                class="btn btn-primary">
-
-                <i class="bi bi-plus-lg me-1"></i>
-
-                Créer une demande
-
-            </a>
-
         </div>
 
     </div>
 
-@else
+
+    {{-- =========================================================
+         MESSAGES DE SUCCÈS
+    ========================================================== --}}
+
+    @if(session('success'))
+
+        <div class="alert alert-success alert-dismissible fade show"
+             role="alert">
+
+            <i class="bi bi-check-circle-fill me-2"></i>
+
+            {{ session('success') }}
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Fermer">
+            </button>
+
+        </div>
+
+    @endif
 
 
-    {{-- =====================================================
-         LISTE DES DEMANDES
-    ====================================================== --}}
+    {{-- =========================================================
+         MESSAGES D'ERREUR
+    ========================================================== --}}
 
-    @foreach($demandes as $demande)
+    @if(session('error'))
 
-        @php
+        <div class="alert alert-danger alert-dismissible fade show"
+             role="alert">
 
-            $statut = strtoupper(
-                (string) ($demande->statut ?? '')
-            );
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
 
-            $badge = match($statut) {
+            {{ session('error') }}
 
-                'ACCEPTEE' => 'success',
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Fermer">
+            </button>
 
-                'REFUSEE' => 'danger',
+        </div>
 
-                'EN_COURS' => 'warning',
-
-                'EN_ATTENTE' => 'secondary',
-
-                'STAGE_EN_COURS' => 'primary',
-
-                'TERMINEE' => 'success',
-
-                default => 'secondary',
-
-            };
-
-        @endphp
+    @endif
 
 
-        {{-- =================================================
-             CARTE DEMANDE
-        ================================================== --}}
+    {{-- =========================================================
+         ERREURS DE VALIDATION
+    ========================================================== --}}
 
-        <div class="card border-0 shadow-sm mb-4">
+    @if($errors->any())
 
-            {{-- En-tête de la demande --}}
+        <div class="alert alert-danger alert-dismissible fade show"
+             role="alert">
 
-            <div class="card-header bg-white border-0 py-3">
+            <div class="fw-bold mb-2">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                Une ou plusieurs erreurs sont survenues :
+            </div>
 
-                <div class="row align-items-center">
+            <ul class="mb-0">
 
-                    <div class="col-md-8">
+                @foreach($errors->all() as $error)
 
-                        <div class="d-flex align-items-center">
+                    <li>{{ $error }}</li>
 
-                            <div
-                                class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center me-3"
-                                style="width: 45px; height: 45px;">
+                @endforeach
 
-                                <i class="bi bi-file-earmark-text text-primary fs-5"></i>
+            </ul>
 
-                            </div>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Fermer">
+            </button>
 
-                            <div>
+        </div>
 
-                                <h5 class="fw-bold mb-1">
+    @endif
 
-                                    {{ $demande->numeroDemande }}
 
-                                </h5>
+    {{-- =========================================================
+         AUCUNE DEMANDE
+    ========================================================== --}}
 
-                                <div class="text-muted small">
+    @if($demandes->isEmpty())
 
-                                    <i class="bi bi-building me-1"></i>
+        <div class="card border-0 shadow-sm">
 
-                                    {{ $demande->service->nomService ?? 'Service non précisé' }}
+            <div class="card-body text-center py-5">
+
+                <div class="mb-3">
+
+                    <i
+                        class="bi bi-folder-x"
+                        style="font-size: 4rem; color: #adb5bd;">
+                    </i>
+
+                </div>
+
+                <h5 class="fw-bold">
+                    Aucun document
+                </h5>
+
+                <p class="text-muted mb-4">
+                    Vous n'avez encore aucun document associé à une demande de stage.
+                </p>
+
+                <a
+                    href="{{ route('etudiant.demandes.create') }}"
+                    class="btn btn-primary">
+
+                    <i class="bi bi-plus-lg me-1"></i>
+
+                    Créer une demande
+
+                </a>
+
+            </div>
+
+        </div>
+
+    @else
+
+        {{-- =====================================================
+             LISTE DES DEMANDES
+        ====================================================== --}}
+
+        @foreach($demandes as $demande)
+
+            @php
+
+                $statut = strtoupper(
+                    (string) ($demande->statut ?? '')
+                );
+
+                $badge = match($statut) {
+
+                    'ACCEPTEE' => 'success',
+
+                    'REFUSEE' => 'danger',
+
+                    'EN_COURS' => 'warning',
+
+                    'EN_ATTENTE' => 'secondary',
+
+                    'STAGE_EN_COURS' => 'primary',
+
+                    'TERMINEE' => 'success',
+
+                    'BROUILLON' => 'secondary',
+
+                    default => 'secondary',
+
+                };
+
+            @endphp
+
+
+            {{-- =================================================
+                 CARTE DEMANDE
+            ================================================== --}}
+
+            <div class="card border-0 shadow-sm mb-4">
+
+
+                {{-- =================================================
+                     EN-TÊTE DE LA DEMANDE
+                ================================================== --}}
+
+                <div class="card-header bg-white border-0 py-3">
+
+                    <div class="row align-items-center">
+
+
+                        {{-- INFORMATIONS DEMANDE --}}
+
+                        <div class="col-md-8">
+
+                            <div class="d-flex align-items-center">
+
+                                <div
+                                    class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center me-3"
+                                    style="width: 45px; height: 45px;">
+
+                                    <i class="bi bi-file-earmark-text text-primary fs-5"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <h5 class="fw-bold mb-1">
+
+                                        {{ $demande->numeroDemande ?? 'Demande #' . $demande->idDemande }}
+
+                                    </h5>
+
+                                    <div class="text-muted small">
+
+                                        <i class="bi bi-building me-1"></i>
+
+                                        {{ $demande->service->nomService ?? 'Service non précisé' }}
+
+                                    </div>
 
                                 </div>
 
@@ -191,132 +243,154 @@
 
                         </div>
 
-                    </div>
 
+                        {{-- STATUT --}}
 
-                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
 
-                        <span class="badge text-bg-{{ $badge }} px-3 py-2">
+                            <span class="badge text-bg-{{ $badge }} px-3 py-2">
 
-                            {{ str_replace('_', ' ', $demande->statut ?? '—') }}
+                                {{ str_replace('_', ' ', $demande->statut ?? '—') }}
 
-                        </span>
+                            </span>
+
+                        </div>
 
                     </div>
 
                 </div>
 
-            </div>
+
+                {{-- =================================================
+                     DOCUMENTS
+                ================================================== --}}
+
+                <div class="card-body pt-2">
 
 
-            {{-- =================================================
-                 DOCUMENTS
-            ================================================== --}}
+                    {{-- Vérification de la relation documents --}}
 
-            <div class="card-body pt-2">
+                    @if($demande->documents && $demande->documents->isNotEmpty())
 
-                @if($demande->documents->isEmpty())
-
-                    <div class="text-center py-4">
-
-                        <i
-                            class="bi bi-file-earmark-x text-muted"
-                            style="font-size: 2.5rem;">
-                        </i>
-
-                        <p class="text-muted mt-2 mb-0">
-
-                            Aucun document ajouté pour cette demande.
-
-                        </p>
-
-                    </div>
-
-                @else
-
-                    <div class="row g-3">
-
-                        @foreach($demande->documents as $document)
-
-                            <div class="col-12">
-
-                                <div class="border rounded-3 p-3">
-
-                                    <div class="row align-items-center">
-
-                                        {{-- =================================================
-                                             ICÔNE + INFORMATIONS DOCUMENT
-                                        ================================================== --}}
-
-                                        <div class="col-md-6">
-
-                                            <div class="d-flex align-items-center">
-
-                                                @php
-
-                                                    $extension = strtolower(
-                                                        pathinfo(
-                                                            $document->nomFichier ?? '',
-                                                            PATHINFO_EXTENSION
-                                                        )
-                                                    );
-
-                                                    $icone = match($extension) {
-
-                                                        'pdf' => 'bi-file-earmark-pdf',
-
-                                                        'jpg',
-                                                        'jpeg',
-                                                        'png' => 'bi-file-earmark-image',
-
-                                                        'doc',
-                                                        'docx' => 'bi-file-earmark-word',
-
-                                                        default => 'bi-file-earmark',
-
-                                                    };
-
-                                                @endphp
+                        <div class="row g-3">
 
 
-                                                <div
-                                                    class="rounded-3 bg-light d-flex align-items-center justify-content-center me-3"
-                                                    style="width: 48px; height: 48px;">
+                            @foreach($demande->documents as $document)
 
-                                                    <i
-                                                        class="bi {{ $icone }} fs-4 text-primary">
-                                                    </i>
+                                <div class="col-12">
 
-                                                </div>
+                                    <div class="border rounded-3 p-3">
+
+                                        <div class="row align-items-center">
 
 
-                                                <div style="min-width: 0;">
+                                            {{-- =================================================
+                                                 INFORMATIONS DOCUMENT
+                                            ================================================== --}}
 
-                                                    <div class="fw-semibold">
+                                            <div class="col-md-6">
 
-                                                        {{ $document->typeDocument }}
+                                                <div class="d-flex align-items-center">
 
-                                                    </div>
+
+                                                    {{-- ICÔNE DOCUMENT --}}
+
+                                                    @php
+
+                                                        $nomFichier = $document->nomFichier ?? '';
+
+                                                        $extension = strtolower(
+                                                            pathinfo(
+                                                                $nomFichier,
+                                                                PATHINFO_EXTENSION
+                                                            )
+                                                        );
+
+                                                        $icone = match($extension) {
+
+                                                            'pdf' =>
+                                                                'bi-file-earmark-pdf',
+
+                                                            'jpg',
+                                                            'jpeg',
+                                                            'png',
+                                                            'gif',
+                                                            'webp' =>
+                                                                'bi-file-earmark-image',
+
+                                                            'doc',
+                                                            'docx' =>
+                                                                'bi-file-earmark-word',
+
+                                                            'xls',
+                                                            'xlsx' =>
+                                                                'bi-file-earmark-excel',
+
+                                                            'ppt',
+                                                            'pptx' =>
+                                                                'bi-file-earmark-ppt',
+
+                                                            'zip',
+                                                            'rar' =>
+                                                                'bi-file-earmark-zip',
+
+                                                            default =>
+                                                                'bi-file-earmark',
+
+                                                        };
+
+                                                    @endphp
+
 
                                                     <div
-                                                        class="text-muted small text-truncate"
-                                                        style="max-width: 350px;"
-                                                        title="{{ $document->nomFichier }}">
+                                                        class="rounded-3 bg-light d-flex align-items-center justify-content-center me-3"
+                                                        style="width: 48px; height: 48px;">
 
-                                                        {{ $document->nomFichier }}
+                                                        <i
+                                                            class="bi {{ $icone }} fs-4 text-primary">
+                                                        </i>
 
                                                     </div>
 
-                                                    <div class="text-muted small mt-1">
 
-                                                        <i class="bi bi-clock me-1"></i>
+                                                    {{-- INFORMATIONS --}}
 
-                                                        Ajouté le
+                                                    <div style="min-width: 0;">
 
-                                                        {{ $document->dateAjout
-                                                            ? \Carbon\Carbon::parse($document->dateAjout)->format('d/m/Y à H:i')
-                                                            : '—'
-                                                        }}
+                                                        <div class="fw-semibold">
+
+                                                            {{ $document->typeDocument ?? 'Document' }}
+
+                                                        </div>
+
+
+                                                        <div
+                                                            class="text-muted small text-truncate"
+                                                            style="max-width: 350px;"
+                                                            title="{{ $nomFichier }}">
+
+                                                            {{ $nomFichier ?: 'Nom du fichier non disponible' }}
+
+                                                        </div>
+
+
+                                                        <div class="text-muted small mt-1">
+
+                                                            <i class="bi bi-clock me-1"></i>
+
+                                                            Ajouté le
+
+                                                            @if(!empty($document->dateAjout))
+
+                                                                {{ \Carbon\Carbon::parse($document->dateAjout)->format('d/m/Y à H:i') }}
+
+                                                            @else
+
+                                                                —
+
+                                                            @endif
+
+                                                        </div>
 
                                                     </div>
 
@@ -324,66 +398,64 @@
 
                                             </div>
 
-                                        </div>
+
+                                            {{-- =================================================
+                                                 ACTIONS
+                                            ================================================== --}}
+
+                                            <div class="col-md-6">
+
+                                                <div
+                                                    class="d-flex justify-content-md-end gap-2 mt-3 mt-md-0 flex-wrap">
 
 
-                                        {{-- =================================================
-                                             ACTIONS
-                                        ================================================== --}}
+                                                    {{-- =================================================
+                                                         VOIR
+                                                    ================================================== --}}
 
-                                        <div class="col-md-6">
+                                                    <a
+                                                        href="{{ route(
+                                                            'etudiant.documents.voir',
+                                                            [
+                                                                'idDemande' => $demande->idDemande,
+                                                                'idDocument' => $document->idDocument
+                                                            ]
+                                                        ) }}"
+                                                        target="_blank"
+                                                        class="btn btn-sm btn-outline-primary">
 
-                                            <div
-                                                class="d-flex justify-content-md-end gap-2 mt-3 mt-md-0">
+                                                        <i class="bi bi-eye me-1"></i>
 
-                                                {{-- ===============================
-                                                     VOIR
-                                                ================================ --}}
+                                                        Voir
 
-                                                <a
-                                                    href="{{ route(
-                                                        'etudiant.documents.voir',
-                                                        [
-                                                            'idDemande' => $demande->idDemande,
-                                                            'idDocument' => $document->idDocument
-                                                        ]
-                                                    ) }}"
-                                                    target="_blank"
-                                                    class="btn btn-sm btn-outline-primary">
-
-                                                    <i class="bi bi-eye me-1"></i>
-
-                                                    Voir
-
-                                                </a>
+                                                    </a>
 
 
-                                                {{-- ===============================
-                                                     TÉLÉCHARGER
-                                                ================================ --}}
+                                                    {{-- =================================================
+                                                         TÉLÉCHARGER
+                                                    ================================================== --}}
 
-                                                <a
-                                                    href="{{ route(
-                                                        'etudiant.documents.telecharger',
-                                                        [
-                                                            'idDemande' => $demande->idDemande,
-                                                            'idDocument' => $document->idDocument
-                                                        ]
-                                                    ) }}"
-                                                    class="btn btn-sm btn-outline-secondary">
+                                                    <a
+                                                        href="{{ route(
+                                                            'etudiant.documents.telecharger',
+                                                            [
+                                                                'idDemande' => $demande->idDemande,
+                                                                'idDocument' => $document->idDocument
+                                                            ]
+                                                        ) }}"
+                                                        class="btn btn-sm btn-outline-secondary">
 
-                                                    <i class="bi bi-download me-1"></i>
+                                                        <i class="bi bi-download me-1"></i>
 
-                                                    Télécharger
+                                                        Télécharger
 
-                                                </a>
+                                                    </a>
 
 
-                                                {{-- ===============================
-                                                     SUPPRIMER
-                                                ================================ --}}
-
-                                                @if(in_array($statut, ['EN_ATTENTE', 'BROUILLON'], true))
+                                                    {{-- =================================================
+                                                         SUPPRIMER
+                                                         ACTIF POUR TOUS LES STATUTS
+                                                    ================================================== --}}
 
                                                     <form
                                                         action="{{ route(
@@ -413,21 +485,8 @@
 
                                                     </form>
 
-                                                @else
 
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-sm btn-outline-secondary"
-                                                        disabled
-                                                        title="La demande est déjà en cours de traitement.">
-
-                                                        <i class="bi bi-lock me-1"></i>
-
-                                                        Supprimer
-
-                                                    </button>
-
-                                                @endif
+                                                </div>
 
                                             </div>
 
@@ -437,61 +496,100 @@
 
                                 </div>
 
-                            </div>
+                            @endforeach
 
-                        @endforeach
+                        </div>
+
+                    @else
+
+                        {{-- =================================================
+                             AUCUN DOCUMENT POUR CETTE DEMANDE
+                        ================================================== --}}
+
+                        <div class="text-center py-4">
+
+                            <i
+                                class="bi bi-file-earmark-x text-muted"
+                                style="font-size: 2.5rem;">
+                            </i>
+
+                            <p class="text-muted mt-2 mb-3">
+
+                                Aucun document ajouté pour cette demande.
+
+                            </p>
+
+                            <a
+                                href="{{ route(
+                                    'etudiant.demandes.documents',
+                                    [
+                                        'idDemande' => $demande->idDemande
+                                    ]
+                                ) }}"
+                                class="btn btn-sm btn-outline-primary">
+
+                                <i class="bi bi-upload me-1"></i>
+
+                                Ajouter un document
+
+                            </a>
+
+                        </div>
+
+                    @endif
+
+                </div>
+
+
+                {{-- =================================================
+                     PIED DE LA CARTE
+                ================================================== --}}
+
+                <div class="card-footer bg-light border-0">
+
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                        <small class="text-muted">
+
+                            <i class="bi bi-file-earmark me-1"></i>
+
+                            {{ $demande->documents ? $demande->documents->count() : 0 }}
+
+                            document(s)
+
+                        </small>
+
+
+                        {{-- =================================================
+                             SEULEMENT : VOIR LA DEMANDE
+                             
+                             "Gérer les documents" SUPPRIMÉ
+                        ================================================== --}}
+
+                        <a
+                            href="{{ route(
+                                'etudiant.demandes.show',
+                                [
+                                    'idDemande' => $demande->idDemande
+                                ]
+                            ) }}"
+                            class="btn btn-sm btn-outline-primary">
+
+                            <i class="bi bi-eye me-1"></i>
+
+                            Voir la demande
+
+                        </a>
 
                     </div>
-
-                @endif
-
-            </div>
-
-
-            {{-- =================================================
-                 PIED DE LA CARTE
-            ================================================== --}}
-
-            <div class="card-footer bg-light border-0">
-
-                <div class="d-flex justify-content-between align-items-center">
-
-                    <small class="text-muted">
-
-                        <i class="bi bi-file-earmark me-1"></i>
-
-                        {{ $demande->documents->count() }}
-
-                        document(s)
-
-                    </small>
-
-
-                    <a
-                        href="{{ route(
-                            'etudiant.demandes.show',
-                            [
-                                'idDemande' => $demande->idDemande
-                            ]
-                        ) }}"
-                        class="btn btn-sm btn-outline-primary">
-
-                        <i class="bi bi-eye me-1"></i>
-
-                        Voir la demande
-
-                    </a>
 
                 </div>
 
             </div>
 
-        </div>
+        @endforeach
 
-    @endforeach
-
-@endif
-
+    @endif
 
 </div>
 

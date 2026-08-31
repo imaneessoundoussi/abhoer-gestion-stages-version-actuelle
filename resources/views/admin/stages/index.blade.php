@@ -20,63 +20,102 @@
     <div class="row g-4 mb-4">
 
         <div class="col-xl-3 col-md-6">
+
             <div class="admin-stat-card">
+
                 <div>
-                    <div class="admin-stat-label">Total stages</div>
+
+                    <div class="admin-stat-label">
+                        Total stages
+                    </div>
+
                     <div class="admin-stat-value">
                         {{ $totalStages }}
                     </div>
+
                 </div>
 
                 <div class="admin-stat-icon blue">
                     <i class="bi bi-briefcase"></i>
                 </div>
+
             </div>
+
         </div>
 
+
         <div class="col-xl-3 col-md-6">
+
             <div class="admin-stat-card">
+
                 <div>
-                    <div class="admin-stat-label">Stages en cours</div>
+
+                    <div class="admin-stat-label">
+                        Stages en cours
+                    </div>
+
                     <div class="admin-stat-value">
                         {{ $stagesEnCours }}
                     </div>
+
                 </div>
 
                 <div class="admin-stat-icon green">
                     <i class="bi bi-play-circle"></i>
                 </div>
+
             </div>
+
         </div>
 
+
         <div class="col-xl-3 col-md-6">
+
             <div class="admin-stat-card">
+
                 <div>
-                    <div class="admin-stat-label">Stages à venir</div>
+
+                    <div class="admin-stat-label">
+                        Stages à venir
+                    </div>
+
                     <div class="admin-stat-value">
                         {{ $stagesAVenir }}
                     </div>
+
                 </div>
 
                 <div class="admin-stat-icon orange">
                     <i class="bi bi-calendar-event"></i>
                 </div>
+
             </div>
+
         </div>
 
+
         <div class="col-xl-3 col-md-6">
+
             <div class="admin-stat-card">
+
                 <div>
-                    <div class="admin-stat-label">Stages terminés</div>
+
+                    <div class="admin-stat-label">
+                        Stages terminés
+                    </div>
+
                     <div class="admin-stat-value">
                         {{ $stagesTermines }}
                     </div>
+
                 </div>
 
                 <div class="admin-stat-icon purple">
                     <i class="bi bi-check-circle"></i>
                 </div>
+
             </div>
+
         </div>
 
     </div>
@@ -89,17 +128,28 @@
     <div class="admin-card mb-4">
 
         <div class="admin-card-header">
+
             <div>
-                <h5>Rechercher un stage</h5>
+
+                <h5>
+                    Rechercher un stage
+                </h5>
+
                 <p>
                     Recherchez par candidat, demande, thème ou service.
                 </p>
+
             </div>
+
         </div>
+
 
         <div class="admin-card-body">
 
-            <form method="GET" action="{{ route('admin.stages.index') }}">
+            <form
+                method="GET"
+                action="{{ route('admin.stages.index') }}"
+            >
 
                 <div class="row g-3">
 
@@ -123,14 +173,18 @@
 
                     </div>
 
+
                     <div class="col-md-3">
 
                         <button
                             type="submit"
                             class="btn btn-primary w-100"
                         >
+
                             <i class="bi bi-search me-1"></i>
+
                             Rechercher
+
                         </button>
 
                     </div>
@@ -153,15 +207,20 @@
         <div class="admin-card-header">
 
             <div>
-                <h5>Liste des stages</h5>
+
+                <h5>
+                    Liste des stages
+                </h5>
 
                 <p>
                     {{ $stages->total() }}
                     stage(s) trouvé(s)
                 </p>
+
             </div>
 
         </div>
+
 
         <div class="table-responsive">
 
@@ -170,15 +229,35 @@
                 <thead>
 
                     <tr>
-                        <th>Stage</th>
-                        <th>Candidat</th>
-                        <th>Service</th>
-                        <th>Période</th>
-                        <th>Statut</th>
-                        <th class="text-end">Action</th>
+
+                        <th>
+                            Stage
+                        </th>
+
+                        <th>
+                            Candidat
+                        </th>
+
+                        <th>
+                            Service
+                        </th>
+
+                        <th>
+                            Période
+                        </th>
+
+                        <th>
+                            Statut
+                        </th>
+
+                        <th class="text-end">
+                            Action
+                        </th>
+
                     </tr>
 
                 </thead>
+
 
                 <tbody>
 
@@ -196,119 +275,198 @@
                             ? \Carbon\Carbon::parse($stage->dateFin)
                             : null;
 
+
                         if ($dateDebut && $dateDebut->isFuture()) {
+
                             $statutStage = 'À venir';
                             $badgeClass = 'warning';
                             $icon = 'calendar-event';
+
                         } elseif (
                             $dateDebut &&
                             $dateFin &&
                             $today->between($dateDebut, $dateFin)
                         ) {
+
                             $statutStage = 'En cours';
                             $badgeClass = 'success';
                             $icon = 'play-circle';
-                        } elseif ($dateFin && $dateFin->isPast()) {
+
+                        } elseif (
+                            $dateFin &&
+                            $dateFin->isPast()
+                        ) {
+
                             $statutStage = 'Terminé';
                             $badgeClass = 'secondary';
                             $icon = 'check-circle';
+
                         } else {
+
                             $statutStage = 'Non défini';
                             $badgeClass = 'secondary';
                             $icon = 'question-circle';
+
                         }
 
                     @endphp
 
+
                     <tr>
+
+                        {{-- Stage --}}
 
                         <td>
 
                             <div class="fw-bold">
+
                                 {{ $stage->numeroDemande }}
+
                             </div>
 
                             <small class="text-muted">
+
                                 Affectation #{{ $stage->idAffectation }}
+
                             </small>
 
                         </td>
 
+
+                        {{-- Candidat --}}
+
                         <td>
 
                             <div class="fw-semibold">
+
                                 {{ $stage->prenom }}
                                 {{ $stage->nom }}
+
                             </div>
 
                             <small class="text-muted">
+
                                 {{ $stage->email }}
+
                             </small>
 
                         </td>
+
+
+                        {{-- Service --}}
 
                         <td>
 
                             <div class="fw-semibold">
+
                                 {{ $stage->nomService }}
+
                             </div>
 
                             <small class="text-muted">
+
                                 {{ $stage->nomDepartement }}
+
                             </small>
 
                         </td>
+
+
+                        {{-- Période --}}
 
                         <td>
 
                             @if($stage->dateDebut && $stage->dateFin)
 
                                 <div>
+
                                     Du
+
                                     <strong>
-                                        {{ \Carbon\Carbon::parse($stage->dateDebut)->format('d/m/Y') }}
+
+                                        {{
+                                            \Carbon\Carbon::parse(
+                                                $stage->dateDebut
+                                            )->format('d/m/Y')
+                                        }}
+
                                     </strong>
+
                                 </div>
 
+
                                 <div>
+
                                     au
+
                                     <strong>
-                                        {{ \Carbon\Carbon::parse($stage->dateFin)->format('d/m/Y') }}
+
+                                        {{
+                                            \Carbon\Carbon::parse(
+                                                $stage->dateFin
+                                            )->format('d/m/Y')
+                                        }}
+
                                     </strong>
+
                                 </div>
 
                             @else
 
                                 <span class="text-muted">
+
                                     Non renseignée
+
                                 </span>
 
                             @endif
 
                         </td>
 
+
+                        {{-- Statut --}}
+
                         <td>
 
-                            <span class="badge bg-{{ $badgeClass }}">
-                                <i class="bi bi-{{ $icon }} me-1"></i>
+                            <span
+                                class="badge bg-{{ $badgeClass }}"
+                            >
+
+                                <i
+                                    class="bi bi-{{ $icon }} me-1"
+                                ></i>
+
                                 {{ $statutStage }}
+
                             </span>
 
                         </td>
 
+
+                        {{-- Action --}}
+
                         <td class="text-end">
 
+                            {{-- IMPORTANT :
+                                 Le contrôleur show() attend idDemande,
+                                 pas idAffectation.
+                            --}}
+
                             <a
-                                href="{{ route('admin.stages.show', $stage->idAffectation) }}"
+                                href="{{ route('admin.stages.show', $stage->idDemande) }}"
                                 class="btn btn-sm btn-outline-primary"
                             >
+
                                 <i class="bi bi-eye"></i>
+
                                 Voir
+
                             </a>
 
                         </td>
 
                     </tr>
+
 
                 @empty
 
@@ -327,7 +485,9 @@
                                 ></i>
 
                                 <p class="mt-3 mb-0">
+
                                     Aucun stage trouvé.
+
                                 </p>
 
                             </div>
@@ -343,6 +503,9 @@
             </table>
 
         </div>
+
+
+        {{-- Pagination --}}
 
         @if($stages->hasPages())
 

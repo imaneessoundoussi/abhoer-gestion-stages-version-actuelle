@@ -7,12 +7,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Historique extends Model
 {
+    /**
+     * Nom de la table.
+     */
     protected $table = 'historique';
 
+    /**
+     * Clé primaire.
+     */
     protected $primaryKey = 'idHistorique';
 
+    /**
+     * Pas de timestamps.
+     */
     public $timestamps = false;
 
+    /**
+     * Champs autorisés.
+     */
     protected $fillable = [
         'idUtilisateur',
         'idDemande',
@@ -22,10 +34,16 @@ class Historique extends Model
         'nouvelleValeur',
     ];
 
+    /**
+     * Conversion.
+     */
     protected $casts = [
         'dateAction' => 'datetime',
     ];
 
+    /**
+     * L'historique appartient à un utilisateur.
+     */
     public function utilisateur(): BelongsTo
     {
         return $this->belongsTo(
@@ -35,6 +53,9 @@ class Historique extends Model
         );
     }
 
+    /**
+     * L'historique appartient à une demande.
+     */
     public function demande(): BelongsTo
     {
         return $this->belongsTo(

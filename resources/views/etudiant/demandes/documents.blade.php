@@ -6,6 +6,7 @@
 
 <div class="container-fluid py-4">
 
+
     {{-- ============================================================
          EN-TÊTE
     ============================================================ --}}
@@ -15,14 +16,19 @@
         <div>
 
             <h2 class="fw-bold mb-1">
+
                 Documents de la demande
+
             </h2>
 
             <p class="text-muted mb-0">
 
                 Demande :
+
                 <strong>
+
                     {{ $demande->numeroDemande }}
+
                 </strong>
 
             </p>
@@ -52,7 +58,10 @@
 
     @if(session('success'))
 
-        <div class="alert alert-success alert-dismissible fade show">
+        <div
+            class="alert alert-success alert-dismissible fade show"
+            role="alert"
+        >
 
             <i class="bi bi-check-circle me-2"></i>
 
@@ -71,7 +80,10 @@
 
     @if(session('error'))
 
-        <div class="alert alert-danger alert-dismissible fade show">
+        <div
+            class="alert alert-danger alert-dismissible fade show"
+            role="alert"
+        >
 
             <i class="bi bi-exclamation-triangle me-2"></i>
 
@@ -98,6 +110,9 @@
 
             <div class="row g-3">
 
+
+                {{-- NUMERO --}}
+
                 <div class="col-md-4">
 
                     <small class="text-muted">
@@ -105,11 +120,15 @@
                     </small>
 
                     <div class="fw-semibold">
+
                         {{ $demande->numeroDemande }}
+
                     </div>
 
                 </div>
 
+
+                {{-- SERVICE --}}
 
                 <div class="col-md-4">
 
@@ -118,11 +137,15 @@
                     </small>
 
                     <div class="fw-semibold">
+
                         {{ $demande->service->nomService ?? '—' }}
+
                     </div>
 
                 </div>
 
+
+                {{-- NOMBRE DOCUMENTS --}}
 
                 <div class="col-md-4">
 
@@ -166,23 +189,40 @@
 
         <div class="card-body">
 
+
+            {{-- ====================================================
+                 AUCUN DOCUMENT
+            ===================================================== --}}
+
             @if($documents->isEmpty())
 
                 <div class="text-center py-5">
 
-                    <i class="bi bi-file-earmark-x display-4 text-muted"></i>
+                    <i
+                        class="bi bi-file-earmark-x display-4 text-muted"
+                    ></i>
 
                     <h5 class="mt-3">
+
                         Aucun document
+
                     </h5>
 
                     <p class="text-muted">
+
                         Aucun document n'a encore été ajouté à cette demande.
+
                     </p>
 
                 </div>
 
+
             @else
+
+
+                {{-- =================================================
+                     TABLEAU
+                ================================================== --}}
 
                 <div class="table-responsive">
 
@@ -215,15 +255,23 @@
 
                         <tbody>
 
+
                             @foreach($documents as $document)
 
                                 <tr>
+
+
+                                    {{-- =================================
+                                         TYPE
+                                    ================================== --}}
 
                                     <td>
 
                                         <span class="badge text-bg-primary">
 
-                                            <i class="bi bi-file-earmark me-1"></i>
+                                            <i
+                                                class="bi bi-file-earmark me-1"
+                                            ></i>
 
                                             {{ $document->typeDocument }}
 
@@ -231,6 +279,10 @@
 
                                     </td>
 
+
+                                    {{-- =================================
+                                         NOM FICHIER
+                                    ================================== --}}
 
                                     <td>
 
@@ -243,18 +295,37 @@
                                     </td>
 
 
+                                    {{-- =================================
+                                         DATE
+                                    ================================== --}}
+
                                     <td>
 
-                                        {{ $document->dateAjout ?? '—' }}
+                                        @if(!empty($document->dateAjout))
+
+                                            {{ \Carbon\Carbon::parse($document->dateAjout)->format('d/m/Y H:i') }}
+
+                                        @else
+
+                                            —
+
+                                        @endif
 
                                     </td>
 
+
+                                    {{-- =================================
+                                         ACTIONS
+                                    ================================== --}}
 
                                     <td class="text-end">
 
                                         <div class="btn-group">
 
-                                            {{-- VOIR --}}
+
+                                            {{-- =================================
+                                                 VOIR
+                                            ================================== --}}
 
                                             <a
                                                 href="{{ route(
@@ -262,6 +333,7 @@
                                                     [
                                                         'idDemande' =>
                                                             $demande->idDemande,
+
                                                         'idDocument' =>
                                                             $document->idDocument
                                                     ]
@@ -278,7 +350,9 @@
                                             </a>
 
 
-                                            {{-- TÉLÉCHARGER --}}
+                                            {{-- =================================
+                                                 TELECHARGER
+                                            ================================== --}}
 
                                             <a
                                                 href="{{ route(
@@ -286,6 +360,7 @@
                                                     [
                                                         'idDemande' =>
                                                             $demande->idDemande,
+
                                                         'idDocument' =>
                                                             $document->idDocument
                                                     ]
@@ -299,7 +374,9 @@
                                             </a>
 
 
-                                            {{-- SUPPRIMER --}}
+                                            {{-- =================================
+                                                 CALCUL STATUT
+                                            ================================== --}}
 
                                             @php
 
@@ -307,18 +384,21 @@
                                                     (string) $demande->statut
                                                 );
 
-                                                $peutSupprimer =
-                                                    in_array(
-                                                        $statut,
-                                                        [
-                                                            'EN_ATTENTE',
-                                                            'BROUILLON'
-                                                        ],
-                                                        true
-                                                    );
+                                                $peutSupprimer = in_array(
+                                                    $statut,
+                                                    [
+                                                        'EN_ATTENTE',
+                                                        'BROUILLON'
+                                                    ],
+                                                    true
+                                                );
 
                                             @endphp
 
+
+                                            {{-- =================================
+                                                 SUPPRIMER
+                                            ================================== --}}
 
                                             @if($peutSupprimer)
 
@@ -328,15 +408,14 @@
                                                         [
                                                             'idDemande' =>
                                                                 $demande->idDemande,
+
                                                             'idDocument' =>
                                                                 $document->idDocument
                                                         ]
                                                     ) }}"
                                                     method="POST"
                                                     class="d-inline"
-                                                    onsubmit="return confirm(
-                                                        'Voulez-vous vraiment supprimer ce document ?'
-                                                    );"
+                                                    onsubmit="return confirm('Voulez-vous vraiment supprimer ce document ?');"
                                                 >
 
                                                     @csrf
@@ -349,13 +428,16 @@
                                                         title="Supprimer"
                                                     >
 
-                                                        <i class="bi bi-trash"></i>
+                                                        <i
+                                                            class="bi bi-trash"
+                                                        ></i>
 
                                                     </button>
 
                                                 </form>
 
                                             @endif
+
 
                                         </div>
 
@@ -365,6 +447,7 @@
 
                             @endforeach
 
+
                         </tbody>
 
                     </table>
@@ -372,6 +455,7 @@
                 </div>
 
             @endif
+
 
         </div>
 

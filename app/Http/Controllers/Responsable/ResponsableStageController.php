@@ -9,40 +9,110 @@ use Illuminate\Http\Request;
 class ResponsableStageController extends Controller
 {
     /**
-     * Suivi des stages affectés : à venir, en cours, terminés.
+     * Suivi des stages :
+     * - à venir
+     * - en cours
+     * - terminés
      */
     public function index(Request $request)
     {
         $onglet = $request->get('statut', 'en_cours');
 
-        $query = Affectation::with(['demande.candidat', 'service']);
-
         $today = now()->toDateString();
 
+        $query = Affectation::with([
+            'demande.candidat',
+            'service',
+        ]);
+
         switch ($onglet) {
+
             case 'a_venir':
-                $query->whereDate('dateDebut', '>', $today);
+
+                $query->whereDate(
+                    'dateDebut',
+                    '>',
+                    $today
+                );
+
                 break;
 
             case 'termine':
-                $query->whereDate('dateFin', '<', $today);
+
+                $query->whereDate(
+                    'dateFin',
+                    '<',
+                    $today
+                );
+
                 break;
 
             case 'en_cours':
+
             default:
-                $query->whereDate('dateDebut', '<=', $today)
-                    ->whereDate('dateFin', '>=', $today);
+
+                $onglet = 'en_cours';
+
+                $query
+                    ->whereDate(
+                        'dateDebut',
+                        '<=',
+                        $today
+                    )
+                    ->whereDate(
+                        'dateFin',
+                        '>=',
+                        $today
+                    );
+
                 break;
         }
 
-        $affectations = $query->orderBy('dateDebut')->paginate(12)->withQueryString();
+        $affectations = $query
+            ->orderBy('dateDebut')
+            ->paginate(12)
+            ->withQueryString();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Compteurs
+        |--------------------------------------------------------------------------
+        */
 
         $compteurs = [
-            'a_venir' => Affectation::whereDate('dateDebut', '>', $today)->count(),
-            'en_cours' => Affectation::whereDate('dateDebut', '<=', $today)->whereDate('dateFin', '>=', $today)->count(),
-            'termine' => Affectation::whereDate('dateFin', '<', $today)->count(),
+
+            'a_venir' => Affectation::whereDate(
+                'dateDebut',
+                '>',
+                $today
+            )->count(),
+
+            'en_cours' => Affectation::whereDate(
+                'dateDebut',
+                '<=',
+                $today
+            )
+                ->whereDate(
+                    'dateFin',
+                    '>=',
+                    $today
+                )
+                ->count(),
+
+            'termine' => Affectation::whereDate(
+                'dateFin',
+                '<',
+                $today
+            )->count(),
         ];
 
-        return view('responsable.stages.index', compact('affectations', 'onglet', 'compteurs'));
+        return view(
+            'responsable.stages.index',
+            compact(
+                'affectations',
+                'onglet',
+                'compteurs'
+            )
+        );
     }
 }

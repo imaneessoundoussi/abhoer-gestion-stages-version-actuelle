@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -21,421 +22,579 @@
         rel="stylesheet"
     >
 
-<style>
+    <style>
 
-/* =========================================================
-   PROFIL ÉTUDIANT — PREMIUM
-========================================================= */
+        /* =========================================================
+           PROFIL ÉTUDIANT — PREMIUM
+        ========================================================= */
 
-:root {
-    --navy: #102f52;
-    --blue: #2563eb;
-    --blue-light: #eff6ff;
-    --bg: #f3f6fa;
-    --text: #172033;
-    --muted: #718096;
-    --border: #e4eaf1;
-}
+        :root {
 
+            --navy: #102f52;
+            --blue: #2563eb;
+            --blue-light: #eff6ff;
+            --bg: #f3f6fa;
+            --text: #172033;
+            --muted: #718096;
+            --border: #e4eaf1;
 
-/* BODY */
+        }
 
-body {
-    background:
-        radial-gradient(
-            circle at top right,
-            rgba(37,99,235,.07),
-            transparent 32%
-        ),
-        var(--bg);
 
-    color:
-        var(--text);
+        /* =========================================================
+           BODY
+        ========================================================= */
 
-    font-family:
-        Inter,
-        "Segoe UI",
-        Arial,
-        sans-serif;
-}
+        body {
 
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(37, 99, 235, .07),
+                    transparent 32%
+                ),
+                var(--bg);
 
-/* TOPBAR */
+            color: var(--text);
 
-.topbar {
-    background:
-        rgba(255,255,255,.94);
+            font-family:
+                Inter,
+                "Segoe UI",
+                Arial,
+                sans-serif;
 
-    backdrop-filter:
-        blur(14px);
+        }
 
-    border-bottom:
-        1px solid var(--border);
 
-    padding:
-        17px 30px;
+        /* =========================================================
+           TOPBAR
+        ========================================================= */
 
-    box-shadow:
-        0 4px 20px rgba(15,35,65,.04);
-}
+        .topbar {
 
+            background:
+                rgba(255, 255, 255, .94);
 
-/* BRAND */
+            backdrop-filter:
+                blur(14px);
 
-.brand {
-    color:
-        var(--navy);
+            border-bottom:
+                1px solid var(--border);
 
-    font-size:
-        21px;
+            padding:
+                17px 30px;
 
-    font-weight:
-        800;
+            box-shadow:
+                0 4px 20px rgba(15, 35, 65, .04);
 
-    text-decoration:
-        none;
+        }
 
-    letter-spacing:
-        .4px;
-}
 
-.brand small {
-    color:
-        var(--muted);
+        /* =========================================================
+           BRAND
+        ========================================================= */
 
-    font-size:
-        11px;
-}
+        .brand {
 
+            color:
+                var(--navy);
 
-/* CONTENT */
+            font-size:
+                21px;
 
-.content {
-    max-width:
-        1150px;
+            font-weight:
+                800;
 
-    margin:
-        0 auto;
+            text-decoration:
+                none;
 
-    padding:
-        42px 25px;
-}
+            letter-spacing:
+                .4px;
 
+        }
 
-/* TITLE */
+        .brand small {
 
-.page-title {
-    color:
-        var(--navy);
+            color:
+                var(--muted);
 
-    font-size:
-        28px;
+            font-size:
+                11px;
 
-    font-weight:
-        800;
+            margin-left:
+                4px;
 
-    letter-spacing:
-        -.5px;
-}
+        }
 
-.page-subtitle {
-    color:
-        var(--muted);
-}
 
+        /* =========================================================
+           CONTENT
+        ========================================================= */
 
-/* PROFILE CARD */
+        .content {
 
-.profile-card {
-    background:
-        #ffffff;
+            max-width:
+                1150px;
 
-    border:
-        1px solid var(--border);
+            margin:
+                0 auto;
 
-    border-radius:
-        18px;
+            padding:
+                42px 25px;
 
-    box-shadow:
-        0 10px 35px rgba(15,35,65,.07);
+        }
 
-    overflow:
-        hidden;
-}
 
+        /* =========================================================
+           TITLE
+        ========================================================= */
 
-/* HEADER */
+        .page-title {
 
-.profile-header {
-    position:
-        relative;
+            color:
+                var(--navy);
 
-    background:
-        linear-gradient(
-            135deg,
-            #102f52,
-            #174a78
-        );
+            font-size:
+                28px;
 
-    padding:
-        30px 34px;
-}
+            font-weight:
+                800;
 
-.profile-header::after {
-    content:
-        "";
+            letter-spacing:
+                -.5px;
 
-    position:
-        absolute;
+        }
 
-    width:
-        180px;
+        .page-subtitle {
 
-    height:
-        180px;
+            color:
+                var(--muted);
 
-    right:
-        -60px;
+        }
 
-    top:
-        -80px;
 
-    border-radius:
-        50%;
+        /* =========================================================
+           PROFILE CARD
+        ========================================================= */
 
-    background:
-        rgba(255,255,255,.05);
-}
+        .profile-card {
 
-.profile-header h4 {
-    font-size:
-        20px;
-}
+            background:
+                #ffffff;
 
-.profile-header p {
-    color:
-        rgba(255,255,255,.65);
-}
+            border:
+                1px solid var(--border);
 
+            border-radius:
+                18px;
 
-/* BODY */
+            box-shadow:
+                0 10px 35px rgba(15, 35, 65, .07);
 
-.profile-body {
-    padding:
-        34px;
-}
+            overflow:
+                hidden;
 
+        }
 
-/* SECTIONS */
 
-.section-title {
-    color:
-        var(--navy);
+        /* =========================================================
+           HEADER
+        ========================================================= */
 
-    font-size:
-        15px;
+        .profile-header {
 
-    font-weight:
-        750;
+            position:
+                relative;
 
-    padding-bottom:
-        12px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #102f52,
+                    #174a78
+                );
 
-    border-bottom:
-        1px solid var(--border);
+            padding:
+                30px 34px;
 
-    margin-bottom:
-        20px;
-}
+            color:
+                #ffffff;
 
+        }
 
-/* INFO */
+        .profile-header::after {
 
-.info-item {
-    position:
-        relative;
+            content:
+                "";
 
-    padding:
-        18px 20px;
+            position:
+                absolute;
 
-    background:
-        #f8fafc;
+            width:
+                180px;
 
-    border:
-        1px solid var(--border);
+            height:
+                180px;
 
-    border-radius:
-        12px;
+            right:
+                -60px;
 
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        background .2s ease;
-}
+            top:
+                -80px;
 
-.info-item:hover {
-    background:
-        #ffffff;
+            border-radius:
+                50%;
 
-    transform:
-        translateY(-2px);
+            background:
+                rgba(255, 255, 255, .05);
 
-    box-shadow:
-        0 8px 20px rgba(15,35,65,.06);
-}
+        }
 
-.info-label {
-    color:
-        #8290a3;
+        .profile-header h4 {
 
-    font-size:
-        10px;
+            font-size:
+                20px;
 
-    font-weight:
-        750;
+            margin-bottom:
+                5px;
 
-    letter-spacing:
-        .8px;
-}
+        }
 
-.info-value {
-    color:
-        #1e293b;
+        .profile-header p {
 
-    font-size:
-        15px;
+            color:
+                rgba(255, 255, 255, .65);
 
-    font-weight:
-        650;
-}
+            margin-bottom:
+                0;
 
+        }
 
-/* BUTTONS */
 
-.btn {
-    border-radius:
-        10px;
+        /* =========================================================
+           BODY
+        ========================================================= */
 
-    font-weight:
-        650;
+        .profile-body {
 
-    padding:
-        10px 17px;
-}
+            padding:
+                34px;
 
-.btn-primary {
-    background:
-        linear-gradient(
-            135deg,
-            #2563eb,
-            #174ea6
-        );
+        }
 
-    border:
-        none;
 
-    box-shadow:
-        0 5px 15px rgba(37,99,235,.20);
-}
+        /* =========================================================
+           SECTIONS
+        ========================================================= */
 
-.btn-primary:hover {
-    background:
-        linear-gradient(
-            135deg,
-            #1d4ed8,
-            #123d86
-        );
-}
+        .section-title {
 
+            color:
+                var(--navy);
 
-/* LOGOUT */
+            font-size:
+                15px;
 
-.logout-btn {
-    border:
-        none;
+            font-weight:
+                750;
 
-    background:
-        transparent;
+            padding-bottom:
+                12px;
 
-    color:
-        #64748b;
+            border-bottom:
+                1px solid var(--border);
 
-    font-weight:
-        600;
-}
+            margin-bottom:
+                20px;
 
-.logout-btn:hover {
-    color:
-        #dc2626;
-}
+        }
 
 
-/* ALERTS */
+        /* =========================================================
+           INFO
+        ========================================================= */
 
-.success-message {
-    background:
-        #ecfdf3;
+        .info-item {
 
-    border:
-        1px solid #bbf7d0;
+            position:
+                relative;
 
-    color:
-        #166534;
+            padding:
+                18px 20px;
 
-    border-radius:
-        12px;
+            background:
+                #f8fafc;
 
-    padding:
-        14px 17px;
-}
+            border:
+                1px solid var(--border);
 
-.error-message {
-    background:
-        #fff1f2;
+            border-radius:
+                12px;
 
-    border:
-        1px solid #fecdd3;
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease,
+                background .2s ease;
 
-    color:
-        #be123c;
+        }
 
-    border-radius:
-        12px;
+        .info-item:hover {
 
-    padding:
-        14px 17px;
-}
+            background:
+                #ffffff;
 
+            transform:
+                translateY(-2px);
 
-/* RESPONSIVE */
+            box-shadow:
+                0 8px 20px rgba(15, 35, 65, .06);
 
-@media (max-width: 767px) {
+        }
 
-    .content {
-        padding:
-            25px 15px;
-    }
+        .info-label {
 
-    .profile-body {
-        padding:
-            22px;
-    }
+            color:
+                #8290a3;
 
-    .profile-header {
-        padding:
-            24px;
-    }
+            font-size:
+                10px;
 
-}
+            font-weight:
+                750;
 
-</style>
+            letter-spacing:
+                .8px;
+
+            text-transform:
+                uppercase;
+
+            margin-bottom:
+                5px;
+
+        }
+
+        .info-value {
+
+            color:
+                #1e293b;
+
+            font-size:
+                15px;
+
+            font-weight:
+                650;
+
+            word-break:
+                break-word;
+
+        }
+
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
+
+        .btn {
+
+            border-radius:
+                10px;
+
+            font-weight:
+                650;
+
+            padding:
+                10px 17px;
+
+        }
+
+        .btn-primary {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #174ea6
+                );
+
+            border:
+                none;
+
+            box-shadow:
+                0 5px 15px rgba(37, 99, 235, .20);
+
+        }
+
+        .btn-primary:hover {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #1d4ed8,
+                    #123d86
+                );
+
+        }
+
+        .btn-light-custom {
+
+            background:
+                #f8fafc;
+
+            border:
+                1px solid var(--border);
+
+            color:
+                #475569;
+
+        }
+
+        .btn-light-custom:hover {
+
+            background:
+                #eef2f7;
+
+            color:
+                var(--navy);
+
+        }
+
+
+        /* =========================================================
+           LOGOUT
+        ========================================================= */
+
+        .logout-btn {
+
+            border:
+                none;
+
+            background:
+                transparent;
+
+            color:
+                #64748b;
+
+            font-weight:
+                600;
+
+        }
+
+        .logout-btn:hover {
+
+            color:
+                #dc2626;
+
+        }
+
+
+        /* =========================================================
+           ALERTS
+        ========================================================= */
+
+        .success-message {
+
+            background:
+                #ecfdf3;
+
+            border:
+                1px solid #bbf7d0;
+
+            color:
+                #166534;
+
+            border-radius:
+                12px;
+
+            padding:
+                14px 17px;
+
+            margin-bottom:
+                20px;
+
+        }
+
+        .error-message {
+
+            background:
+                #fff1f2;
+
+            border:
+                1px solid #fecdd3;
+
+            color:
+                #be123c;
+
+            border-radius:
+                12px;
+
+            padding:
+                14px 17px;
+
+            margin-bottom:
+                20px;
+
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 767px) {
+
+            .content {
+
+                padding:
+                    25px 15px;
+
+            }
+
+            .profile-body {
+
+                padding:
+                    22px;
+
+            }
+
+            .profile-header {
+
+                padding:
+                    24px;
+
+            }
+
+            .topbar {
+
+                padding:
+                    15px;
+
+            }
+
+            .brand small {
+
+                display:
+                    block;
+
+                margin-left:
+                    0;
+
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
 <div class="page-wrapper">
 
-    {{-- BARRE SUPERIEURE --}}
+
+    {{-- =========================================================
+         BARRE SUPERIEURE
+    ========================================================= --}}
+
     <div class="topbar">
 
         <div class="container-fluid">
@@ -446,33 +605,44 @@ body {
                     href="{{ route('etudiant.dashboard') }}"
                     class="brand"
                 >
+
                     ABHOER
 
                     <small>
                         Gestion des stages
                     </small>
+
                 </a>
+
 
                 <div class="d-flex align-items-center gap-3">
 
                     <span class="text-secondary small">
+
                         {{ $user->prenom ?? '' }}
                         {{ $user->nom ?? '' }}
+
                     </span>
+
 
                     <form
                         method="POST"
                         action="{{ route('logout') }}"
                     >
+
                         @csrf
 
                         <button
                             type="submit"
                             class="logout-btn"
                         >
+
                             <i class="bi bi-box-arrow-right me-1"></i>
+
                             Déconnexion
+
                         </button>
+
                     </form>
 
                 </div>
@@ -483,22 +653,37 @@ body {
 
     </div>
 
-    {{-- CONTENU --}}
+
+    {{-- =========================================================
+         CONTENU
+    ========================================================= --}}
+
     <main class="content">
+
+
+        {{-- TITRE --}}
 
         <div class="mb-4">
 
             <h2 class="page-title">
+
                 Mon profil
+
             </h2>
 
             <p class="page-subtitle">
+
                 Consultez et gérez vos informations personnelles et universitaires.
+
             </p>
 
         </div>
 
-        {{-- SUCCESS --}}
+
+        {{-- =====================================================
+             MESSAGE SUCCÈS
+        ====================================================== --}}
+
         @if(session('success'))
 
             <div class="success-message">
@@ -511,7 +696,11 @@ body {
 
         @endif
 
-        {{-- ERROR --}}
+
+        {{-- =====================================================
+             MESSAGE ERREUR
+        ====================================================== --}}
+
         @if(session('error'))
 
             <div class="error-message">
@@ -524,8 +713,17 @@ body {
 
         @endif
 
-        {{-- CARTE --}}
+
+        {{-- =====================================================
+             CARTE PROFIL
+        ====================================================== --}}
+
         <div class="profile-card">
+
+
+            {{-- =================================================
+                 HEADER
+            ================================================== --}}
 
             <div class="profile-header">
 
@@ -543,6 +741,7 @@ body {
 
                     </div>
 
+
                     <i
                         class="bi bi-person-circle"
                         style="font-size: 42px;"
@@ -552,9 +751,18 @@ body {
 
             </div>
 
+
+            {{-- =================================================
+                 BODY
+            ================================================== --}}
+
             <div class="profile-body">
 
-                {{-- INFORMATIONS PERSONNELLES --}}
+
+                {{-- =================================================
+                     INFORMATIONS PERSONNELLES
+                ================================================== --}}
+
                 <div class="section-title">
 
                     <i class="bi bi-person me-2"></i>
@@ -563,83 +771,195 @@ body {
 
                 </div>
 
+
                 <div class="row g-3 mb-4">
 
+
+                    {{-- NOM --}}
+
                     <div class="col-md-6">
+
                         <div class="info-item">
-                            <div class="info-label">Nom</div>
+
+                            <div class="info-label">
+                                Nom
+                            </div>
+
                             <div class="info-value">
+
                                 {{ $candidat->nom ?? '-' }}
+
                             </div>
+
                         </div>
+
                     </div>
 
+
+                    {{-- PRENOM --}}
+
                     <div class="col-md-6">
+
                         <div class="info-item">
-                            <div class="info-label">Prénom</div>
+
+                            <div class="info-label">
+                                Prénom
+                            </div>
+
                             <div class="info-value">
+
                                 {{ $candidat->prenom ?? '-' }}
+
                             </div>
+
                         </div>
+
                     </div>
 
+
+                    {{-- CIN --}}
+
                     <div class="col-md-6">
+
                         <div class="info-item">
-                            <div class="info-label">CIN</div>
+
+                            <div class="info-label">
+                                CIN
+                            </div>
+
                             <div class="info-value">
+
                                 {{ $candidat->cin ?? '-' }}
+
                             </div>
+
                         </div>
+
                     </div>
 
+
+                    {{-- CNE --}}
+
                     <div class="col-md-6">
+
                         <div class="info-item">
-                            <div class="info-label">CNE</div>
+
+                            <div class="info-label">
+                                CNE
+                            </div>
+
                             <div class="info-value">
+
                                 {{ $candidat->cne ?? '-' }}
+
                             </div>
+
                         </div>
+
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="info-item">
-                            <div class="info-label">Date de naissance</div>
-                            <div class="info-value">
-                                {{ $candidat->dateNaissance ?? '-' }}
-                            </div>
-                        </div>
-                    </div>
+
+                    {{-- =================================================
+                         DATE DE NAISSANCE
+                         CORRECTION : DATE SEULEMENT
+                    ================================================== --}}
 
                     <div class="col-md-6">
+
                         <div class="info-item">
-                            <div class="info-label">Téléphone</div>
+
+                            <div class="info-label">
+                                Date de naissance
+                            </div>
+
                             <div class="info-value">
+
+                                @if(!empty($candidat->dateNaissance))
+
+                                    {{ \Carbon\Carbon::parse($candidat->dateNaissance)->format('d/m/Y') }}
+
+                                @else
+
+                                    -
+
+                                @endif
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    {{-- TELEPHONE --}}
+
+                    <div class="col-md-6">
+
+                        <div class="info-item">
+
+                            <div class="info-label">
+                                Téléphone
+                            </div>
+
+                            <div class="info-value">
+
                                 {{ $candidat->telephone ?? '-' }}
+
                             </div>
+
                         </div>
+
                     </div>
 
+
+                    {{-- EMAIL --}}
+
                     <div class="col-md-6">
+
                         <div class="info-item">
-                            <div class="info-label">Adresse email</div>
+
+                            <div class="info-label">
+                                Adresse email
+                            </div>
+
                             <div class="info-value">
+
                                 {{ $candidat->email ?? '-' }}
+
                             </div>
+
                         </div>
+
                     </div>
 
+
+                    {{-- ADRESSE --}}
+
                     <div class="col-md-6">
+
                         <div class="info-item">
-                            <div class="info-label">Adresse</div>
-                            <div class="info-value">
-                                {{ $candidat->adresse ?? '-' }}
+
+                            <div class="info-label">
+                                Adresse
                             </div>
+
+                            <div class="info-value">
+
+                                {{ $candidat->adresse ?? '-' }}
+
+                            </div>
+
                         </div>
+
                     </div>
 
                 </div>
 
-                {{-- INFORMATIONS UNIVERSITAIRES --}}
+
+                {{-- =================================================
+                     INFORMATIONS UNIVERSITAIRES
+                ================================================== --}}
+
                 <div class="section-title">
 
                     <i class="bi bi-mortarboard me-2"></i>
@@ -648,78 +968,128 @@ body {
 
                 </div>
 
+
                 <div class="row g-3 mb-4">
 
+
+                    {{-- ETABLISSEMENT --}}
+
                     <div class="col-md-6">
+
                         <div class="info-item">
+
                             <div class="info-label">
                                 Établissement
                             </div>
 
                             <div class="info-value">
+
                                 {{ $candidat->etablissement ?? '-' }}
+
                             </div>
+
                         </div>
+
                     </div>
 
+
+                    {{-- FORMATION --}}
+
                     <div class="col-md-6">
+
                         <div class="info-item">
+
                             <div class="info-label">
                                 Formation
                             </div>
 
                             <div class="info-value">
+
                                 {{ $candidat->formation ?? '-' }}
+
                             </div>
+
                         </div>
+
                     </div>
 
+
+                    {{-- NIVEAU --}}
+
                     <div class="col-md-6">
+
                         <div class="info-item">
+
                             <div class="info-label">
                                 Niveau d'étude
                             </div>
 
                             <div class="info-value">
+
                                 {{ $candidat->niveauEtude ?? '-' }}
+
                             </div>
+
                         </div>
+
                     </div>
 
+
+                    {{-- ANNEE UNIVERSITAIRE --}}
+
                     <div class="col-md-6">
+
                         <div class="info-item">
+
                             <div class="info-label">
                                 Année universitaire
                             </div>
 
                             <div class="info-value">
+
                                 {{ $candidat->anneeUniversitaire ?? '-' }}
+
                             </div>
+
                         </div>
+
                     </div>
 
                 </div>
 
-                {{-- BOUTONS --}}
+
+                {{-- =================================================
+                     BOUTONS
+                ================================================== --}}
+
                 <div class="d-flex justify-content-end gap-2">
+
 
                     <a
                         href="{{ route('etudiant.dashboard') }}"
                         class="btn btn-light-custom"
                     >
+
                         <i class="bi bi-arrow-left me-2"></i>
+
                         Retour
+
                     </a>
+
 
                     <a
                         href="{{ route('etudiant.profil.edit') }}"
                         class="btn btn-primary"
                     >
+
                         <i class="bi bi-pencil me-2"></i>
+
                         Modifier mon profil
+
                     </a>
 
                 </div>
+
 
             </div>
 
@@ -728,6 +1098,7 @@ body {
     </main>
 
 </div>
+
 
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

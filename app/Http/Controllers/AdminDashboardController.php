@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Candidat;
-use App\Models\DemandeStage;
-use App\Models\Service;
-use App\Models\Utilisateur;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
 {
@@ -17,40 +14,118 @@ class AdminDashboardController extends Controller
     {
         /*
         |--------------------------------------------------------------------------
-        | STATISTIQUES GENERALES
+        | DATE ACTUELLE
         |--------------------------------------------------------------------------
         */
 
-        $totalUtilisateurs = Utilisateur::count();
-
-        $totalCandidats = Candidat::count();
-
-        $totalServices = Service::count();
-
-        $totalDemandes = DemandeStage::count();
-
+        $today = Carbon::today();
 
         /*
         |--------------------------------------------------------------------------
-        | STATISTIQUES PAR STATUT
+        | STATISTIQUES DES DEMANDES
         |--------------------------------------------------------------------------
         */
 
-        $demandesEnAttente = DemandeStage::whereRaw(
-            "UPPER(REPLACE(statut, ' ', '_')) = ?",
-            ['EN_ATTENTE']
-        )->count();
+        $totalDemandes = DB::table('demande_stage')
+            ->count();
 
-        $demandesAcceptees = DemandeStage::whereRaw(
-            "UPPER(REPLACE(statut, ' ', '_')) IN (?, ?)",
-            ['ACCEPTEE', 'ACCEPTE']
-        )->count();
+        /*
+        |--------------------------------------------------------------------------
+        | DEMANDES EN ATTENTE
+        |--------------------------------------------------------------------------
+        */
 
-        $demandesRefusees = DemandeStage::whereRaw(
-            "UPPER(REPLACE(statut, ' ', '_')) IN (?, ?)",
-            ['REFUSEE', 'REFUSE']
-        )->count();
+        $demandesEnAttente = DB::table('demande_stage')
+            ->where(function ($query) {
+                $query->where('statut', 'EN_ATTENTE')
+                    ->orWhere('statut', 'en_attente');
+            })
+            ->count();
 
+        /*
+        |--------------------------------------------------------------------------
+        | DEMANDES ACCEPTÉES
+        |--------------------------------------------------------------------------
+        |
+        | Une demande acceptée peut ensuite passer à :
+        |
+        | ACCEPTEE
+        | STAGE_EN_COURS
+        | TERMINEE
+        |
+        | On les considère donc comme des demandes acceptées.
+        |
+        */
+
+        $demandesAcceptees = DB::table('demande_stage')
+            ->whereIn('statut', [
+                'ACCEPTEE',
+                'ACCEPTE',
+                'STAGE_EN_COURS',
+                'TERMINEE'
+            ])
+            ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | DEMANDES REFUSÉES
+        |--------------------------------------------------------------------------
+        */
+
+        $demandesRefusees = DB::table('demande_stage')
+            ->whereIn('statut', [
+                'REFUSEE',
+                'REFUSE'
+            ])
+            ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | UTILISATEURS
+        |--------------------------------------------------------------------------
+        */
+
+        $totalUtilisateurs = DB::table('utilisateur')
+            ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | CANDIDATS
+        |--------------------------------------------------------------------------
+        */
+
+        $totalCandidats = DB::table('candidat')
+            ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | SERVICES
+        |--------------------------------------------------------------------------
+        */
+
+        $totalServices = DB::table('service')
+            ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | DÉPARTEMENTS
+        |--------------------------------------------------------------------------
+        */
+
+        $totalDepartements = DB::table('departement')
+            ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | STAGES
+        |--------------------------------------------------------------------------
+        |
+        | Un stage existe lorsqu'une affectation existe.
+        |
+        */
+
+        $totalStages = DB::table('affectation')
+            ->count();
 
         /*
         |--------------------------------------------------------------------------
@@ -58,112 +133,87 @@ class AdminDashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $aujourdHui = Carbon::today();
-
-        $stagesEnCours = DemandeStage::whereRaw(
-            "UPPER(REPLACE(statut, ' ', '_')) IN (?, ?)",
-            ['ACCEPTEE', 'ACCEPTE']
-        )
-            ->whereDate('dateDebut', '<=', $aujourdHui)
-            ->whereDate('dateFin', '>=', $aujourdHui)
+        $stagesEnCours = DB::table('affectation')
+            ->whereNotNull('dateDebut')
+            ->whereNotNull('dateFin')
+            ->whereDate('dateDebut', '<=', $today)
+            ->whereDate('dateFin', '>=', $today)
             ->count();
-
 
         /*
         |--------------------------------------------------------------------------
-        | STAGES TERMINES
+        | STAGES À VENIR
         |--------------------------------------------------------------------------
         */
 
-        $stagesTermines = DemandeStage::whereRaw(
-            "UPPER(REPLACE(statut, ' ', '_')) IN (?, ?)",
-            ['ACCEPTEE', 'ACCEPTE']
-        )
-            ->whereDate('dateFin', '<', $aujourdHui)
+        $stagesAVenir = DB::table('affectation')
+            ->whereNotNull('dateDebut')
+            ->whereDate('dateDebut', '>', $today)
             ->count();
-
 
         /*
         |--------------------------------------------------------------------------
-        | DEMANDES PAR MOIS
+        | STAGES TERMINÉS
         |--------------------------------------------------------------------------
         */
 
-        $demandesParMois = [];
+        $stagesTermines = DB::table('affectation')
+            ->whereNotNull('dateFin')
+            ->whereDate('dateFin', '<', $today)
+            ->count();
 
-        for ($i = 5; $i >= 0; $i--) {
-            $date = Carbon::now()->subMonths($i);
+        /*
+        |--------------------------------------------------------------------------
+        | DERNIÈRES DEMANDES
+        |--------------------------------------------------------------------------
+        */
 
-            $nomMois = $date->translatedFormat('M Y');
-
-            $nombre = DemandeStage::whereYear(
-                'dateDepot',
-                $date->year
+        $dernieresDemandes = DB::table('demande_stage')
+            ->leftJoin(
+                'candidat',
+                'demande_stage.idCandidat',
+                '=',
+                'candidat.idCandidat'
             )
-                ->whereMonth(
-                    'dateDepot',
-                    $date->month
-                )
-                ->count();
-
-            $demandesParMois[] = [
-                'mois' => ucfirst($nomMois),
-                'nombre' => $nombre,
-            ];
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DERNIERES DEMANDES
-        |--------------------------------------------------------------------------
-        */
-
-        $dernieresDemandes = DemandeStage::with([
-            'candidat',
-            'service',
-        ])
-            ->orderByDesc('dateDepot')
-            ->limit(6)
-            ->get();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | ACTIVITES RECENTES
-        |--------------------------------------------------------------------------
-        */
-
-        $activitesRecentes = DemandeStage::with([
-            'candidat',
-            'service',
-        ])
-            ->orderByDesc('dateDepot')
+            ->leftJoin(
+                'service',
+                'demande_stage.idService',
+                '=',
+                'service.idService'
+            )
+            ->select(
+                'demande_stage.*',
+                'candidat.nom',
+                'candidat.prenom',
+                'candidat.email',
+                'service.nomService'
+            )
+            ->orderByDesc('demande_stage.dateDepot')
             ->limit(5)
             ->get();
 
-
         /*
         |--------------------------------------------------------------------------
-        | ENVOI A LA VUE
+        | RETOUR VERS LE DASHBOARD
         |--------------------------------------------------------------------------
         */
 
         return view(
             'admin.dashboard',
             compact(
-                'totalUtilisateurs',
-                'totalCandidats',
-                'totalServices',
                 'totalDemandes',
                 'demandesEnAttente',
                 'demandesAcceptees',
                 'demandesRefusees',
+                'totalUtilisateurs',
+                'totalCandidats',
+                'totalServices',
+                'totalDepartements',
+                'totalStages',
                 'stagesEnCours',
+                'stagesAVenir',
                 'stagesTermines',
-                'demandesParMois',
-                'dernieresDemandes',
-                'activitesRecentes'
+                'dernieresDemandes'
             )
         );
     }

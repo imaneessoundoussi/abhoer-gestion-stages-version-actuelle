@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Utilisateur extends Authenticatable
 {
@@ -26,16 +27,17 @@ class Utilisateur extends Authenticatable
     public $timestamps = false;
 
     /**
-     * Champs autorisés.
+     * Champs autorisés en écriture.
      */
     protected $fillable = [
+        'idCandidat',
+        'idService',
         'nom',
         'prenom',
         'login',
         'motDePasse',
         'role',
         'actif',
-        'idCandidat',
     ];
 
     /**
@@ -46,7 +48,14 @@ class Utilisateur extends Authenticatable
     ];
 
     /**
-     * Mot de passe utilisé par Laravel pour l'authentification.
+     * Conversion des champs.
+     */
+    protected $casts = [
+        'actif' => 'boolean',
+    ];
+
+    /**
+     * Mot de passe utilisé par Laravel Auth.
      */
     public function getAuthPassword()
     {
@@ -54,7 +63,7 @@ class Utilisateur extends Authenticatable
     }
 
     /**
-     * Candidat associé à l'utilisateur.
+     * Relation avec le candidat.
      */
     public function candidat(): BelongsTo
     {
@@ -62,6 +71,42 @@ class Utilisateur extends Authenticatable
             Candidat::class,
             'idCandidat',
             'idCandidat'
+        );
+    }
+
+    /**
+     * Relation avec le service.
+     */
+    public function service(): BelongsTo
+    {
+        return $this->belongsTo(
+            Service::class,
+            'idService',
+            'idService'
+        );
+    }
+
+    /**
+     * Historique des actions effectuées par l'utilisateur.
+     */
+    public function historiques(): HasMany
+    {
+        return $this->hasMany(
+            Historique::class,
+            'idUtilisateur',
+            'idUtilisateur'
+        );
+    }
+
+    /**
+     * Notifications.
+     */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(
+            Notification::class,
+            'idUtilisateur',
+            'idUtilisateur'
         );
     }
 }

@@ -26,28 +26,24 @@ class AdminStageController extends Controller
                 '=',
                 'demande_stage.idDemande'
             )
-
             ->leftJoin(
                 'candidat',
                 'demande_stage.idCandidat',
                 '=',
                 'candidat.idCandidat'
             )
-
             ->leftJoin(
                 'service',
                 'affectation.idService',
                 '=',
                 'service.idService'
             )
-
             ->leftJoin(
                 'departement',
                 'service.idDepartement',
                 '=',
                 'departement.idDepartement'
             )
-
             ->select(
                 'affectation.idAffectation',
                 'affectation.idDemande',
@@ -68,10 +64,8 @@ class AdminStageController extends Controller
                 'candidat.email',
 
                 'service.nomService',
-
                 'departement.nomDepartement'
             );
-
 
         /*
         |--------------------------------------------------------------------------
@@ -129,7 +123,6 @@ class AdminStageController extends Controller
             });
         }
 
-
         /*
         |--------------------------------------------------------------------------
         | Filtre par statut
@@ -144,7 +137,6 @@ class AdminStageController extends Controller
             );
         }
 
-
         /*
         |--------------------------------------------------------------------------
         | Filtre par période
@@ -158,7 +150,9 @@ class AdminStageController extends Controller
             $today = Carbon::today();
 
             /*
+            |--------------------------------------------------------------------------
             | Stage en cours
+            |--------------------------------------------------------------------------
             */
 
             if ($periode === 'en_cours') {
@@ -177,7 +171,9 @@ class AdminStageController extends Controller
             }
 
             /*
+            |--------------------------------------------------------------------------
             | Stage à venir
+            |--------------------------------------------------------------------------
             */
 
             elseif ($periode === 'a_venir') {
@@ -190,7 +186,9 @@ class AdminStageController extends Controller
             }
 
             /*
+            |--------------------------------------------------------------------------
             | Stage terminé
+            |--------------------------------------------------------------------------
             */
 
             elseif ($periode === 'termine') {
@@ -202,7 +200,6 @@ class AdminStageController extends Controller
                 );
             }
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -216,7 +213,6 @@ class AdminStageController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-
         /*
         |--------------------------------------------------------------------------
         | Statistiques
@@ -225,17 +221,19 @@ class AdminStageController extends Controller
 
         $today = Carbon::today();
 
-
         /*
+        |--------------------------------------------------------------------------
         | Total stages
+        |--------------------------------------------------------------------------
         */
 
         $totalStages = DB::table('affectation')
             ->count();
 
-
         /*
+        |--------------------------------------------------------------------------
         | Stages en cours
+        |--------------------------------------------------------------------------
         */
 
         $stagesEnCours = DB::table('affectation')
@@ -253,9 +251,10 @@ class AdminStageController extends Controller
             )
             ->count();
 
-
         /*
+        |--------------------------------------------------------------------------
         | Stages à venir
+        |--------------------------------------------------------------------------
         */
 
         $stagesAVenir = DB::table('affectation')
@@ -267,9 +266,10 @@ class AdminStageController extends Controller
             )
             ->count();
 
-
         /*
+        |--------------------------------------------------------------------------
         | Stages terminés
+        |--------------------------------------------------------------------------
         */
 
         $stagesTermines = DB::table('affectation')
@@ -280,7 +280,6 @@ class AdminStageController extends Controller
                 $today
             )
             ->count();
-
 
         /*
         |--------------------------------------------------------------------------
@@ -300,46 +299,45 @@ class AdminStageController extends Controller
         );
     }
 
-
     /**
      * Afficher le détail d'un stage.
+     *
+     * IMPORTANT :
+     * La route reçoit ici l'idDemande.
      */
     public function show(int $idDemande)
     {
         $stage = DB::table('affectation')
-
             ->join(
                 'demande_stage',
                 'affectation.idDemande',
                 '=',
                 'demande_stage.idDemande'
             )
-
             ->leftJoin(
                 'candidat',
                 'demande_stage.idCandidat',
                 '=',
                 'candidat.idCandidat'
             )
-
             ->leftJoin(
                 'service',
                 'affectation.idService',
                 '=',
                 'service.idService'
             )
-
             ->leftJoin(
                 'departement',
                 'service.idDepartement',
                 '=',
                 'departement.idDepartement'
             )
-
             ->select(
 
                 /*
+                |--------------------------------------------------------------------------
                 | Affectation
+                |--------------------------------------------------------------------------
                 */
 
                 'affectation.idAffectation',
@@ -351,7 +349,9 @@ class AdminStageController extends Controller
                 'affectation.observation',
 
                 /*
+                |--------------------------------------------------------------------------
                 | Demande
+                |--------------------------------------------------------------------------
                 */
 
                 'demande_stage.numeroDemande',
@@ -361,7 +361,9 @@ class AdminStageController extends Controller
                 'demande_stage.typeDepot',
 
                 /*
+                |--------------------------------------------------------------------------
                 | Candidat
+                |--------------------------------------------------------------------------
                 */
 
                 'candidat.idCandidat',
@@ -375,7 +377,9 @@ class AdminStageController extends Controller
                 'candidat.niveauEtude',
 
                 /*
+                |--------------------------------------------------------------------------
                 | Service
+                |--------------------------------------------------------------------------
                 */
 
                 'service.idService',
@@ -383,12 +387,20 @@ class AdminStageController extends Controller
                 'service.description as descriptionService',
 
                 /*
+                |--------------------------------------------------------------------------
                 | Département
+                |--------------------------------------------------------------------------
                 */
 
                 'departement.idDepartement',
                 'departement.nomDepartement'
             )
+
+            /*
+            |--------------------------------------------------------------------------
+            | Recherche par ID de demande
+            |--------------------------------------------------------------------------
+            */
 
             ->where(
                 'affectation.idDemande',
@@ -397,7 +409,6 @@ class AdminStageController extends Controller
 
             ->first();
 
-
         /*
         |--------------------------------------------------------------------------
         | Stage introuvable
@@ -405,7 +416,6 @@ class AdminStageController extends Controller
         */
 
         abort_if(!$stage, 404);
-
 
         /*
         |--------------------------------------------------------------------------

@@ -6,12 +6,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class Notification extends Model
 {
-    protected $table = 'notification';
+    /**
+     * Nom réel de la table.
+     */
+    protected $table = 'notifications';
 
+    /**
+     * Clé primaire personnalisée.
+     */
     protected $primaryKey = 'idNotification';
 
-    public $timestamps = false;
+    /**
+     * La table possède created_at et updated_at.
+     */
+    public $timestamps = true;
 
+    /**
+     * Champs pouvant être remplis.
+     */
     protected $fillable = [
         'idUtilisateur',
         'idDemande',
@@ -19,16 +31,19 @@ class Notification extends Model
         'message',
         'type',
         'lu',
-        'dateNotification',
-    ];
-
-    protected $casts = [
-        'lu' => 'boolean',
-        'dateNotification' => 'datetime',
     ];
 
     /**
-     * Utilisateur destinataire
+     * Conversion des types.
+     */
+    protected $casts = [
+        'lu' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * Utilisateur destinataire de la notification.
      */
     public function utilisateur()
     {
@@ -40,7 +55,7 @@ class Notification extends Model
     }
 
     /**
-     * Demande concernée
+     * Demande concernée par la notification.
      */
     public function demande()
     {
