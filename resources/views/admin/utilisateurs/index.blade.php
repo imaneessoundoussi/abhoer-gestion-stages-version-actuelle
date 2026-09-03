@@ -14,7 +14,6 @@
         Utilisateurs - ABHOER
     </title>
 
-
     <style>
 
         * {
@@ -23,13 +22,11 @@
             padding: 0;
         }
 
-
         body {
             font-family: Arial, sans-serif;
             background: #f4f7fb;
             color: #333;
         }
-
 
         /* =====================================================
            NAVBAR
@@ -43,81 +40,56 @@
             );
 
             color: white;
-
             padding: 18px 30px;
 
             display: flex;
-
             justify-content: space-between;
-
             align-items: center;
         }
-
 
         .navbar-brand {
             display: flex;
-
             align-items: center;
-
             gap: 12px;
         }
 
-
         .navbar-logo {
             height: 42px;
-
             width: auto;
 
             background: white;
-
             border-radius: 8px;
-
             padding: 3px 6px;
         }
 
-
         .navbar-brand h1 {
             font-size: 19px;
-
             line-height: 1.1;
         }
 
-
         .navbar-subtitle {
             display: block;
-
             font-size: 11px;
-
             opacity: 0.85;
-
             letter-spacing: 0.3px;
-
             margin-top: 2px;
         }
 
-
         .navbar-links {
             display: flex;
-
             align-items: center;
-
             gap: 20px;
         }
 
-
         .navbar-links a {
             color: white;
-
             text-decoration: none;
-
             font-weight: 600;
         }
-
 
         .navbar-links a:hover {
             text-decoration: underline;
         }
-
 
         /* =====================================================
            VAGUE
@@ -125,19 +97,14 @@
 
         .wave-divider {
             line-height: 0;
-
             margin-top: -1px;
         }
 
-
         .wave-divider svg {
             width: 100%;
-
             height: 26px;
-
             display: block;
         }
-
 
         /* =====================================================
            CONTENEUR
@@ -145,12 +112,9 @@
 
         .container {
             padding: 30px;
-
             max-width: 1500px;
-
             margin: auto;
         }
-
 
         /* =====================================================
            HEADER
@@ -158,23 +122,17 @@
 
         .header {
             display: flex;
-
             justify-content: space-between;
-
             align-items: center;
 
             margin-bottom: 25px;
-
             gap: 20px;
         }
 
-
         .header h2 {
             color: #1a7a86;
-
             font-size: 28px;
         }
-
 
         /* =====================================================
            BOUTONS
@@ -188,52 +146,40 @@
             border-radius: 6px;
 
             text-decoration: none;
-
             border: none;
 
             cursor: pointer;
 
             font-weight: bold;
-
             font-size: 14px;
         }
 
-
         .btn-primary {
             background: #1a7a86;
-
             color: white;
         }
-
 
         .btn-primary:hover {
             background: #14636d;
         }
 
-
         .btn-danger {
             background: #dc2626;
-
             color: white;
         }
-
 
         .btn-danger:hover {
             background: #b91c1c;
         }
 
-
         .btn-success {
             background: #16a34a;
-
             color: white;
         }
-
 
         .btn-success:hover {
             background: #15803d;
         }
-
 
         /* =====================================================
            MESSAGES
@@ -241,33 +187,24 @@
 
         .message {
             padding: 12px 16px;
-
             border-radius: 6px;
-
             margin-bottom: 20px;
         }
 
-
         .message-success {
             background: #dcfce7;
-
             color: #166534;
         }
 
-
         .message-error {
             background: #fee2e2;
-
             color: #991b1b;
         }
 
-
         .message ul {
             margin-top: 8px;
-
             margin-left: 20px;
         }
-
 
         /* =====================================================
            TABLEAU
@@ -285,13 +222,10 @@
             overflow-x: auto;
         }
 
-
         table {
             width: 100%;
-
             border-collapse: collapse;
         }
-
 
         th,
         td {
@@ -302,20 +236,15 @@
             border-bottom: 1px solid #eee;
         }
 
-
         th {
             background: #1a7a86;
-
             color: white;
-
             white-space: nowrap;
         }
-
 
         tbody tr:hover {
             background: #f8fafc;
         }
-
 
         /* =====================================================
            BADGES
@@ -329,24 +258,18 @@
             border-radius: 20px;
 
             font-size: 13px;
-
             font-weight: bold;
         }
 
-
         .badge-active {
             background: #dcfce7;
-
             color: #166534;
         }
 
-
         .badge-inactive {
             background: #fee2e2;
-
             color: #991b1b;
         }
-
 
         /* =====================================================
            RÔLE
@@ -356,26 +279,21 @@
             font-weight: 600;
         }
 
-
         /* =====================================================
            ACTIONS
         ====================================================== */
 
         .actions {
             display: flex;
-
             gap: 8px;
-
             align-items: center;
+            flex-wrap: wrap;
         }
-
 
         .actions form {
             display: inline;
-
             margin: 0;
         }
-
 
         /* =====================================================
            VIDE
@@ -383,12 +301,9 @@
 
         .empty {
             text-align: center;
-
             padding: 30px;
-
             color: #666;
         }
-
 
         /* =====================================================
            RESPONSIVE
@@ -406,7 +321,6 @@
                 align-items: flex-start;
             }
 
-
             .navbar-links {
                 width: 100%;
 
@@ -415,18 +329,15 @@
                 gap: 12px;
             }
 
-
             .container {
                 padding: 20px 15px;
             }
-
 
             .header {
                 flex-direction: column;
 
                 align-items: flex-start;
             }
-
 
             .header h2 {
                 font-size: 23px;
@@ -438,9 +349,7 @@
 
 </head>
 
-
 <body>
-
 
     {{-- =====================================================
          NAVBAR
@@ -448,9 +357,7 @@
 
     <div class="navbar">
 
-
         <div class="navbar-brand">
-
 
             <img
                 src="{{ asset('images/logo-abhoer.png') }}"
@@ -458,13 +365,11 @@
                 class="navbar-logo"
             >
 
-
             <div>
 
                 <h1>
                     ABHOER
                 </h1>
-
 
                 <span class="navbar-subtitle">
                     Gestion des stages
@@ -472,19 +377,13 @@
 
             </div>
 
-
         </div>
-
 
         <div class="navbar-links">
 
-
-            <a
-                href="{{ route('admin.dashboard') }}"
-            >
+            <a href="{{ route('admin.dashboard') }}">
                 Tableau de bord
             </a>
-
 
             <a
                 href="{{ route('logout') }}"
@@ -495,7 +394,6 @@
             >
                 Déconnexion
             </a>
-
 
             <form
                 id="logout-form"
@@ -508,12 +406,9 @@
 
             </form>
 
-
         </div>
 
-
     </div>
-
 
     {{-- =====================================================
          VAGUE
@@ -537,13 +432,11 @@
 
     </div>
 
-
     {{-- =====================================================
          CONTENU
     ====================================================== --}}
 
     <div class="container">
-
 
         {{-- =================================================
              TITRE
@@ -551,11 +444,9 @@
 
         <div class="header">
 
-
             <h2>
                 Gestion des utilisateurs
             </h2>
-
 
             <a
                 href="{{ route('admin.utilisateurs.create') }}"
@@ -564,9 +455,7 @@
                 + Ajouter un utilisateur
             </a>
 
-
         </div>
-
 
         {{-- =================================================
              MESSAGE SUCCÈS
@@ -582,7 +471,6 @@
 
         @endif
 
-
         {{-- =================================================
              MESSAGE ERREUR
         ================================================== --}}
@@ -597,7 +485,6 @@
 
         @endif
 
-
         {{-- =================================================
              ERREURS VALIDATION
         ================================================== --}}
@@ -606,11 +493,9 @@
 
             <div class="message message-error">
 
-
                 <strong>
                     Une erreur est survenue :
                 </strong>
-
 
                 <ul>
 
@@ -624,11 +509,9 @@
 
                 </ul>
 
-
             </div>
 
         @endif
-
 
         {{-- =================================================
              TABLEAU
@@ -636,12 +519,9 @@
 
         <div class="table-container">
 
-
             @if($utilisateurs->count() > 0)
 
-
                 <table>
-
 
                     <thead>
 
@@ -679,186 +559,162 @@
 
                     </thead>
 
-
                     <tbody>
-
 
                         @foreach($utilisateurs as $utilisateur)
 
-
                             <tr>
 
-
-                                {{-- =========================
-                                     ID
-                                ========================== --}}
+                                {{-- ID --}}
 
                                 <td>
-
                                     {{ $utilisateur->idUtilisateur }}
-
                                 </td>
 
-
-                                {{-- =========================
-                                     NOM
-                                ========================== --}}
+                                {{-- NOM --}}
 
                                 <td>
-
                                     {{ $utilisateur->nom }}
-
                                 </td>
 
-
-                                {{-- =========================
-                                     PRÉNOM
-                                ========================== --}}
+                                {{-- PRÉNOM --}}
 
                                 <td>
-
                                     {{ $utilisateur->prenom }}
-
                                 </td>
 
-
-                                {{-- =========================
-                                     LOGIN
-                                ========================== --}}
+                                {{-- LOGIN --}}
 
                                 <td>
-
                                     {{ $utilisateur->login }}
-
                                 </td>
 
-
-                                {{-- =========================
-                                     RÔLE
-                                ========================== --}}
+                                {{-- RÔLE --}}
 
                                 <td>
 
                                     <span class="role">
-
                                         {{ $utilisateur->role }}
-
                                     </span>
 
                                 </td>
 
-
-                                {{-- =========================
-                                     ÉTAT
-                                ========================== --}}
+                                {{-- ÉTAT --}}
 
                                 <td>
-
 
                                     @if($utilisateur->actif)
 
-
                                         <span class="badge badge-active">
-
                                             Actif
-
                                         </span>
-
 
                                     @else
 
-
                                         <span class="badge badge-inactive">
-
                                             Inactif
-
                                         </span>
-
 
                                     @endif
 
-
                                 </td>
 
-
-                                {{-- =========================
-                                     ACTION
-                                ========================== --}}
+                                {{-- ACTIONS --}}
 
                                 <td>
 
-
                                     <div class="actions">
 
+                                        {{-- ====================================
+                                             ACTIVER / DÉSACTIVER
+                                        ===================================== --}}
 
                                         <form
                                             method="POST"
                                             action="{{ route('admin.utilisateurs.toggle', $utilisateur->idUtilisateur) }}"
                                         >
 
-
                                             @csrf
-
-
-                                            {{-- IMPORTANT :
-                                                 La route Laravel utilise
-                                                 PATCH et non PUT. --}}
 
                                             @method('PATCH')
 
-
                                             @if($utilisateur->actif)
-
 
                                                 <button
                                                     type="submit"
                                                     class="btn btn-danger"
                                                 >
-
                                                     Désactiver
-
                                                 </button>
 
-
                                             @else
-
 
                                                 <button
                                                     type="submit"
                                                     class="btn btn-success"
                                                 >
-
                                                     Activer
-
                                                 </button>
 
-
                                             @endif
-
 
                                         </form>
 
 
-                                    </div>
+                                        {{-- ====================================
+                                             SUPPRIMER
+                                        ===================================== --}}
 
+                                        @if(
+                                            Auth::id() !==
+                                            $utilisateur->idUtilisateur
+                                        )
+
+                                            <form
+                                                method="POST"
+                                                action="{{ route('admin.utilisateurs.destroy', $utilisateur->idUtilisateur) }}"
+                                                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.');"
+                                            >
+
+                                                @csrf
+
+                                                @method('DELETE')
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-danger"
+                                                >
+                                                    Supprimer
+                                                </button>
+
+                                            </form>
+
+                                        @else
+
+                                            <span
+                                                style="
+                                                    color: #999;
+                                                    font-size: 13px;
+                                                "
+                                            >
+                                                Compte connecté
+                                            </span>
+
+                                        @endif
+
+                                    </div>
 
                                 </td>
 
-
                             </tr>
-
 
                         @endforeach
 
-
                     </tbody>
-
 
                 </table>
 
-
             @else
-
 
                 <div class="empty">
 
@@ -866,15 +722,11 @@
 
                 </div>
 
-
             @endif
-
 
         </div>
 
-
     </div>
-
 
 </body>
 

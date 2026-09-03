@@ -24,7 +24,6 @@ class AdminUtilisateurController extends Controller
         }
     }
 
-
     /**
      * Liste des utilisateurs.
      */
@@ -46,7 +45,6 @@ class AdminUtilisateurController extends Controller
         );
     }
 
-
     /**
      * Formulaire de création.
      */
@@ -54,11 +52,8 @@ class AdminUtilisateurController extends Controller
     {
         $this->verifierAdmin();
 
-        return view(
-            'admin.utilisateurs.create'
-        );
+        return view('admin.utilisateurs.create');
     }
-
 
     /**
      * Enregistrer un nouvel utilisateur.
@@ -100,23 +95,16 @@ class AdminUtilisateurController extends Controller
             ],
         ]);
 
-
         Utilisateur::create([
             'nom' => $validated['nom'],
-
             'prenom' => $validated['prenom'],
-
             'login' => $validated['login'],
-
             'motDePasse' => Hash::make(
                 $validated['motDePasse']
             ),
-
             'role' => $validated['role'],
-
             'actif' => true,
         ]);
-
 
         return redirect()
             ->route('admin.utilisateurs.index')
@@ -125,7 +113,6 @@ class AdminUtilisateurController extends Controller
                 'Utilisateur créé avec succès.'
             );
     }
-
 
     /**
      * Formulaire de modification.
@@ -144,7 +131,6 @@ class AdminUtilisateurController extends Controller
         );
     }
 
-
     /**
      * Modifier un utilisateur.
      */
@@ -157,7 +143,6 @@ class AdminUtilisateurController extends Controller
         $utilisateur = Utilisateur::findOrFail(
             $idUtilisateur
         );
-
 
         $validated = $request->validate([
             'nom' => [
@@ -192,28 +177,19 @@ class AdminUtilisateurController extends Controller
             ],
         ]);
 
-
         $utilisateur->update([
             'nom' => $validated['nom'],
-
             'prenom' => $validated['prenom'],
-
             'login' => $validated['login'],
-
             'role' => $validated['role'],
-
             'actif' => $request->boolean('actif'),
         ]);
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Modifier le mot de passe uniquement s'il est fourni
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Modifier le mot de passe uniquement
+         * s'il est fourni.
+         */
         if ($request->filled('motDePasse')) {
-
             $request->validate([
                 'motDePasse' => [
                     'string',
@@ -222,14 +198,12 @@ class AdminUtilisateurController extends Controller
                 ],
             ]);
 
-
             $utilisateur->update([
                 'motDePasse' => Hash::make(
                     $request->input('motDePasse')
                 ),
             ]);
         }
-
 
         return redirect()
             ->route('admin.utilisateurs.index')
@@ -239,7 +213,6 @@ class AdminUtilisateurController extends Controller
             );
     }
 
-
     /**
      * Activer / désactiver un utilisateur.
      */
@@ -247,25 +220,20 @@ class AdminUtilisateurController extends Controller
     {
         $this->verifierAdmin();
 
-
         $utilisateur = Utilisateur::findOrFail(
             $idUtilisateur
         );
 
-
         $userConnecte = Auth::user();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Empêcher l'administrateur de désactiver son propre compte
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Empêcher l'administrateur
+         * de désactiver son propre compte.
+         */
         if (
             $userConnecte &&
             $userConnecte->idUtilisateur ===
-            $utilisateur->idUtilisateur
+                $utilisateur->idUtilisateur
         ) {
             return back()->with(
                 'error',
@@ -273,35 +241,18 @@ class AdminUtilisateurController extends Controller
             );
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Inverser l'état du compte
-        |--------------------------------------------------------------------------
-        */
-
         $utilisateur->actif = !$utilisateur->actif;
-
         $utilisateur->save();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Message
-        |--------------------------------------------------------------------------
-        */
 
         $message = $utilisateur->actif
             ? 'Utilisateur activé avec succès.'
             : 'Utilisateur désactivé avec succès.';
-
 
         return back()->with(
             'success',
             $message
         );
     }
-
 
     /**
      * Supprimer un utilisateur.
@@ -310,25 +261,20 @@ class AdminUtilisateurController extends Controller
     {
         $this->verifierAdmin();
 
-
         $utilisateur = Utilisateur::findOrFail(
             $idUtilisateur
         );
 
-
         $userConnecte = Auth::user();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Empêcher l'administrateur de supprimer son propre compte
-        |--------------------------------------------------------------------------
-        */
-
+        /**
+         * Empêcher l'administrateur
+         * de supprimer son propre compte.
+         */
         if (
             $userConnecte &&
             $userConnecte->idUtilisateur ===
-            $utilisateur->idUtilisateur
+                $utilisateur->idUtilisateur
         ) {
             return back()->with(
                 'error',
@@ -336,13 +282,16 @@ class AdminUtilisateurController extends Controller
             );
         }
 
-
+        /**
+         * Suppression de l'utilisateur.
+         */
         $utilisateur->delete();
 
-
-        return back()->with(
-            'success',
-            'Utilisateur supprimé avec succès.'
-        );
+        return redirect()
+            ->route('admin.utilisateurs.index')
+            ->with(
+                'success',
+                'Utilisateur supprimé avec succès.'
+            );
     }
 }
